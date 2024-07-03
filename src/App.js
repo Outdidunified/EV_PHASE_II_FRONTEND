@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import SuperAdminApp from './adminApps/SuperAdminApp';
 import ResellerAdminApp from './adminApps/ResellerAdminApp';
-import ClientAdminApp from './adminApps/ClientAdminApp';
+import AssociationAdminApp from './adminApps/AssociationAdminApp';
 
 const App = () => {
   
