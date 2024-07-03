@@ -6,7 +6,6 @@ import AssociationAdminApp from './adminApps/AssociationAdminApp';
 
 const App = () => {
   
-  
   return (
     <Router>
       <Routes>

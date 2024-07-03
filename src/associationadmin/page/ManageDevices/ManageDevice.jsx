@@ -1,12 +1,11 @@
 import React, {useState, useEffect} from 'react';
-import axios from 'axios';
-import Header from '../components/Header';
-import Sidebar from '../components/Sidebar';
-import Footer from '../components/Footer';
+import Header from '../../components/Header';
+import Sidebar from '../../components/Sidebar';
+import Footer from '../../components/Footer';
 import Swal from 'sweetalert2';
 
-const ManageUserRole = ({ userInfo, handleLogout }) => {
-
+const ManageDevice = ({ userInfo, handleLogout }) => {    
+    
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -14,27 +13,47 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
     const [posts, setPosts] = useState([]);
     const [updateTrigger, setUpdateTrigger] = useState(false);
 
-    // Get manage user role
+    // Get manage charger data
     useEffect(() => {
-        const url = `/superadmin/FetchUserRoles`;
-        axios.get(url).then((res) => {
-            setData(res.data.data);
-            // console.log(res.data.data);
-            setLoading(false);
-        })
-        .catch((err) => {
-            console.error('Error fetching data:', err);
-            setError('Error fetching data. Please try again.');
-            setLoading(false);
-        });
-    }, [updateTrigger]);
+        const fetchProfile = async () => {
+            try {
+                const response = await fetch('/associationadmin/FetchAllocatedChargerByClientToAssociation', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ client_id: userInfo.data.client_id }),
+                });
 
-     // Search data 
-     const handleSearchInputChange = (e) => {
+                if (response.ok) {
+                    const data = await response.json();
+                    // console.log('Response datasss:', data); 
+                    setData(data.data);
+                    setLoading(false);
+                } else {
+                    setError('Failed to fetch profile');
+                    console.error('Failed to fetch profile:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                setError('Error fetching data. Please try again.');
+                setLoading(false);
+            }
+        };
+
+        if (userInfo.data.client_id) {
+            fetchProfile();
+        } else {
+            console.error('User ID not found in userInfo');
+        }
+    }, [userInfo.data.client_id, updateTrigger]);
+
+    // Search data 
+    const handleSearchInputChange = (e) => {
         const inputValue = e.target.value.toUpperCase();
         if (Array.isArray(data)) {
             const filteredData = data.filter((item) =>
-                item.role_name.toUpperCase().includes(inputValue)
+                item.charger_id.toUpperCase().includes(inputValue)
             );
             setPosts(filteredData);
         }
@@ -52,8 +71,8 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
         }
     }, [data, filteredData]);
 
-     // Timestamp data 
-     function formatTimestamp(originalTimestamp) {
+    // Timestamp data 
+    function formatTimestamp(originalTimestamp) {
         const date = new Date(originalTimestamp);
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -71,65 +90,16 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
         return formattedDate;
     } 
 
-    // Add user role start 
-    const [showAddForm, setShowAddForm] = useState(false);
-
-    const addChargers = () => {
-        setShowAddForm(prevState => !prevState); // Toggles the form visibility
-    };
-    const closeAddModal = () => {
-        setShowAddForm(false); // Close the form
-    };
-    const modalAddStyle = {
-        display: showAddForm ? 'block' : 'none',
-    }
-
-    // Add user role
-    const [rolename, setuserRole] = useState('');
-
-    const addUserRole = async (e) => {
+    // DeActive
+    const changeDeActivate = async (e, charger_id) => {
         e.preventDefault();
         try {
-            const response = await fetch('/superadmin/CreateUserRole', {
+            const response = await fetch('/associationadmin/DeActivateOrActivateCharger', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ rolename, created_by: userInfo.data.username }),
-            });
-            if (response.ok) {
-                Swal.fire({
-                    title: "Add user role successfully",
-                    icon: "success"
-                });
-                setuserRole(''); 
-                setShowAddForm(false);
-                closeAddModal();
-            } else {
-                Swal.fire({
-                    title: "Error",
-                    text: "Failed to user role",
-                    icon: "error"
-                });
-            }
-        }catch (error) {
-            Swal.fire({
-                title: "Error:", error,
-                text: "An error occurred while adding user role",
-                icon: "error"
-            });
-        }
-    };
-
-    const changeDeActivate = async (e, role_id) => {
-        e.preventDefault();
-        try {
-            const response = await fetch('/superadmin/DeActivateOrActivateUserRole', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ role_id, status:false, modified_by: userInfo.data.username }),
+            body: JSON.stringify({ charger_id, status:false, modified_by: userInfo.data.association_name }),
             });
             if (response.ok) {
                 Swal.fire({
@@ -147,21 +117,22 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
         }catch (error) {
             Swal.fire({
                 title: "Error:", error,
-                text: "An error occurred while adding DeActivate",
+                text: "An error occurred while updating user status.",
                 icon: "error"
             });
         }
     };
 
-    const changeActivate = async (e, role_id) => {
+    // Active
+    const changeActivate = async (e, charger_id) => {
         e.preventDefault();
         try {
-            const response = await fetch('/superadmin/DeActivateOrActivateUserRole', {
+            const response = await fetch('/associationadmin/DeActivateOrActivateCharger', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ role_id, status:true, modified_by: userInfo.data.username }),
+            body: JSON.stringify({ charger_id, status:true, modified_by: userInfo.data.association_name }),
             });
             if (response.ok) {
                 Swal.fire({
@@ -179,7 +150,7 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
         }catch (error) {
             Swal.fire({
                 title: "Error:", error,
-                text: "An error occurred while adding Activate",
+                text: "An error occurred while updating user status.",
                 icon: "error"
             });
         }
@@ -198,37 +169,7 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
                             <div className="col-md-12 grid-margin">
                                 <div className="row">
                                     <div className="col-12 col-xl-8 mb-4 mb-xl-0">
-                                        <h3 className="font-weight-bold">Manage User Role's</h3>
-                                    </div>
-                                    <div className="col-12 col-xl-4">
-                                        <div className="justify-content-end d-flex">
-                                            <button type="button" className="btn btn-success" onClick={addChargers}>Add Role's</button>
-                                            {/* Add role start */}
-                                            <div className="modalStyle" style={modalAddStyle}>
-                                                <div className="modalContentStyle" style={{ maxHeight: '680px', overflowY: 'auto' }}>
-                                                    <span onClick={closeAddModal} style={{ float: 'right', cursor: 'pointer', fontSize:'30px' }}>&times;</span>
-                                                    <form className="pt-3" onSubmit={addUserRole}>
-                                                        <div className="card-body">
-                                                            <div style={{textAlign:'center'}}>
-                                                                <h4 className="card-title">Add Role's</h4>
-                                                            </div>
-                                                            <div className="table-responsive pt-3">
-                                                                <div className="input-group">
-                                                                    <div className="input-group-prepend">
-                                                                        <span className="input-group-text" style={{color:'black', width:'125px'}}>Role Name</span>
-                                                                    </div>
-                                                                    <input type="text" className="form-control" placeholder="Role Name" value={rolename} onChange={(e) => setuserRole(e.target.value)} required/>
-                                                                </div>
-                                                            </div>
-                                                            <div style={{textAlign:'center'}}>
-                                                                <button type="submit" className="btn btn-primary mr-2" style={{marginTop:'10px'}}>Add</button>
-                                                            </div>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                            {/* Add role end */}
-                                        </div>
+                                        <h3 className="font-weight-bold">Manage Device</h3>
                                     </div>
                                 </div>
                             </div>
@@ -241,7 +182,7 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
                                             <div className="col-md-12 grid-margin">
                                                 <div className="row">
                                                     <div className="col-4 col-xl-8">
-                                                        <h4 className="card-title" style={{paddingTop:'10px'}}>List Of Role's</h4>  
+                                                        <h4 className="card-title" style={{paddingTop:'10px'}}>List Of Chargers</h4>  
                                                     </div>
                                                     <div className="col-8 col-xl-4">
                                                         <div className="input-group">
@@ -261,53 +202,59 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
                                                 <thead style={{textAlign:'center'}}>
                                                     <tr> 
                                                         <th>Sl.No</th>
-                                                        <th>Role Name</th>
+                                                        <th>Charger ID</th>
+                                                        <th>Model</th>
+                                                        <th>Type</th>
+                                                        <th>Gun Connetor</th>
+                                                        <th>Max Current</th>
                                                         <th>Created By</th>
                                                         <th>Created Date</th>
-                                                        <th>Modified By</th>
-                                                        <th>Modified Date</th>
                                                         <th>Status</th>
                                                         <th>Active/DeActive</th>
+                                                        {/* <th>Option</th> */}
                                                     </tr>
                                                 </thead>
                                                 <tbody style={{textAlign:'center'}}>
                                                     {loading ? (
                                                         <tr>
-                                                            <td colSpan="8" style={{ marginTop: '50px', textAlign: 'center' }}>Loading...</td>
+                                                        <td colSpan="10" style={{ marginTop: '50px', textAlign: 'center' }}>Loading...</td>
                                                         </tr>
                                                     ) : error ? (
                                                         <tr>
-                                                            <td colSpan="8" style={{ marginTop: '50px', textAlign: 'center' }}>Error: {error}</td>
+                                                        <td colSpan="10" style={{ marginTop: '50px', textAlign: 'center' }}>Error: {error}</td>
                                                         </tr>
                                                     ) : (
                                                         Array.isArray(posts) && posts.length > 0 ? (
                                                             posts.map((dataItem, index) => (
                                                             <tr key={index}>
                                                                 <td>{index + 1}</td>
-                                                                <td>{dataItem.role_name}</td>
+                                                                <td>{dataItem.charger_id}</td>
+                                                                <td>{dataItem.model}</td>
+                                                                <td>{dataItem.type}</td>
+                                                                <td>{dataItem.gun_connector}</td>
+                                                                <td>{dataItem.max_current}</td>
                                                                 <td>{dataItem.created_by}</td>
                                                                 <td>{formatTimestamp(dataItem.created_date)}</td>
-                                                                <td>{dataItem.modified_by}</td>
-                                                                <td>{formatTimestamp(dataItem.modified_date)}</td>
                                                                 <td>{dataItem.status===true ? <span className="text-success">Active</span> : <span className="text-danger">DeActive</span>}</td>
                                                                 <td>
                                                                     <div className='form-group' style={{paddingTop:'13px'}}> 
                                                                         {dataItem.status===true ?
                                                                             <div className="form-check form-check-danger">
-                                                                                <label className="form-check-label"><input type="radio" className="form-check-input" name="optionsRadios1" id="optionsRadios2" value={false} onClick={(e) => changeDeActivate(e, dataItem.role_id)}/>DeActive<i className="input-helper"></i></label>
+                                                                                <label className="form-check-label"><input type="radio" className="form-check-input" name="optionsRadios1" id="optionsRadios2" value={false} onClick={(e) => changeDeActivate(e, dataItem.charger_id)}/>DeActive<i className="input-helper"></i></label>
                                                                             </div>
                                                                         :
                                                                             <div className="form-check form-check-success">
-                                                                                <label className="form-check-label"><input type="radio" className="form-check-input" name="optionsRadios1" id="optionsRadios1" value={true} onClick={(e) => changeActivate(e, dataItem.role_id)}/>Active<i className="input-helper"></i></label>
+                                                                                <label className="form-check-label"><input type="radio" className="form-check-input" name="optionsRadios1" id="optionsRadios1" value={true} onClick={(e) => changeActivate(e, dataItem.charger_id)}/>Active<i className="input-helper"></i></label>
                                                                             </div>
                                                                         }
                                                                     </div>
-                                                                </td>                                                    
+                                                                </td>     
+                                                                
                                                             </tr>
                                                         ))
                                                         ) : (
                                                         <tr>
-                                                            <td colSpan="8" style={{ marginTop: '50px', textAlign: 'center' }}>No devices found</td>
+                                                            <td colSpan="10" style={{ marginTop: '50px', textAlign: 'center' }}>No devices found</td>
                                                         </tr>
                                                         )
                                                     )}
@@ -327,4 +274,4 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
     )
 }   
                  
-export default ManageUserRole
+export default ManageDevice

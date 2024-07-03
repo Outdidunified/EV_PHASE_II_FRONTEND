@@ -2,32 +2,27 @@ import React, { useState } from 'react';
 
 const Login = ({ handleLogin }) => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [passwords, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
+  // Login
   const handleLoginFormSubmit = async (e) => {
     e.preventDefault();
     try {
-      const passwordAsInteger = parseInt(password, 10);
-  
-  // Perform API call for login
-      const response = await fetch('/clientadmin/CheckLoginCredentials', {
-         method: 'POST',
-           headers: {
+      const parsedPassword = parseInt(passwords);
+      const response = await fetch('/associationadmin/CheckLoginCredentials', {
+        method: 'POST',
+        headers: {
           'Content-Type': 'application/json',
-       },
-         body: JSON.stringify({ email, password: passwordAsInteger }),
+        },
+        body: JSON.stringify({ email, password: parsedPassword }),
       });
-      console.log(response)
-
       // alert(email )
       if (response.ok) {
-        // const data = await response.json();
-        // handleLogin(data);
         const data = await response.json();
-        // Include email in the data sent to handleLogin
-        handleLogin({ ...data, email }); // Adding email to the data object
+        // console.log('Response data:', data); 
+        handleLogin({...data});
       } else {
         // console.error('Login failed');
         setErrorMessage('Login failed. Please check your credentials.');
@@ -50,16 +45,16 @@ const Login = ({ handleLogin }) => {
             <div className="col-lg-4 mx-auto">
               <div className="auth-form-light text-left py-5 px-4 px-sm-5">
                 <div className="brand-logo"> 
-                  <img src="../../images/dashboard/EV-CLIENT-ADMIN.png" alt="logo" style={{width:'83%', height:'200%'}}/>
+                  <img src="../../images/dashboard/EV-ASSOCIATION-ADMIN.png" alt="logo" style={{width:'72%', height:'110%'}}/>
                 </div>
                 <h4>Hello! let's get started</h4>
-                <h6 className="font-weight-light">Sign in to continue.</h6>
+                <h6 className="font-weight-light">Sign in to continue</h6>
                 <form className="pt-3" onSubmit={handleLoginFormSubmit}>
                   <div className="form-group">
                     <input type="email" className="form-control form-control-lg" placeholder="Enter your email" value={email}  onChange={(e) => setEmail(e.target.value)} required/>
                   </div>
                   <div className="form-group">
-                    <input type="password" className="form-control form-control-lg" placeholder="Enter your password" value={password} onChange={(e) => setPassword(e.target.value)} required/>
+                    <input type="password" className="form-control form-control-lg" placeholder="Enter your password" value={passwords} onChange={(e) => setPassword(e.target.value)} required/>
                   </div>
                   {errorMessage && <p className="text-danger">{errorMessage}</p>}
                   {successMessage && <p className="text-success">{successMessage}</p>}

@@ -8,13 +8,8 @@ import Swal from 'sweetalert2';
 
 const ManageUsers = ({ userInfo, handleLogout }) => {
     const navigate = useNavigate();
-    
-    const handleViewUser = (dataItem) => {
-        navigate('/superadmin/ViewUserList', { state: { dataItem } });
-    };
-
     const handleEditUser = (dataItem) => {
-        navigate('/superadmin/EditUserList', { state: { dataItem } });
+        navigate('/associationadmin/EditManageUsers', { state: { dataItem } });
     };
     
     // Add Chargers start 
@@ -32,37 +27,30 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
 
     // Add Manage User
     const [role, setRole] = useState({ role_id: '', role_name: '' });
-    const [reseller_id, setSelectedReseller] = useState('');
     const [username, setuserName] = useState('');
     const [email_id, setemailID] = useState('');
     const [Password, setPassword] = useState('');
     const [phoneNo, setPhone] = useState('');
-    const [walletBal, setWallet] = useState('');
     const [updateTrigger, setUpdateTrigger] = useState(false);
 
     const handleResellerChange = (e) => {
         const [role_id, role_name] = e.target.value.split('|');
         setRole({ role_id, role_name });
     };
-
-    const handleselectionReseller = (e) => {
-        setSelectedReseller(e.target.value);
-    };
     
+    // Add user
     const addManageUser = async (e) => {
         e.preventDefault();
         try {
             const roleID = parseInt(role.role_id);
-            const resellerID = parseInt(reseller_id);
             const password = parseInt(Password);
             const phone_no = parseInt(phoneNo);
-            const wallet_bal = parseInt(walletBal);
-            const response = await fetch('/superadmin/CreateUser', {
+            const response = await fetch('/associationadmin/CreateUser', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ role_id:roleID, reseller_id:resellerID, username, email_id, password, phone_no, wallet_bal, created_by:userInfo.data.username }),
+            body: JSON.stringify({ role_id:roleID, reseller_id:userInfo.data.reseller_id, client_id:userInfo.data.client_id, association_id:userInfo.data.association_id, username, email_id, password, phone_no, created_by:userInfo.data.association_name }),
             });
             if (response.ok) {
                 Swal.fire({
@@ -73,8 +61,8 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
                 setemailID(''); 
                 setPassword(''); 
                 setPhone(''); 
-                setWallet(''); 
                 setShowAddForm(false);
+                setUpdateTrigger((prev) => !prev);
             } else {
                 Swal.fire({
                     title: "Error",
@@ -93,24 +81,12 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
     // Add Manage User end
 
     const [selectionRoles, setSelectionRoles] = useState([]);
-    const [selectionReseller, setSelectionReseller] = useState([]);
   
     useEffect(() => {
-        const url = '/superadmin/FetchSpecificUserRoleForSelection';
+        const url = '/associationadmin/FetchSpecificUserRoleForSelection';
         axios.get(url)
             .then((res) => {
                 setSelectionRoles(res.data.data);
-            })
-            .catch((err) => {
-                console.error('Error fetching data:', err);
-            });
-    }, []);
-
-    useEffect(() => {
-        const url = '/superadmin/FetchResellerForSelection';
-        axios.get(url)
-            .then((res) => {
-                setSelectionReseller(res.data.data);
             })
             .catch((err) => {
                 console.error('Error fetching data:', err);
@@ -125,7 +101,7 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
 
     // Get manage user data
     useEffect(() => {
-        const url = `/superadmin/FetchUsers`;
+        const url = `/associationadmin/FetchUsers`;
         axios.get(url).then((res) => {
             setData(res.data.data);
             setLoading(false);
@@ -177,15 +153,16 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
         return formattedDate;
     } 
 
+    // DeActive
     const changeDeActivate = async (e, user_id) => {
         e.preventDefault();
         try {
-            const response = await fetch('/superadmin/DeActivateUser', {
+            const response = await fetch('/associationadmin/DeActivateUser', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ user_id, status:false, modified_by: userInfo.data.username }),
+            body: JSON.stringify({ user_id, status:false, modified_by: userInfo.data.association_name }),
             });
             if (response.ok) {
                 Swal.fire({
@@ -209,15 +186,16 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
         }
     };
 
+    // Active
     const changeActivate = async (e, user_id) => {
         e.preventDefault();
         try {
-            const response = await fetch('/superadmin/DeActivateUser', {
+            const response = await fetch('/associationadmin/DeActivateUser', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ user_id, status:true, modified_by: userInfo.data.username }),
+            body: JSON.stringify({ user_id, status:true, modified_by: userInfo.data.association_name }),
             });
             if (response.ok) {
                 Swal.fire({
@@ -280,20 +258,6 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
                                                                         ))}
                                                                     </select>                                                               
                                                                 </div>
-
-                                                                {role.role_name === 'reselleradmin' && (
-                                                                <div className="input-group">
-                                                                    <div className="input-group-prepend">
-                                                                        <span className="input-group-text" style={{color:'black', width:'125px'}}>Reseller</span>
-                                                                    </div>
-                                                                    <select className="form-control" value={reseller_id} onChange={handleselectionReseller}>
-                                                                        <option value="">Select Reseller</option>
-                                                                        {selectionReseller.map((roles, index) => (
-                                                                            <option key={index} value={roles.reseller_id}>{roles.reseller_name}</option>
-                                                                        ))}
-                                                                    </select>                                                               
-                                                                </div>
-                                                                )}
                                                                 <div className="input-group">
                                                                     <div className="input-group-prepend">
                                                                         <span className="input-group-text" style={{color:'black', width:'125px'}}>User Name</span>
@@ -317,12 +281,6 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
                                                                         <span className="input-group-text" style={{color:'black', width:'125px'}}>Password</span>
                                                                     </div>
                                                                     <input type="password" className="form-control" placeholder="Password" value={Password} onChange={(e) => setPassword(e.target.value)} required/>
-                                                                </div>
-                                                                <div className="input-group">
-                                                                    <div className="input-group-prepend">
-                                                                        <span className="input-group-text" style={{color:'black', width:'125px'}}>Wallet</span>
-                                                                    </div>
-                                                                    <input type="text" className="form-control" placeholder="Wallet" value={walletBal} onChange={(e) => setWallet(e.target.value)} required/>
                                                                 </div>
                                                             </div>
                                                             <div style={{textAlign:'center'}}>
@@ -414,7 +372,6 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
                                                                     </div>
                                                                 </td>      
                                                                 <td>
-                                                                    <button type="button" className="btn btn-outline-success btn-icon-text"  onClick={() => handleViewUser(dataItem)} style={{marginBottom:'10px', marginRight:'10px'}}><i className="mdi mdi-eye"></i>View</button> 
                                                                     <button type="button" className="btn btn-outline-primary btn-icon-text"  onClick={() => handleEditUser(dataItem)} style={{marginBottom:'10px', marginRight:'10px'}}><i className="mdi mdi-pencil btn-icon-prepend"></i>Edit</button><br/>
                                                                 </td>
                                                             </tr>
