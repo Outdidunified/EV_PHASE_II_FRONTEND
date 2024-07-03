@@ -6,13 +6,13 @@ import ClientAdminApp from './adminApps/ClientAdminApp';
 
 const App = () => {
   
+  
   return (
     <Router>
       <Routes>
         <Route path="/superadmin/*" element={<SuperAdminApp />} />
         <Route path="/reselleradmin/*" element={<ResellerAdminApp />} />
-        <Route path="/clientadmin/*" element={<ClientAdminApp />} />
-
+        <Route path="/associationadmin/*" element={<AssociationAdminApp />} />
         <Route path="/" element={<Navigate to="/superadmin" />} />
       </Routes>
     </Router>
