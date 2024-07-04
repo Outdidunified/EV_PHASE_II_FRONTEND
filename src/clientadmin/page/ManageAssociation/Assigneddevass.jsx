@@ -25,11 +25,13 @@ const Assigneddevass = ({ userInfo, handleLogout }) => {
             const response = await axios.post('/clientadmin/FetchChargerDetailsWithSession', {
                 association_id: association_id,
             });
-          
+
             if (response.data.status === 'Success' && response.data.data.length > 0) {
                 const fetchedData = response.data.data.map(item => ({
                     charger_id: item.charger_id,
-                    finance_id: item.finance_id, // Assign finance_id from response
+                    finance_id: item.finance_id,
+                    client_commission: item.client_commission,
+                    sessiondata: item.sessiondata // Ensure sessiondata is included
                 }));
                 setFilteredData(fetchedData);
                 setOriginalData(fetchedData); // Keep original data for resetting
@@ -61,6 +63,13 @@ const Assigneddevass = ({ userInfo, handleLogout }) => {
 
     const goBack = () => {
         navigate(-1);
+    };
+
+    const navsessionhistory = (item) => {
+        const sessiondata = item.sessiondata[0];
+      
+       
+        navigate('/clientadmin/Sessionhistoryass', { state: { sessiondata } });
     };
 
     const navtoassignfinance = (charger_id) => {
@@ -129,7 +138,9 @@ const Assigneddevass = ({ userInfo, handleLogout }) => {
                                                         <th>Sl.No</th>
                                                         <th>Charger Id</th>
                                                         <th>Finance_Id</th>
+                                                        <th>Client Commission</th>
                                                         <th>Assign Finance</th>
+                                                        <th>Session History</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -139,6 +150,7 @@ const Assigneddevass = ({ userInfo, handleLogout }) => {
                                                                 <td>{index + 1}</td>
                                                                 <td>{item.charger_id}</td>
                                                                 <td>{item.finance_id ? item.finance_id : <span style={{ color: 'red' }}>Not yet Assigned</span>}</td>
+                                                                <td>{item.client_commission}</td>
                                                                 <td>
                                                                     <button
                                                                         type="button"
@@ -150,11 +162,21 @@ const Assigneddevass = ({ userInfo, handleLogout }) => {
                                                                         <i className="mdi mdi-check btn-icon-prepend"></i>Assign
                                                                     </button>
                                                                 </td>
+                                                                <td>
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-outline-dark btn-icon-text"
+                                                                        onClick={() => navsessionhistory(item)}
+                                                                        style={{ marginBottom: '10px', marginLeft: '10px' }}
+                                                                    >
+                                                                        <i className="mdi mdi-history btn-icon-prepend"></i>Session History
+                                                                    </button>
+                                                                </td>
                                                             </tr>
                                                         ))
                                                     ) : (
                                                         <tr>
-                                                            <td colSpan="2" className="text-center">No associations found.</td>
+                                                            <td colSpan="8" className="text-center">No associations found.</td>
                                                         </tr>
                                                     )}
                                                 </tbody>

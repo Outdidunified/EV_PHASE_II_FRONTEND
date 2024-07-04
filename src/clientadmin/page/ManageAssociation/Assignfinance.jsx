@@ -87,10 +87,10 @@ const Assignfinance = ({ userInfo, handleLogout }) => {
                 <Sidebar />
                 <div className="main-panel">
                     <div className="content-wrapper">
-                        <div className="row">
+                    <div className="row">
                             <div className="col-md-12 grid-margin">
                                 <div className="row">
-                                    <div className="col-12">
+                                    <div className="col-12 col-xl-8 mb-4 mb-xl-0">
                                         <h3 className="font-weight-bold">Assign Finance</h3>
                                     </div>
                                     <div className="col-12 col-xl-4">
@@ -101,7 +101,7 @@ const Assignfinance = ({ userInfo, handleLogout }) => {
                                                 onClick={goBack}
                                                 style={{ marginRight: '10px' }}
                                             >
-                                                Go back
+                                                Go Back
                                             </button>
                                         </div>
                                     </div>

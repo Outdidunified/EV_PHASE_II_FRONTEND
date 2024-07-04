@@ -3,16 +3,22 @@ import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 import Footer from '../../components/Footer';
 import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 
 const ManageDevice = ({ userInfo, handleLogout }) => {    
-    
+    const navigate = useNavigate();
+
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [filteredData] = useState([]);
     const [posts, setPosts] = useState([]);
     const [updateTrigger, setUpdateTrigger] = useState(false);
-
+    
+    const handleEditManageDevice = (dataItem) => {
+        navigate('/associationadmin/EditManageDevice', { state: { dataItem } });
+    };
+    
     // Get manage charger data
     useEffect(() => {
         const fetchProfile = async () => {
@@ -211,17 +217,17 @@ const ManageDevice = ({ userInfo, handleLogout }) => {
                                                         <th>Created Date</th>
                                                         <th>Status</th>
                                                         <th>Active/DeActive</th>
-                                                        {/* <th>Option</th> */}
+                                                        <th>Option</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody style={{textAlign:'center'}}>
                                                     {loading ? (
                                                         <tr>
-                                                        <td colSpan="10" style={{ marginTop: '50px', textAlign: 'center' }}>Loading...</td>
+                                                        <td colSpan="11" style={{ marginTop: '50px', textAlign: 'center' }}>Loading...</td>
                                                         </tr>
                                                     ) : error ? (
                                                         <tr>
-                                                        <td colSpan="10" style={{ marginTop: '50px', textAlign: 'center' }}>Error: {error}</td>
+                                                        <td colSpan="11" style={{ marginTop: '50px', textAlign: 'center' }}>Error: {error}</td>
                                                         </tr>
                                                     ) : (
                                                         Array.isArray(posts) && posts.length > 0 ? (
@@ -248,13 +254,15 @@ const ManageDevice = ({ userInfo, handleLogout }) => {
                                                                             </div>
                                                                         }
                                                                     </div>
-                                                                </td>     
-                                                                
+                                                                </td>  
+                                                                <td>
+                                                                    <button type="button" className="btn btn-outline-primary btn-icon-text"  onClick={() => handleEditManageDevice(dataItem)} style={{marginBottom:'10px', marginRight:'10px'}}><i className="mdi mdi-pencil btn-icon-prepend"></i>Edit</button><br/>
+                                                                </td>   
                                                             </tr>
                                                         ))
                                                         ) : (
                                                         <tr>
-                                                            <td colSpan="10" style={{ marginTop: '50px', textAlign: 'center' }}>No devices found</td>
+                                                            <td colSpan="11" style={{ marginTop: '50px', textAlign: 'center' }}>No devices found</td>
                                                         </tr>
                                                         )
                                                     )}

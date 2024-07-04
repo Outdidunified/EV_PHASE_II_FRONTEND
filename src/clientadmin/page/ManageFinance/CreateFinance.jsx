@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Header from '../../components/Header';
@@ -8,7 +8,7 @@ import Swal from 'sweetalert2';
 
 const CreateFinance = ({ userInfo, handleLogout }) => {
     const [newFinance, setNewFinance] = useState({
-        association_id: '',
+      
         eb_charges: '',
         app_charges: '',
         other_charges: '',
@@ -20,31 +20,16 @@ const CreateFinance = ({ userInfo, handleLogout }) => {
     });
 
     const [errorMessage, setErrorMessage] = useState('');
-    const [associationNames, setAssociationNames] = useState([]);
+   
     const navigate = useNavigate();
 
-    useEffect(() => {
-        fetchAssociationNames();
-    }, []);
-
-    const fetchAssociationNames = async () => {
-        try {
-            const response = await axios.get('/clientadmin/FetchAssociationForSelection');
-            if (response.data.status === 'Success') {
-                setAssociationNames(response.data.data); // Set associationNames state to the array of associations
-            } else {
-                console.error('Failed to fetch association names:', response.data.message);
-            }
-        } catch (error) {
-            console.error('Error fetching association names:', error);
-        }
-    };
+   
 
     const createFinance = async (e) => {
         e.preventDefault();
         try {
             const formattedFinanceData = {
-                association_id: parseInt(newFinance.association_id),
+                
                 client_id: userInfo.data.client_id, // Assuming userInfo has necessary client info
                 eb_charges: newFinance.eb_charges,
                 app_charges: newFinance.app_charges,
@@ -112,26 +97,7 @@ const CreateFinance = ({ userInfo, handleLogout }) => {
                                                     <h4 className="card-title">Create Finance</h4>
                                                     <form className="form-sample" onSubmit={createFinance}>
                                                         <div className="row">
-                                                            <div className="col-md-6">
-                                                                <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Association Name</label>
-                                                                    <div className="col-sm-9">
-                                                                        <select
-                                                                            className="form-control"
-                                                                            value={newFinance.association_id}
-                                                                            onChange={(e) => setNewFinance({ ...newFinance, association_id: e.target.value })}
-                                                                            required
-                                                                        >
-                                                                            <option value="">Select Association</option>
-                                                                            {associationNames.map(association => (
-                                                                                <option key={association.association_id} value={association.association_id}>
-                                                                                    {association.association_name}
-                                                                                </option>
-                                                                            ))}
-                                                                        </select>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                                            
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">EB Charges</label>

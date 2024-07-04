@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Footer from '../../components/Footer';
 
-const Asssigntoass = ({ userInfo, handleLogout }) => {
+const Assigneddevicesclient = ({ userInfo, handleLogout }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [data, setData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
@@ -127,6 +127,7 @@ const Asssigntoass = ({ userInfo, handleLogout }) => {
                                                     <tr>
                                                         <th>Sl.No</th>
                                                         <th>Charger Id</th>
+                                                        <th>Session History</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -135,18 +136,23 @@ const Asssigntoass = ({ userInfo, handleLogout }) => {
                                                             <tr key={index} style={{ textAlign: 'center' }}>
                                                                 <td>{index + 1}</td>
                                                                 <td>
-                                                                    <span
-                                                                        style={{  cursor: 'pointer' }}
-                                                                        onClick={() => navigateToSessionHistory(item)}
-                                                                    >
                                                                         {item.chargerID}
-                                                                    </span>
+                                                                </td>
+                                                                <td>
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-outline-dark btn-icon-text"
+                                                                        onClick={() => navigateToSessionHistory(item)}
+                                                                        style={{ marginBottom: '10px', marginLeft: '10px' }}
+                                                                    >
+                                                                        <i className="mdi mdi-history btn-icon-prepend"></i>Session History
+                                                                    </button>
                                                                 </td>
                                                             </tr>
                                                         ))
                                                     ) : (
                                                         <tr className="text-center">
-                                                            <td colSpan="2">No Record Found</td>
+                                                            <td colSpan="6">No Record Found</td>
                                                         </tr>
                                                     )}
                                                 </tbody>
@@ -164,4 +170,4 @@ const Asssigntoass = ({ userInfo, handleLogout }) => {
     );
 };
 
-export default Asssigntoass;
+export default Assigneddevicesclient;

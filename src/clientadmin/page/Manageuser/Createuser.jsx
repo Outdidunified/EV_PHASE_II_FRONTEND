@@ -78,7 +78,7 @@ const CreateUser = ({ userInfo, handleLogout }) => {
                 position: "center",
                 icon: "success",
                 title: "User created successfully",
-                showConfirmButton: false,
+                showConfirmButton: false,      
                 timer: 1500
             });
            

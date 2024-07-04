@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 
 const Login = ({ handleLogin }) => {
   const [email, setEmail] = useState('');
@@ -12,14 +11,14 @@ const Login = ({ handleLogin }) => {
     e.preventDefault();
     try {
       const parsedPassword = parseInt(passwords);
-        // Perform API call for login
-        const response = await fetch('/associationadmin/CheckLoginCredentials', {
-          method: 'POST',
-            headers: {
+      const response = await fetch('/associationadmin/CheckLoginCredentials', {
+        method: 'POST',
+        headers: {
           'Content-Type': 'application/json',
         },
-          body: JSON.stringify({ email, password: parsedPassword }),
+        body: JSON.stringify({ email, password: parsedPassword }),
       });
+      // alert(email )
       if (response.ok) {
         const data = await response.json();
         // console.log('Response data:', data); 

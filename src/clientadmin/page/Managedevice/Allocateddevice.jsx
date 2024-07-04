@@ -77,11 +77,18 @@ const Allocateddevice = ({ userInfo, handleLogout }) => {
                 setAllocatedChargers(response.data.data || []);
             } catch (error) {
                 console.error('Error fetching allocated charger details:', error);
-                // Handle error appropriately, such as showing an error message to the user
+                Swal.fire({
+                    title: "Error",
+                    text: "An error occurred while fetching allocated charger details.",
+                    icon: "error"
+                });
             }
         };
 
-        fetchAllocatedChargerDetails();
+        // Fetch allocated charger details only when userInfo.data.client_id changes
+        if (userInfo.data.client_id) {
+            fetchAllocatedChargerDetails();
+        }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userInfo.data.client_id]);  // Include userInfo.data.client_id in the dependency array
@@ -153,7 +160,7 @@ const Allocateddevice = ({ userInfo, handleLogout }) => {
                                                         <th>Type</th>
                                                         <th>Gun Connector</th>
                                                         <th>Max Current</th>
-                                                        <th>Assigned Client</th>
+                                                        <th>Assigned Association</th>
                                                         <th>Created Date</th>
                                                         <th>Status</th>
                                                         <th>Actions</th>
@@ -169,7 +176,7 @@ const Allocateddevice = ({ userInfo, handleLogout }) => {
                                                                 <td>{charger.type}</td>
                                                                 <td>{charger.gun_connector}</td>
                                                                 <td>{charger.max_current}</td>
-                                                                <td>{charger.client_name}</td>
+                                                                <td>{charger.association_name}</td>
                                                                 <td>{charger.created_date ? new Date(charger.created_date).toLocaleString() : ''}</td>
                                                                 <td style={{ color: charger.status ? 'green' : 'red' }}>{charger.status ? 'Active' : 'Inactive'}</td>
                                                                 <td>
