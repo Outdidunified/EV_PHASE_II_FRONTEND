@@ -19,7 +19,7 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
     // Memoized fetch functions using useCallback
     const fetchClients = useCallback(async () => {
         try {
-            const response = await axios.post('/reselleradmin/getAllClients', {
+            const response = await axios.post('/reselleradmin/FetchClientUserToAssginCharger', {
                 reseller_id: userInfo.data.reseller_id
             });
             setClientsList(response.data.data || []);
@@ -31,7 +31,7 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
 
     const fetchUnAllocatedChargerDetails = useCallback(async () => {
         try {
-            const response = await axios.post('/reselleradmin/FetchUnAllocatedCharger',{
+            const response = await axios.post('/reselleradmin/FetchUnAllocatedChargerToAssgin',{
                 reseller_id: userInfo.data.reseller_id,
             });
             setUnallocatedChargers(response.data.data || []);

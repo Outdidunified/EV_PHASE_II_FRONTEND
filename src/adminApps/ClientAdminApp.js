@@ -29,6 +29,7 @@ import Editass from '../clientadmin/page/ManageAssociation/Editass';
 import Createass from '../clientadmin/page/ManageAssociation/Createass';
 import Assigneddevass from '../clientadmin/page/ManageAssociation/Assigneddevass';
 import Assignfinance from '../clientadmin/page/ManageAssociation/Assignfinance';
+import Sessionhistoryass from '../clientadmin/page/ManageAssociation/Sessionhistoryass';
 
 
 import Wallet from '../clientadmin/page/Wallet';
@@ -238,6 +239,14 @@ const ClientAdminApp = () => {
         path="/Assignfinance"
         element={loggedIn ? (
           <Assignfinance userInfo={userInfo} handleLogout={handleLogout} />
+        ) : (
+          <Navigate to="/clientadmin" />
+        )}
+      />
+       <Route
+        path="/Sessionhistoryass"
+        element={loggedIn ? (
+          <Sessionhistoryass userInfo={userInfo} handleLogout={handleLogout} />
         ) : (
           <Navigate to="/clientadmin" />
         )}

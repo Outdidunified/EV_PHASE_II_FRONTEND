@@ -162,7 +162,7 @@ const Profile = ({ userInfo, handleLogout }) => {
                                             </div>
 
                                             <div className="form-group">
-                                                <label htmlFor="exampleInputUsername1">Username</label>
+                                                <label htmlFor="exampleInputUsername1">Reseller Name</label>
                                                 <input
                                                     type="text"
                                                     className="form-control"

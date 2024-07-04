@@ -163,7 +163,7 @@ const Profile = ({ userInfo, handleLogout }) => {
                                             </div>
 
                                             <div className="form-group">
-                                                <label htmlFor="exampleInputUsername1">Username</label>
+                                                <label htmlFor="exampleInputUsername1">Client name</label>
                                                 <input
                                                     type="text"
                                                     className="form-control"

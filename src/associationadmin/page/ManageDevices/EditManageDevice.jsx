@@ -9,59 +9,59 @@ import Swal from 'sweetalert2';
 const EditManageDevice = ({ userInfo, handleLogout }) => {
     const location = useLocation();
     const dataItem = location.state?.dataItem;    
-
     const navigate = useNavigate();
     
     const backManageDevice = () => {
         navigate('/associationadmin/ManageDevice');
     };
+    
+    const [selectStatus, setSelected] = useState(dataItem.charger_accessibility ? '1' : '2');
+    const handleselection = (e) => {
+        setSelected(e.target.value);
+    };
 
-    // Edit manage device
-    const [charger_id, setChargerID] = useState(dataItem?.charger_id || '');
-    const [tag_id, setTagID] = useState(dataItem?.tag_id || '');
-    const [model, setModel] = useState(dataItem?.model || '');
-    const [type, setType] = useState(dataItem?.type || '');
-    const [vendor, setVendor] = useState(dataItem?.vendor || '');
-    const [gun_connector, setGunConnetor] = useState(dataItem?.gun_connector || '');
-    const [max_current, setMaxCurrent] = useState(dataItem?.max_current || '');
-    const [max_power, setMaxPower] = useState(dataItem?.max_power || '');
-    const [socket_count, setsocketCount] = useState(dataItem?.socket_count || '');
+    // Edit users
+    const [latitude, setLatitude] = useState(dataItem?.lat || '');
+    const [longitude, setLongitude] = useState(dataItem?.long || '');
+    const [wifiUsername, setWifiUsername] = useState(dataItem?.wifi_username || '');
+    const [wifiPassword, setWifiPassword] = useState(dataItem?.wifi_password || '');
 
-   const addManageDevice = async (e) => {
+    const editManageUser = async (e) => {
         e.preventDefault();
         try {
-            const maxCurrents = parseInt(max_current);
-            const maxPowers = parseInt(max_power);
-            const socketCounts = parseInt(socket_count);
-            const response = await fetch('/superadmin/UpdateCharger', {
+            const Status = parseInt(selectStatus);
+            const response = await fetch('/associationadmin/UpdateDevice', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ charger_id, tag_id, model, type, vendor, gun_connector, max_current:maxCurrents, max_power:maxPowers, socket_count:socketCounts, modified_by: userInfo.data.username  }),
+            body: JSON.stringify({ charger_id:dataItem.charger_id, charger_accessibility:Status, lat:latitude, long:longitude, wifi_username:wifiUsername, wifi_password:wifiPassword, modified_by: userInfo.data.association_name }),
             });
             if (response.ok) {
                 Swal.fire({
-                    title: "Charger added successfully",
+                    title: "Update manage device successfully",
                     icon: "success"
                 });
+                setLatitude(''); 
+                setLongitude(''); 
+                setWifiUsername(''); 
+                setWifiPassword(''); 
                 backManageDevice();
             } else {
                 Swal.fire({
                     title: "Error",
-                    text: "Failed to Update",
+                    text: "Failed to update manage device",
                     icon: "error"
                 });
             }
         }catch (error) {
             Swal.fire({
                 title: "Error:", error,
-                text: "An error occurred while adding the charger",
+                text: "An error occurred while update manage device",
                 icon: "error"
             });
         }
-    };
-    // Add Chargers end
+    };  
     
     return (
         <div className='container-scroller'>
@@ -93,22 +93,36 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                         <div className="col-12 grid-margin">
                                             <div className="card">
                                                 <div className="card-body">
-                                                    <h4 className="card-title">Manage Device</h4>
-                                                    <form className="form-sample" onSubmit={addManageDevice}>
+                                                    <h4 className="card-title">Manage User</h4>
+                                                    <form className="form-sample" onSubmit={editManageUser}>
                                                         <div className="row">
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Charger ID</label>
+                                                                    <label className="col-sm-3 col-form-label">Public/Private</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Charger ID" value={charger_id}  onChange={(e) => setChargerID(e.target.value)} readOnly required/>
+                                                                        <div className="input-group">
+                                                                            <select className="form-control" value={selectStatus} onChange={handleselection}>
+                                                                                {dataItem.charger_accessibility===1 ? (
+                                                                                    <>
+                                                                                        <option value="1">Public</option>
+                                                                                        <option value="2">Private</option>
+                                                                                    </>
+                                                                                ) : (
+                                                                                    <>
+                                                                                        <option value="2">Private</option>
+                                                                                        <option value="1">Public</option>
+                                                                                    </>
+                                                                                )}                                                                            
+                                                                            </select>                                                             
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Tag ID</label>
+                                                                    <label className="col-sm-3 col-form-label">Latitude</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Tag ID" value={tag_id}  onChange={(e) => setTagID(e.target.value)} required/>
+                                                                        <input type="text" className="form-control" placeholder="Latitude" value={latitude} onChange={(e) => setLatitude(e.target.value)} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -116,17 +130,17 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                         <div className="row">
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Model</label>
+                                                                    <label className="col-sm-3 col-form-label">Longitude</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Model" value={model}  onChange={(e) => setModel(e.target.value)} required/>
+                                                                        <input type="text" className="form-control" placeholder="Longitude"  value={longitude} onChange={(e) => setLongitude(e.target.value)} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Type</label>
+                                                                    <label className="col-sm-3 col-form-label">Wifi Username</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Type" value={type}  onChange={(e) => setType(e.target.value)} required/>
+                                                                        <input type="text" className="form-control" placeholder="Wifi Username" value={wifiUsername}  onChange={(e) => setWifiUsername(e.target.value)} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -134,45 +148,9 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                         <div className="row">
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Vendor</label>
+                                                                    <label className="col-sm-3 col-form-label">Wifi Password</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Vendor" value={vendor}  onChange={(e) => setVendor(e.target.value)} required/>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-md-6">
-                                                                <div className="form-group row"> 
-                                                                    <label className="col-sm-3 col-form-label">Gun Connetor</label>
-                                                                    <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Gun Connetor" value={gun_connector}  onChange={(e) => setGunConnetor(e.target.value)} required/>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="row">
-                                                            <div className="col-md-6">
-                                                                <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Max Current</label>
-                                                                    <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Max Current" value={max_current}  onChange={(e) => setMaxCurrent(e.target.value)} required/>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-md-6">
-                                                                <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Max Power</label>
-                                                                    <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Max Power" value={max_power}  onChange={(e) => setMaxPower(e.target.value)} required/>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="row">
-                                                            <div className="col-md-6">
-                                                                <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Socket Count</label>
-                                                                    <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Socket Count" value={socket_count}  onChange={(e) => setsocketCount(e.target.value)} required/>
+                                                                        <input type="text" className="form-control" placeholder="Wifi Password" value={wifiPassword}  onChange={(e) => setWifiPassword(e.target.value)} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
