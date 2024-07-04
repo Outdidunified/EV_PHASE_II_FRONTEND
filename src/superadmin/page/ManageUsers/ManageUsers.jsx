@@ -39,7 +39,6 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
     const [phoneNo, setPhone] = useState('');
     const [walletBal, setWallet] = useState('');
     const [updateTrigger, setUpdateTrigger] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
 
     const handleResellerChange = (e) => {
         const [role_id, role_name] = e.target.value.split('|');
@@ -52,28 +51,6 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
     
     const addManageUser = async (e) => {
         e.preventDefault();
-
-        // Validate phone number
-        const phoneRegex = /^\d{10}$/;
-        if (!phoneNo) {
-            setErrorMessage("Phone can't be empty.");
-            return;
-        }
-        if (!phoneRegex.test(phoneNo)) {
-            setErrorMessage('Oops! Phone must be a 10-digit number.');
-            return;
-        }
- 
-        // Validate password
-        const passwordRegex = /^\d{4}$/;
-        if (!Password) {
-            setErrorMessage("Password can't be empty.");
-            return;
-        }
-        if (!passwordRegex.test(Password)) {
-            setErrorMessage('Oops! Password must be a 4-digit number.');
-            return;
-        }
         try {
             const roleID = parseInt(role.role_id);
             const resellerID = parseInt(reseller_id);
@@ -348,7 +325,6 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
                                                                     <input type="text" className="form-control" placeholder="Wallet" value={walletBal} onChange={(e) => setWallet(e.target.value)} required/>
                                                                 </div>
                                                             </div>
-                                                            {errorMessage && <div className="text-danger">{errorMessage}</div>}
                                                             <div style={{textAlign:'center'}}>
                                                                 <button type="submit" className="btn btn-primary mr-2" style={{marginTop:'10px'}}>Add</button>
                                                             </div>

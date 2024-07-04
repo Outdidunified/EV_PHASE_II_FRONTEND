@@ -1,49 +1,47 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
-import axios from 'axios';
-import { useLocation, useNavigate } from 'react-router-dom';
 import Footer from '../../components/Footer';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-const Assigneddevicesclient = ({ userInfo, handleLogout }) => {
+const Assigneddevass = ({ userInfo, handleLogout }) => {
     const [searchQuery, setSearchQuery] = useState('');
-    const [data, setData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
-    const [,setClientId] = useState(null);
-
+    const [originalData, setOriginalData] = useState([]);
     const navigate = useNavigate();
     const location = useLocation();
 
     useEffect(() => {
-        const { client_id } = location.state || {};
-        if (client_id) {
-            setClientId(client_id);
-            fetchAsssigntoassData(client_id);
+        const { association } = location.state || {};
+        if (association && association.association_id) {
+            const association_id = association.association_id;
+            fetchAssignedDevices(association_id); // Call fetchAssignedDevices with association_id
         }
-    }, [location, setClientId]);
-    
+    }, [location]);
 
-    const fetchAsssigntoassData = async (client_id) => {
+    const fetchAssignedDevices = async (association_id) => {
         try {
-            const response = await axios.post('/reselleradmin/FetchChargerDetailsWithSession', {
-                client_id: client_id
+            const response = await axios.post('/clientadmin/FetchChargerDetailsWithSession', {
+                association_id: association_id,
             });
 
             if (response.data.status === 'Success' && response.data.data.length > 0) {
                 const fetchedData = response.data.data.map(item => ({
-                    chargerID: item.chargerID,
-                    sessiondata: item.sessiondata
+                    charger_id: item.charger_id,
+                    finance_id: item.finance_id,
+                    client_commission: item.client_commission,
+                    sessiondata: item.sessiondata // Ensure sessiondata is included
                 }));
-
-                setData(fetchedData);
                 setFilteredData(fetchedData);
+                setOriginalData(fetchedData); // Keep original data for resetting
             } else {
-                console.log('No data available');
-                setData([]);
+                console.log('No assigned devices found');
                 setFilteredData([]);
+                setOriginalData([]);
             }
         } catch (error) {
-            console.error('Error fetching data:', error);
+            console.error('Error fetching assigned devices:', error);
         }
     };
 
@@ -51,19 +49,31 @@ const Assigneddevicesclient = ({ userInfo, handleLogout }) => {
         const query = e.target.value.toLowerCase();
         setSearchQuery(query);
 
-        const filtered = data.filter(item =>
-            item.chargerID.toLowerCase().includes(query)
-        );
-        setFilteredData(filtered);
+        if (query.trim() === '') {
+            // If search query is empty, show all original data
+            setFilteredData(originalData);
+        } else {
+            // Filter data based on search query
+            const filtered = originalData.filter(item =>
+                item.charger_id.toLowerCase().includes(query)
+            );
+            setFilteredData(filtered);
+        }
     };
 
     const goBack = () => {
         navigate(-1);
     };
 
-    const navigateToSessionHistory = (item) => {
+    const navsessionhistory = (item) => {
         const sessiondata = item.sessiondata[0];
-        navigate('/reselleradmin/Sessionhistoryclient', { state: { sessiondata } });
+      
+       
+        navigate('/clientadmin/Sessionhistoryass', { state: { sessiondata } });
+    };
+
+    const navtoassignfinance = (charger_id) => {
+        navigate('/clientadmin/assignfinance', { state: { charger_id } }); // Navigate to assignfinance page with charger_id
     };
 
     return (
@@ -86,11 +96,11 @@ const Assigneddevicesclient = ({ userInfo, handleLogout }) => {
                                                 className="btn btn-success"
                                                 onClick={goBack}
                                                 style={{ marginRight: '10px' }}
-                                            >
-                                                Go Back
+                                            >Go back
                                             </button>
                                         </div>
                                     </div>
+                                    
                                 </div>
                             </div>
                         </div>
@@ -101,7 +111,7 @@ const Assigneddevicesclient = ({ userInfo, handleLogout }) => {
                                         <div className="col-md-12 grid-margin">
                                             <div className="row">
                                                 <div className="col-4 col-xl-8">
-                                                    <h4 className="card-title" style={{ paddingTop: '10px' }}>List Of Chargers</h4>
+                                                    {/* <h4 className="card-title" style={{ paddingTop: '10px' }}></h4> */}
                                                 </div>
                                                 <div className="col-12 col-xl-4">
                                                     <div className="input-group">
@@ -113,7 +123,7 @@ const Assigneddevicesclient = ({ userInfo, handleLogout }) => {
                                                         <input
                                                             type="text"
                                                             className="form-control"
-                                                            placeholder="Search by charger_id"
+                                                            placeholder="Search by Charger Id"
                                                             value={searchQuery}
                                                             onChange={handleSearch}
                                                         />
@@ -127,6 +137,9 @@ const Assigneddevicesclient = ({ userInfo, handleLogout }) => {
                                                     <tr>
                                                         <th>Sl.No</th>
                                                         <th>Charger Id</th>
+                                                        <th>Finance_Id</th>
+                                                        <th>Client Commission</th>
+                                                        <th>Assign Finance</th>
                                                         <th>Session History</th>
                                                     </tr>
                                                 </thead>
@@ -135,14 +148,25 @@ const Assigneddevicesclient = ({ userInfo, handleLogout }) => {
                                                         filteredData.map((item, index) => (
                                                             <tr key={index} style={{ textAlign: 'center' }}>
                                                                 <td>{index + 1}</td>
+                                                                <td>{item.charger_id}</td>
+                                                                <td>{item.finance_id ? item.finance_id : <span style={{ color: 'red' }}>Not yet Assigned</span>}</td>
+                                                                <td>{item.client_commission}</td>
                                                                 <td>
-                                                                        {item.chargerID}
+                                                                    <button
+                                                                        type="button"
+                                                                        className={`btn btn-outline-success btn-icon-text ${item.finance_id ? 'disabled' : ''}`}
+                                                                        onClick={() => navtoassignfinance(item.charger_id)}
+                                                                        style={{ marginBottom: '10px', marginRight: '10px' }}
+                                                                        disabled={item.finance_id}
+                                                                    >
+                                                                        <i className="mdi mdi-check btn-icon-prepend"></i>Assign
+                                                                    </button>
                                                                 </td>
                                                                 <td>
                                                                     <button
                                                                         type="button"
                                                                         className="btn btn-outline-dark btn-icon-text"
-                                                                        onClick={() => navigateToSessionHistory(item)}
+                                                                        onClick={() => navsessionhistory(item)}
                                                                         style={{ marginBottom: '10px', marginLeft: '10px' }}
                                                                     >
                                                                         <i className="mdi mdi-history btn-icon-prepend"></i>Session History
@@ -151,8 +175,8 @@ const Assigneddevicesclient = ({ userInfo, handleLogout }) => {
                                                             </tr>
                                                         ))
                                                     ) : (
-                                                        <tr className="text-center">
-                                                            <td colSpan="6">No Record Found</td>
+                                                        <tr>
+                                                            <td colSpan="8" className="text-center">No associations found.</td>
                                                         </tr>
                                                     )}
                                                 </tbody>
@@ -170,4 +194,4 @@ const Assigneddevicesclient = ({ userInfo, handleLogout }) => {
     );
 };
 
-export default Assigneddevicesclient;
+export default Assigneddevass;

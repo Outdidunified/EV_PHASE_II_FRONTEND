@@ -20,7 +20,7 @@ const AssignReseller = ({ userInfo, handleLogout }) => {
     const [charger_ids, setSelectedChargers] = useState([]);
 
     useEffect(() => {
-        const url = '/superadmin/FetchResellers';
+        const url = '/superadmin/FetchResellersToAssgin';
         axios.get(url)
             .then((res) => {
                 setResellers(res.data.data);
@@ -30,7 +30,7 @@ const AssignReseller = ({ userInfo, handleLogout }) => {
             });
     }, []);
     useEffect(() => {
-        const url = '/superadmin/FetchUnallocatedCharger';
+        const url = '/superadmin/FetchUnAllocatedChargerToAssgin';
         axios.get(url)
             .then((res) => {
                 setChargers(res.data.data);
@@ -71,7 +71,7 @@ const AssignReseller = ({ userInfo, handleLogout }) => {
                 });
                 backManageDevice();
             } else {
-                Swal.fire({
+                Swal.fire({ 
                     title: "Error",
                     text: "Failed to assigned charger",
                     icon: "error"

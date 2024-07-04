@@ -13,7 +13,6 @@ const Profile = ({ userInfo, handleLogout }) => {
     const [password, setUpdatePassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
-    // Profile data fetch
     useEffect(() => {
         const fetchProfile = async () => {
             try {
@@ -55,31 +54,10 @@ const Profile = ({ userInfo, handleLogout }) => {
         }
     }, [data]);
 
-    // Update profile
+   
+
     const addProfileUpdate = async (e) => {
         e.preventDefault();
-         // Validate phone number
-         const phoneRegex = /^\d{10}$/;
-         if (!phone_no) {
-             setErrorMessage("Phone can't be empty.");
-             return;
-         }
-         if (!phoneRegex.test(phone_no)) {
-             setErrorMessage('Oops! Phone must be a 10-digit number.');
-             return;
-         }
- 
-         // Validate password
-         const passwordRegex = /^\d{4}$/;
-         if (!password) {
-             setErrorMessage("Password can't be empty.");
-             return;
-         }
-         if (!passwordRegex.test(password)) {
-             setErrorMessage('Oops! Password must be a 4-digit number.');
-             return;
-         }
- 
         try {
             const phoneNo = parseInt(phone_no);
             const Password = parseInt(password);
@@ -151,13 +129,13 @@ const Profile = ({ userInfo, handleLogout }) => {
                                                         <div className="form-group row">
                                                             <label htmlFor="exampleInputMobile" className="col-sm-2 col-form-label">Phone</label>
                                                             <div className="col-sm-10">
-                                                                <input type="text" className="form-control" placeholder="Phone number" value={phone_no}  onChange={(e) => setUpdatePhone(e.target.value)} required/>
+                                                                <input type="text" className="form-control" placeholder="Phone number" pattern="[0-9]{10}" value={phone_no}  onChange={(e) => setUpdatePhone(e.target.value)} required/>
                                                             </div>
                                                         </div>
                                                         <div className="form-group row">
                                                             <label htmlFor="exampleInputPassword2" className="col-sm-2 col-form-label">Password</label>
                                                             <div className="col-sm-10">
-                                                                <input type="text" className="form-control" placeholder="Password" value={password}  onChange={(e) => setUpdatePassword(e.target.value)} required/>
+                                                                <input type="text" className="form-control" pattern="[0-9]{4}" placeholder="Password" value={password}  onChange={(e) => setUpdatePassword(e.target.value)} required/>
                                                             </div>
                                                         </div>
                                                         {errorMessage && <div className="text-danger">{errorMessage}</div>}

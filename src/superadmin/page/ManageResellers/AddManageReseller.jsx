@@ -17,22 +17,10 @@ const AddManageReseller = ({ userInfo, handleLogout }) => {
     const [phoneNumber, setPhoneNumber] = useState('');
     const [reseller_email_id, setEmailID] = useState('');
     const [reseller_address, setAddress] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
 
     const addManageReseller = async (e) => {
+        alert(  JSON.stringify({ reseller_name, phoneNumber, reseller_email_id, reseller_address, created_by:userInfo.data.username }), 'add charger all data' );
         e.preventDefault();
-         
-        // Validate phone number
-        const phoneRegex = /^\d{10}$/;
-        if (!phoneNumber) {
-            setErrorMessage("Phone can't be empty.");
-            return;
-        }
-        if (!phoneRegex.test(phoneNumber)) {
-            setErrorMessage('Oops! Phone must be a 10-digit number.');
-            return;
-        }
-
         try {
             const PhoneNumber = parseInt(phoneNumber);
 
@@ -115,7 +103,7 @@ const AddManageReseller = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Phone Number</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Phone Number" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} required/>
+                                                                        <input type="text" className="form-control" placeholder="Phone Number" pattern="[0-9]{10}" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -138,7 +126,6 @@ const AddManageReseller = ({ userInfo, handleLogout }) => {
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        {errorMessage && <div className="text-danger">{errorMessage}</div>}
                                                         <div style={{textAlign:'center'}}>
                                                             <button type="submit" className="btn btn-primary mr-2">Add</button>
                                                         </div>

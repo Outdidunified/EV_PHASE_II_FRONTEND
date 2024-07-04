@@ -10,6 +10,7 @@ const EditManageReseller = ({ userInfo, handleLogout }) => {
     const location = useLocation();
     // Check if location.state and dataItem exist
     const dataItem = location.state?.dataItem;    
+    // alert(dataItem)
 
     const navigate = useNavigate();
     
@@ -21,7 +22,7 @@ const EditManageReseller = ({ userInfo, handleLogout }) => {
 
     const handleselection = (e) => {
         setSelected(e.target.value);
-        // alert(e.target.value); // Alert the selected value
+        alert(e.target.value); // Alert the selected value
     };
 
     // Edit reseller
@@ -29,20 +30,9 @@ const EditManageReseller = ({ userInfo, handleLogout }) => {
     const [reseller_phone_no, setPhoneNumber] = useState(dataItem?.reseller_phone_no || '');
     const [reseller_email_id, setEmailID] = useState(dataItem?.reseller_email_id || '');
     const [reseller_address, setAddress] = useState(dataItem?.reseller_address || '');
-    const [errorMessage, setErrorMessage] = useState('');
-
+ 
     const editManageReseller = async (e) => {
         e.preventDefault();
-         // Validate phone number
-         const phoneRegex = /^\d{10}$/;
-         if (!reseller_phone_no) {
-             setErrorMessage("Phone can't be empty.");
-             return;
-         }
-         if (!phoneRegex.test(reseller_phone_no)) {
-             setErrorMessage('Oops! Phone must be a 10-digit number.');
-             return;
-         }
         try {
             const resellerPhoneNo = parseInt(reseller_phone_no);
             const resellerID = parseInt(dataItem.reseller_id);
@@ -125,7 +115,7 @@ const EditManageReseller = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Phone Number</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Phone Number" value={reseller_phone_no} onChange={(e) => setPhoneNumber(e.target.value)} required/>
+                                                                        <input type="text" className="form-control" placeholder="Phone Number" pattern="[0-9]{10}" value={reseller_phone_no} onChange={(e) => setPhoneNumber(e.target.value)} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -172,7 +162,6 @@ const EditManageReseller = ({ userInfo, handleLogout }) => {
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        {errorMessage && <div className="text-danger">{errorMessage}</div>}
                                                         <div style={{textAlign:'center'}}>
                                                             <button type="submit" className="btn btn-primary mr-2">Update</button>
                                                         </div>
