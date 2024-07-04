@@ -10,6 +10,7 @@ const Profile = ({ userInfo, handleLogout }) => {
     const [email_id, setUserEmail] = useState('');
     const [phone_no, setUserPhone] = useState('');
     const [password, setUserPassword] = useState('');
+    const [errorMessageAss, setErrorMessageAss] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [dataAss, setPostsAss] = useState({});
     const [association_name, setUpdateUname] = useState('');
@@ -32,9 +33,9 @@ const Profile = ({ userInfo, handleLogout }) => {
                 if (response.ok) {
                     const data = await response.json();
                     setPosts(data.data);
-                     // Assuming `association_details` is an array with one object
-                     const associationDetails = data.data.association_details[0] || {};
-                     setPostsAss(associationDetails);
+                    // Assuming `association_details` is an array with one object
+                    const associationDetails = data.data.association_details[0] || {};
+                    setPostsAss(associationDetails);
                 } else {
                     setErrorMessage('Failed to fetch profile');
                     console.error('Failed to fetch profile:', response.statusText);
@@ -64,6 +65,18 @@ const Profile = ({ userInfo, handleLogout }) => {
 
     const addAssProfileUpdate = async (e) => {
         e.preventDefault();
+
+        // Validate phone number
+        const phoneRegex = /^\d{10}$/;
+        if (!association_phone_no) {
+            setErrorMessageAss("Phone can't be empty.");
+            return;
+        }
+        if (!phoneRegex.test(association_phone_no)) {
+            setErrorMessageAss('Oops! Phone must be a 10-digit number.');
+            return;
+        }
+
         try {
             const phoneNos = parseInt(association_phone_no);
             const response = await fetch('/associationadmin/UpdateAssociationProfile', {
@@ -76,7 +89,8 @@ const Profile = ({ userInfo, handleLogout }) => {
                 Swal.fire({
                     title: "User profile updated successfully",
                     icon: "success"
-                });               
+                });       
+                        
             } else {
                 Swal.fire({
                     title: "Error",
@@ -105,6 +119,29 @@ const Profile = ({ userInfo, handleLogout }) => {
 
     const addUserProfileUpdate = async (e) => {
         e.preventDefault();
+
+        // Validate phone number
+        const phoneRegex = /^\d{10}$/;
+        if (!phone_no) {
+            setErrorMessage("Phone can't be empty.");
+            return;
+        }
+        if (!phoneRegex.test(phone_no)) {
+            setErrorMessage('Oops! Phone must be a 10-digit number.');
+            return;
+        }
+
+        // Validate password
+        const passwordRegex = /^\d{4}$/;
+        if (!password) {
+            setErrorMessage("Password can't be empty.");
+            return;
+        }
+        if (!passwordRegex.test(password)) {
+            setErrorMessage('Oops! Password must be a 4-digit number.');
+            return;
+        }
+
         try {
             const phoneNo = parseInt(phone_no);
             const Password = parseInt(password);
@@ -177,7 +214,7 @@ const Profile = ({ userInfo, handleLogout }) => {
                                                 <label htmlFor="exampleInputConfirmPassword1">Address</label>
                                                 <textarea type="password" className="form-control" placeholder="Address" value={association_address} onChange={(e) => setUpdateAddress(e.target.value)} required/>
                                             </div>
-                                            {errorMessage && <div className="text-danger">{errorMessage}</div>}
+                                            {errorMessageAss && <div className="text-danger">{errorMessageAss}</div>}
                                             <div style={{textAlign:'center'}}>
                                                 <button type="submit" className="btn btn-primary mr-2">Update</button>
                                             </div> 
@@ -202,11 +239,11 @@ const Profile = ({ userInfo, handleLogout }) => {
                                             </div>
                                             <div className="form-group">
                                                 <label htmlFor="exampleInputConfirmPassword1">Phone Number</label>
-                                                <input type="text" className="form-control" pattern="[0-9]{10}" placeholder="Phone Number" value={phone_no} onChange={(e) => setUserPhone(e.target.value)} required/>
+                                                <input type="text" className="form-control" placeholder="Phone Number" value={phone_no} onChange={(e) => setUserPhone(e.target.value)} required/>
                                             </div>
                                             <div className="form-group">
                                                 <label htmlFor="exampleInputPassword1">Password</label>
-                                                <input type="text" className="form-control" pattern="[0-9]{4}" placeholder="Password" value={password} onChange={(e) => setUserPassword(e.target.value)} required/>
+                                                <input type="text" className="form-control" placeholder="Password" value={password} onChange={(e) => setUserPassword(e.target.value)} required/>
                                             </div>
                                             {errorMessage && <div className="text-danger">{errorMessage}</div>}
                                             <div style={{textAlign:'center'}}>
