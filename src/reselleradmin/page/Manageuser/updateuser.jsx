@@ -40,7 +40,7 @@ const UpdateUser = ({ userInfo, handleLogout }) => {
                 username: newUser.username,
                 phone_no: parseInt(newUser.phone_no),
                 modified_by:userInfo.data.reseller_name,
-                password: newUser.password,
+                password: parseInt(newUser.password),
                 status: newUser.status === 'Active',
             };
 
@@ -52,7 +52,7 @@ const UpdateUser = ({ userInfo, handleLogout }) => {
                 showConfirmButton: false,
                 timer: 1500
             });
-            navigate.goBack();
+            navigate('/reselleradmin/ManageUsers');
         } catch (error) {
             console.error('Error updating user:', error);
         }

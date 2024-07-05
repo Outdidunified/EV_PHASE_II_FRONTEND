@@ -43,7 +43,7 @@ const ViewAlloc = ({ userInfo, handleLogout }) => {
                 type: charger.type || '',
                 gun_connector: charger.gun_connector || '',
                 max_current: charger.max_current || '',
-                create_date: charger.create_date || '',
+                create_date: charger.created_date || '',
                 status: charger.status || '',
                 tag_id: charger.tag_id || '',
                 assigned_association_date: charger.assigned_association_date || '',

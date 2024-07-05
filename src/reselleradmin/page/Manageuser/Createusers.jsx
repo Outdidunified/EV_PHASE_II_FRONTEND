@@ -66,7 +66,7 @@ const CreateUsers = ({ userInfo, handleLogout }) => {
                 username: newUser.username,
                 phone_no: parseInt(newUser.phone_no),
                 email_id: newUser.email_id,
-                password: newUser.password,
+                password: parseInt(newUser.password),
                 role_id: selectedRole ? selectedRole.role_id : '',
                 client_id: selectedClient ? selectedClient.client_id : '',
                 
@@ -82,6 +82,7 @@ const CreateUsers = ({ userInfo, handleLogout }) => {
                 showConfirmButton: false,
                 timer: 1500
             });
+            navigate('/reselleradmin/ManageUsers');
            
         } catch (error) {
             console.error('Error creating user:', error);
