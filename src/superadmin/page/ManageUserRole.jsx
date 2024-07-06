@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import axios from 'axios';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
@@ -13,20 +13,24 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
     const [filteredData] = useState([]);
     const [posts, setPosts] = useState([]);
     const [updateTrigger, setUpdateTrigger] = useState(false);
+    const fetchUserRoleCalled = useRef(false); // Ref to track if fetchProfile has been called
 
     // Get manage user role
     useEffect(() => {
-        const url = `/superadmin/FetchUserRoles`;
-        axios.get(url).then((res) => {
-            setData(res.data.data);
-            // console.log(res.data.data);
-            setLoading(false);
-        })
-        .catch((err) => {
-            console.error('Error fetching data:', err);
-            setError('Error fetching data. Please try again.');
-            setLoading(false);
-        });
+        if (!fetchUserRoleCalled.current) {
+            const url = `/superadmin/FetchUserRoles`;
+            axios.get(url).then((res) => {
+                    setData(res.data.data);
+                    // console.log(res.data.data);
+                    setLoading(false);
+                })
+                .catch((err) => {
+                    console.error('Error fetching data:', err);
+                    setError('Error fetching data. Please try again.');
+                    setLoading(false);
+                });
+            fetchUserRoleCalled.current = true;
+        }
     }, [updateTrigger]);
 
      // Search data 
@@ -52,8 +56,8 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
         }
     }, [data, filteredData]);
 
-     // Timestamp data 
-     function formatTimestamp(originalTimestamp) {
+    // Timestamp data 
+    function formatTimestamp(originalTimestamp) {
         const date = new Date(originalTimestamp);
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -121,6 +125,62 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
         }
     };
 
+    // Edit user role start 
+    const [showEditForm, setShowEditForm] = useState(false);
+    const [dataItem, setEditDataItem] = useState(null);
+ 
+    const handleEditUser = (dataItem) => {
+        setEditDataItem(dataItem);
+        setEdituserRole(dataItem.role_name); // Set role name for editing
+        setShowEditForm(true); // Open the form
+    };
+    const closeEditModal = () => {
+        setShowEditForm(false); // Close the form
+    };
+    const modalEditStyle = {
+        display: showEditForm ? 'block' : 'none',
+    }
+ 
+
+    // Edit user role
+    const [roleEditname, setEdituserRole] = useState('');
+    
+    const editUserRole = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch('/superadmin/UpdateUserRole', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ role_id: dataItem.role_id, role_name: roleEditname, modified_by: userInfo.data.username }),
+            });
+            if (response.ok) {
+                Swal.fire({
+                    title: "Update user role successfully",
+                    icon: "success"
+                });
+                setEdituserRole(''); 
+                setShowEditForm(false);
+                closeEditModal();
+                setUpdateTrigger(prev => !prev);
+            } else {
+                Swal.fire({
+                    title: "Error",
+                    text: "Failed to update user role",
+                    icon: "error"
+                });
+            }
+        }catch (error) {
+            Swal.fire({
+                title: "Error:", error,
+                text: "An error occurred while update user role",
+                icon: "error"
+            });
+        }
+    };
+
+    // DeActive
     const changeDeActivate = async (e, role_id) => {
         e.preventDefault();
         try {
@@ -153,6 +213,7 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
         }
     };
 
+    // Active
     const changeActivate = async (e, role_id) => {
         e.preventDefault();
         try {
@@ -268,6 +329,7 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
                                                         <th>Modified Date</th>
                                                         <th>Status</th>
                                                         <th>Active/DeActive</th>
+                                                        <th>Option</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody style={{textAlign:'center'}}>
@@ -302,6 +364,9 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
                                                                             </div>
                                                                         }
                                                                     </div>
+                                                                </td>
+                                                                <td>
+                                                                    <button type="button" className="btn btn-outline-primary btn-icon-text"  onClick={() => handleEditUser(dataItem)} style={{marginBottom:'10px', marginRight:'10px'}}><i className="mdi mdi-pencil btn-icon-prepend"></i>Edit</button><br/>
                                                                 </td>                                                    
                                                             </tr>
                                                         ))
@@ -311,6 +376,31 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
                                                         </tr>
                                                         )
                                                     )}
+                                                    {/* Edit role start */}
+                                                    <div className="modalStyle" style={modalEditStyle}>
+                                                        <div className="modalContentStyle" style={{ maxHeight: '680px', overflowY: 'auto' }}>
+                                                            <span onClick={closeEditModal} style={{ float: 'right', cursor: 'pointer', fontSize:'30px' }}>&times;</span>
+                                                            <form className="pt-3" onSubmit={editUserRole}>
+                                                                <div className="card-body">
+                                                                    <div style={{textAlign:'center'}}>
+                                                                        <h4 className="card-title">Edit Role's</h4>
+                                                                    </div>
+                                                                    <div className="table-responsive pt-3">
+                                                                        <div className="input-group">
+                                                                            <div className="input-group-prepend">
+                                                                                <span className="input-group-text" style={{color:'black', width:'125px'}}>Role Name</span>
+                                                                            </div>
+                                                                            <input type="text" className="form-control" placeholder="Role Name" id="roleEditname" value={roleEditname} onChange={(e) => setEdituserRole(e.target.value)} />
+                                                                        </div>
+                                                                    </div>
+                                                                    <div style={{textAlign:'center'}}>
+                                                                        <button type="submit" className="btn btn-primary mr-2" style={{marginTop:'10px'}}>Update</button>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                    {/* Edit role end */}
                                                 </tbody>
                                             </table>
                                         </div>

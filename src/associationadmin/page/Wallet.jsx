@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect, useRef} from 'react';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer';
@@ -6,6 +6,7 @@ import Footer from '../components/Footer';
 const Wallet = ({ userInfo, handleLogout }) => {
     const [data, setPosts] = useState({});
     const [errorMessage, setErrorMessage] = useState('');
+    const fetchWalletCalled = useRef(false); // Ref to track if fetchProfile has been called
 
     // get profile data
     useEffect(() => {
@@ -20,8 +21,8 @@ const Wallet = ({ userInfo, handleLogout }) => {
                 });
 
                 if (response.ok) {
-                    const data = await response.json();
-                    console.log("Wallet res " , data)
+                    const data = await response.json()
+                    // console.log("Wallet res " , data)
                     setPosts(data);
                 } else {
                     setErrorMessage('Failed to fetch wallet');
@@ -33,12 +34,12 @@ const Wallet = ({ userInfo, handleLogout }) => {
             }
         };
 
-        if (userInfo.data.user_id) {
+        if (!fetchWalletCalled.current && userInfo && userInfo.data && userInfo.data.user_id) {
             fetchProfile();
-        } else {
-            console.error('User ID not found in userInfo');
+            fetchWalletCalled.current = true; // Mark fetchProfile as called
         }
-    }, [userInfo.data.user_id]);
+    }, [userInfo]);
+
     return (
         <div className='container-scroller'>
             {/* Header */}
@@ -81,7 +82,7 @@ const Wallet = ({ userInfo, handleLogout }) => {
                 </div>         
             </div>    
         </div>
-    )
-}   
+    );
+};
                  
 export default Wallet

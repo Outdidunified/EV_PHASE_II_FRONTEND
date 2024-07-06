@@ -26,10 +26,33 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
     const [max_current, setMaxCurrent] = useState(dataItem?.max_current || '');
     const [max_power, setMaxPower] = useState(dataItem?.max_power || '');
     const [socket_count, setsocketCount] = useState(dataItem?.socket_count || '');
+    const [errorMessage, setErrorMessage] = useState('');
 
-   const addManageDevice = async (e) => {
+    const addManageDevice = async (e) => {
         e.preventDefault();
+        // Validate Charger ID
+        const chargerIDRegex = /^[a-zA-Z0-9]{1,14}$/;;
+        if (!charger_id) {
+            setErrorMessage("Charger ID can't be empty.");
+            return;
+        }
+        if (!chargerIDRegex.test(charger_id)) {
+            setErrorMessage('Oops! Charger ID must be a maximum of 14 characters.');
+            return;
+        }
+
+        // Validate Tag ID
+        const tagIDRegex = /^[a-zA-Z0-9]{1,12}$/;;
+        if (!tag_id) {
+            setErrorMessage("Charger ID can't be empty.");
+            return;
+        }
+        if (!tagIDRegex.test(tag_id)) {
+            setErrorMessage('Oops! Tag ID must be a maximum of 12 characters.');
+            return;
+        }
         try {
+            const gunConnector = parseInt(gun_connector);
             const maxCurrents = parseInt(max_current);
             const maxPowers = parseInt(max_power);
             const socketCounts = parseInt(socket_count);
@@ -38,7 +61,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ charger_id, tag_id, model, type, vendor, gun_connector, max_current:maxCurrents, max_power:maxPowers, socket_count:socketCounts, modified_by: userInfo.data.username  }),
+            body: JSON.stringify({ charger_id, tag_id, model, type, vendor, gun_connector:gunConnector, max_current:maxCurrents, max_power:maxPowers, socket_count:socketCounts, modified_by: userInfo.data.username  }),
             });
             if (response.ok) {
                 Swal.fire({
@@ -144,7 +167,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row"> 
                                                                     <label className="col-sm-3 col-form-label">Gun Connetor</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Gun Connetor" value={gun_connector}  onChange={(e) => setGunConnetor(e.target.value)} required/>
+                                                                        <input type="number" className="form-control" placeholder="Gun Connetor" value={gun_connector}  onChange={(e) => setGunConnetor(e.target.value)} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -154,7 +177,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Max Current</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Max Current" value={max_current}  onChange={(e) => setMaxCurrent(e.target.value)} required/>
+                                                                        <input type="number" className="form-control" placeholder="Max Current" value={max_current}  onChange={(e) => setMaxCurrent(e.target.value)} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -162,7 +185,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Max Power</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Max Power" value={max_power}  onChange={(e) => setMaxPower(e.target.value)} required/>
+                                                                        <input type="number" className="form-control" placeholder="Max Power" value={max_power}  onChange={(e) => setMaxPower(e.target.value)} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -172,11 +195,12 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Socket Count</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Socket Count" value={socket_count}  onChange={(e) => setsocketCount(e.target.value)} required/>
+                                                                        <input type="number" className="form-control" placeholder="Socket Count" value={socket_count}  onChange={(e) => setsocketCount(e.target.value)} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        {errorMessage && <div className="text-danger">{errorMessage}</div>}
                                                         <div style={{textAlign:'center'}}>
                                                             <button type="submit" className="btn btn-primary mr-2">Update</button>
                                                         </div>

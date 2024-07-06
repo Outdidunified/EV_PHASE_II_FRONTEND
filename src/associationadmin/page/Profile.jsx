@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect, useRef} from 'react';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer';
@@ -17,6 +17,8 @@ const Profile = ({ userInfo, handleLogout }) => {
     const [association_email_id, setUpdateEmail] = useState('');
     const [association_phone_no, setUpdatePhone] = useState('');
     const [association_address, setUpdateAddress] = useState('');
+
+    const fetchProfileCalled = useRef(false); // Ref to track if fetchProfile has been called
 
     // get profile data
     useEffect(() => {
@@ -46,12 +48,11 @@ const Profile = ({ userInfo, handleLogout }) => {
             }
         };
 
-        if (userInfo.data.user_id) {
+        if (!fetchProfileCalled.current && userInfo && userInfo.data && userInfo.data.user_id) {
             fetchProfile();
-        } else {
-            console.error('User ID not found in userInfo');
+            fetchProfileCalled.current = true; // Mark fetchProfile as called
         }
-    }, [userInfo.data.user_id]);
+    }, [userInfo]);
    
     // Association profile
     useEffect(() => {

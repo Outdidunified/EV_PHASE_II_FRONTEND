@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 import Footer from '../../components/Footer';
@@ -14,7 +14,11 @@ const ManageDevice = ({ userInfo, handleLogout }) => {
     const [filteredData] = useState([]);
     const [posts, setPosts] = useState([]);
     const [updateTrigger, setUpdateTrigger] = useState(false);
+    const fetchMangeCalled = useRef(false); // Ref to track if fetchProfile has been called
     
+    const handleViewManageDevice = (dataItem) => {
+        navigate('/associationadmin/ViewManageDevice', { state: { dataItem } });
+    };
     const handleEditManageDevice = (dataItem) => {
         navigate('/associationadmin/EditManageDevice', { state: { dataItem } });
     };
@@ -47,12 +51,12 @@ const ManageDevice = ({ userInfo, handleLogout }) => {
             }
         };
 
-        if (userInfo.data.client_id) {
+        if (!fetchMangeCalled.current && userInfo && userInfo.data && userInfo.data.user_id) {
             fetchProfile();
-        } else {
-            console.error('User ID not found in userInfo');
+            fetchMangeCalled.current = true; // Mark fetchProfile as called
         }
-    }, [userInfo.data.client_id, updateTrigger]);
+    }, [userInfo, updateTrigger]);
+   
 
     // Search data 
     const handleSearchInputChange = (e) => {
@@ -256,6 +260,7 @@ const ManageDevice = ({ userInfo, handleLogout }) => {
                                                                     </div>
                                                                 </td>  
                                                                 <td>
+                                                                    <button type="button" className="btn btn-outline-success btn-icon-text"  onClick={() => handleViewManageDevice(dataItem)} style={{marginBottom:'10px', marginRight:'10px'}}><i className="mdi mdi-eye"></i>View</button> 
                                                                     <button type="button" className="btn btn-outline-primary btn-icon-text"  onClick={() => handleEditManageDevice(dataItem)} style={{marginBottom:'10px', marginRight:'10px'}}><i className="mdi mdi-pencil btn-icon-prepend"></i>Edit</button><br/>
                                                                 </td>   
                                                             </tr>
