@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect, useRef} from 'react';
 import axios from 'axios';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
@@ -18,26 +18,38 @@ const AssignReseller = ({ userInfo, handleLogout }) => {
 
     const [reseller_id, setSelectedReseller] = useState('');
     const [charger_ids, setSelectedChargers] = useState([]);
+    const FetchSpecificUserRoleForSelectionCalled = useRef(false);
+    const FetchUnAllocatedChargerToAssginCalled = useRef(false);
 
+   
+    // Fetch Reseller
     useEffect(() => {
-        const url = '/superadmin/FetchResellersToAssgin';
-        axios.get(url)
-            .then((res) => {
-                setResellers(res.data.data);
-            })
-            .catch((err) => {
-                console.error('Error fetching data:', err);
-            });
+        if (!FetchSpecificUserRoleForSelectionCalled.current) {
+            const url = '/superadmin/FetchResellersToAssgin';
+            axios.get(url)
+                .then((res) => {
+                    setResellers(res.data.data);
+                })
+                .catch((err) => {
+                    console.error('Error fetching data:', err);
+                });
+                FetchSpecificUserRoleForSelectionCalled.current = true;
+        }
     }, []);
+    
+    // Fetch Unallocated charger
     useEffect(() => {
-        const url = '/superadmin/FetchUnAllocatedChargerToAssgin';
-        axios.get(url)
-            .then((res) => {
-                setChargers(res.data.data);
-            })
-            .catch((err) => {
-                console.error('Error fetching data:', err);
-            });
+        if (!FetchUnAllocatedChargerToAssginCalled.current) {
+            const url = '/superadmin/FetchUnAllocatedChargerToAssgin';
+            axios.get(url)
+                .then((res) => {
+                    setChargers(res.data.data);
+                })
+                .catch((err) => {
+                    console.error('Error fetching data:', err);
+                });
+            FetchUnAllocatedChargerToAssginCalled.current = true;
+        }
     }, []);
 
     const handleResellerChange = (e) => {
@@ -55,36 +67,35 @@ const AssignReseller = ({ userInfo, handleLogout }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        alert(`Selected Reseller: ${reseller_id}\nSelected Chargers: ${charger_ids.join(', ')}`);
+        const resellerID = parseInt(reseller_id);
         try {
-            const response = await fetch('/superadmin/AssginChargerToReseller', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ reseller_id, charger_ids, modified_by: userInfo.data.username  }),
+            const response = await axios.post('/superadmin/AssginChargerToReseller', {
+                reseller_id: resellerID,
+                charger_ids,
+                modified_by: userInfo.data.username
             });
-            if (response.ok) {
+            if (response.status === 200) {
                 Swal.fire({
                     title: "Charger assigned successfully",
                     icon: "success"
                 });
                 backManageDevice();
             } else {
-                Swal.fire({ 
+                Swal.fire({
                     title: "Error",
-                    text: "Failed to assigned charger",
+                    text: "Failed to assign charger",
                     icon: "error"
                 });
             }
-        }catch (error) {
+        } catch (error) {
             Swal.fire({
-                title: "Error:", error,
+                title: "Error",
                 text: "An error occurred while adding the charger",
                 icon: "error"
             });
         }
     };
+
    
     return (
         <div className='container-scroller'>

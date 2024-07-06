@@ -1,11 +1,10 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer';
 import Swal from 'sweetalert2';
 
 const Profile = ({ userInfo, handleLogout }) => {
-
     const [data, setPosts] = useState({});
     const [username, setUpdateUname] = useState('');
     const [email_id, setUpdateEmail] = useState('');
@@ -13,6 +12,9 @@ const Profile = ({ userInfo, handleLogout }) => {
     const [password, setUpdatePassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
+    const fetchProfileCalled = useRef(false); // Ref to track if fetchProfile has been called
+
+    // Fetch profile
     useEffect(() => {
         const fetchProfile = async () => {
             try {
@@ -26,7 +28,6 @@ const Profile = ({ userInfo, handleLogout }) => {
 
                 if (response.ok) {
                     const data = await response.json();
-                    // console.log('Profile data:', data);
                     setPosts(data.data);
                 } else {
                     setErrorMessage('Failed to fetch profile');
@@ -38,12 +39,11 @@ const Profile = ({ userInfo, handleLogout }) => {
             }
         };
 
-        if (userInfo.data.user_id) {
+        if (!fetchProfileCalled.current && userInfo && userInfo.data && userInfo.data.user_id) {
             fetchProfile();
-        } else {
-            console.error('User ID not found in userInfo');
+            fetchProfileCalled.current = true; // Mark fetchProfile as called
         }
-    }, [userInfo.data.user_id]);
+    }, [userInfo]);
 
     useEffect(() => {
         if (data) {
@@ -54,10 +54,30 @@ const Profile = ({ userInfo, handleLogout }) => {
         }
     }, [data]);
 
-   
-
+    // Update profile
     const addProfileUpdate = async (e) => {
         e.preventDefault();
+
+        const phoneRegex = /^\d{10}$/;
+        if (!phone_no) {
+            setErrorMessage("Phone can't be empty.");
+            return;
+        }
+        if (!phoneRegex.test(phone_no)) {
+            setErrorMessage('Oops! Phone must be a 10-digit number.');
+            return;
+        }
+
+        const passwordRegex = /^\d{4}$/;
+        if (!password) {
+            setErrorMessage("Password can't be empty.");
+            return;
+        }
+        if (!passwordRegex.test(password)) {
+            setErrorMessage('Oops! Password must be a 4-digit number.');
+            return;
+        }
+
         try {
             const phoneNo = parseInt(phone_no);
             const Password = parseInt(password);
@@ -66,12 +86,13 @@ const Profile = ({ userInfo, handleLogout }) => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ user_id: userInfo.data.user_id, username, phone_no: phoneNo, password: Password, status:true, modified_by: userInfo.data.username}),});
+                body: JSON.stringify({ user_id: userInfo.data.user_id, username, phone_no: phoneNo, password: Password, status: true, modified_by: userInfo.data.username }),
+            });
             if (response.ok) {
                 Swal.fire({
                     title: "Profile updated successfully",
                     icon: "success"
-                });               
+                });
             } else {
                 Swal.fire({
                     title: "Error",
@@ -81,20 +102,18 @@ const Profile = ({ userInfo, handleLogout }) => {
             }
         } catch (error) {
             Swal.fire({
-                title: "Error:", error,
+                title: "Error:",
                 text: "An error occurred while updating the profile",
                 icon: "error"
             });
         }
     };
-    
+
     return (
         <div className='container-scroller'>
-            {/* Header */}
-            <Header userInfo={userInfo} handleLogout={handleLogout}/>
+            <Header userInfo={userInfo} handleLogout={handleLogout} />
             <div className="container-fluid page-body-wrapper">
-                {/* Sidebar */}
-                <Sidebar/>
+                <Sidebar />
                 <div className="main-panel">
                     <div className="content-wrapper">
                         <div className="row">
@@ -117,29 +136,29 @@ const Profile = ({ userInfo, handleLogout }) => {
                                                         <div className="form-group row">
                                                             <label htmlFor="exampleInputUsername2" className="col-sm-2 col-form-label">User Name</label>
                                                             <div className="col-sm-10">
-                                                                <input type="text" className="form-control" placeholder="Username" value={username}  onChange={(e) => setUpdateUname(e.target.value)} required/>
+                                                                <input type="text" className="form-control" placeholder="Username" value={username} onChange={(e) => setUpdateUname(e.target.value)} required />
                                                             </div>
                                                         </div>
                                                         <div className="form-group row">
                                                             <label htmlFor="exampleInputEmail2" className="col-sm-2 col-form-label">Email</label>
                                                             <div className="col-sm-10">
-                                                                <input type="email" className="form-control" placeholder="Email" value={email_id}  onChange={(e) => setUpdateEmail(e.target.value)} readOnly required/>
+                                                                <input type="email" className="form-control" placeholder="Email" value={email_id} onChange={(e) => setUpdateEmail(e.target.value)} readOnly required />
                                                             </div>
                                                         </div>
                                                         <div className="form-group row">
                                                             <label htmlFor="exampleInputMobile" className="col-sm-2 col-form-label">Phone</label>
                                                             <div className="col-sm-10">
-                                                                <input type="text" className="form-control" placeholder="Phone number" pattern="[0-9]{10}" value={phone_no}  onChange={(e) => setUpdatePhone(e.target.value)} required/>
+                                                                <input type="text" className="form-control" placeholder="Phone number" value={phone_no} onChange={(e) => setUpdatePhone(e.target.value)} required />
                                                             </div>
                                                         </div>
                                                         <div className="form-group row">
                                                             <label htmlFor="exampleInputPassword2" className="col-sm-2 col-form-label">Password</label>
                                                             <div className="col-sm-10">
-                                                                <input type="text" className="form-control" pattern="[0-9]{4}" placeholder="Password" value={password}  onChange={(e) => setUpdatePassword(e.target.value)} required/>
+                                                                <input type="text" className="form-control" placeholder="Password" value={password} onChange={(e) => setUpdatePassword(e.target.value)} required />
                                                             </div>
                                                         </div>
                                                         {errorMessage && <div className="text-danger">{errorMessage}</div>}
-                                                        <div style={{textAlign:'center'}}>
+                                                        <div style={{ textAlign: 'center' }}>
                                                             <button type="submit" className="btn btn-primary mr-2">Update</button>
                                                         </div>
                                                     </form>
@@ -151,12 +170,11 @@ const Profile = ({ userInfo, handleLogout }) => {
                             </div>
                         </div>
                     </div>
-                    {/* Footer */}
                     <Footer />
-                </div>         
-            </div>    
+                </div>
+            </div>
         </div>
     );
-};   
-                 
-export default Profile
+};
+
+export default Profile;

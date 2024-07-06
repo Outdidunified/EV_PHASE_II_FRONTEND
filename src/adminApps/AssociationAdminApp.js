@@ -3,6 +3,7 @@ import { Route, Routes, Navigate } from 'react-router-dom';
 import Login from '../associationadmin/page/Login';
 import Dashboard from '../associationadmin/page/Dashboard';
 import ManageDevice from '../associationadmin/page/ManageDevices/ManageDevice';
+import ViewManageDevice from'../associationadmin/page/ManageDevices/ViewManageDevice'
 import EditManageDevice from '../associationadmin/page/ManageDevices/EditManageDevice'
 import ManageUsers from '../associationadmin/page/ManageUser/ManageUsers';
 import EditManageUsers from '../associationadmin/page/ManageUser/EditManageUsers'
@@ -51,6 +52,14 @@ const AssociationaAdminApp = () => {
         path="/ManageDevice"
         element={loggedIn ? (
           <ManageDevice userInfo={userInfo} handleLogout={handleLogout} />
+        ) : (
+          <Navigate to="/associationadmin" />
+        )}
+      />
+      <Route
+        path="/ViewManageDevice"
+        element={loggedIn ? (
+          <ViewManageDevice userInfo={userInfo} handleLogout={handleLogout} />
         ) : (
           <Navigate to="/associationadmin" />
         )}

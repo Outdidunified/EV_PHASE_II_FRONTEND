@@ -18,16 +18,42 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
     const [model, setModel] = useState('');
     const [type, setType] = useState('');
     const [vendor, setVendor] = useState('');
-    const [gun_connector, setGunConnetor] = useState('');
+    const [gunConnector, setGunConnetor] = useState('');
     const [maxCurrent, setMaxCurrent] = useState('');
     const [maxPower, setMaxPower] = useState('');
     const [socketCount, setsocketCount] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const addManageDevice = async (e, ) => {
         e.preventDefault();
+
+        // Validate Charger ID
+        const chargerIDRegex = /^[a-zA-Z0-9]{1,14}$/;;
+        if (!charger_id) {
+            setErrorMessage("Charger ID can't be empty.");
+            return;
+        }
+        if (!chargerIDRegex.test(charger_id)) {
+            setErrorMessage('Oops! Charger ID must be a maximum of 14 characters.');
+            return;
+        }
+
+        // Validate Tag ID
+        const tagIDRegex = /^[a-zA-Z0-9]{1,12}$/;;
+        if (!tag_id) {
+            setErrorMessage("Charger ID can't be empty.");
+            return;
+        }
+        if (!tagIDRegex.test(tag_id)) {
+            setErrorMessage('Oops! Tag ID must be a maximum of 12 characters.');
+            return;
+        }
+        
         try {
             const max_current = parseInt(maxCurrent);
             const max_power = parseInt(maxPower);
+            const gun_connector = parseInt(gunConnector);
+
             const socket_count = parseInt(socketCount);
 
             const response = await fetch('/superadmin/CreateCharger', {
@@ -115,7 +141,7 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Tag ID</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Charger ID" value={tag_id}  onChange={(e) => setTagID(e.target.value)} required/>
+                                                                        <input type="text" className="form-control" placeholder="Tag ID" value={tag_id}  onChange={(e) => setTagID(e.target.value)} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -151,7 +177,7 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Gun Connetor</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Gun Connetor" value={gun_connector}  onChange={(e) => setGunConnetor(e.target.value)} required/>
+                                                                        <input type="number" className="form-control" placeholder="Gun Connetor" value={gunConnector}  onChange={(e) => setGunConnetor(e.target.value)} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -184,6 +210,7 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        {errorMessage && <div className="text-danger">{errorMessage}</div>}
                                                         <div style={{textAlign:'center'}}>
                                                             <button type="submit" className="btn btn-primary mr-2">Add</button>
                                                         </div>

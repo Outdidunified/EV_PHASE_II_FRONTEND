@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect, useRef} from 'react';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 import Footer from '../../components/Footer';
@@ -18,6 +18,7 @@ const AssignClient = ({ userInfo, handleLogout }) => {
     const [data, setData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [posts, setPosts] = useState([]);
+    const FetchAssignedClientsCalled = useRef(false);
 
     useEffect(() => {
         const fetchAssignedClients = async () => {
@@ -42,12 +43,11 @@ const AssignClient = ({ userInfo, handleLogout }) => {
             }
         };
     
-        if (dataItem?.reseller_id) {
+        if (!FetchAssignedClientsCalled.current && dataItem && dataItem.reseller_id) {
             fetchAssignedClients();
-        } else {
-            console.error('Reseller ID not found in dataItem');
+            FetchAssignedClientsCalled.current = true; // Mark fetchProfile as called
         }
-    }, [dataItem?.reseller_id]);
+    }, [dataItem]);
     
 
     const handleSearchInputChange = (e) => {

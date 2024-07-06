@@ -8,10 +8,11 @@ import { useLocation } from 'react-router-dom';
 const ViewManageDevice = ({ userInfo, handleLogout }) => {
     const location = useLocation();
     const dataItem = location.state?.dataItem;    
+console.log(dataItem);
     const navigate = useNavigate();
     
     const handleBack = () => {
-        navigate('/superadmin/ManageDevice');
+        navigate('/associationadmin/ManageDevice');
     };
 
     const gridContainerStyle = {
@@ -58,7 +59,7 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
                             <div className="col-md-12 grid-margin">
                                 <div className="row">
                                     <div className="col-12 col-xl-8 mb-4 mb-xl-0">
-                                        <h3 className="font-weight-bold">Manage Device</h3>
+                                        <h3 className="font-weight-bold">View Manage Device</h3>
                                     </div>
                                     <div className="col-12 col-xl-4">
                                         <div className="justify-content-end d-flex">
@@ -91,12 +92,10 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
                                                         <div style={gridItemStyle}>Max Power: <span style={{fontWeight:'normal'}}>{dataItem.max_power}</span></div>
                                                         <div style={gridItemStyle}>Socket Count: <span style={{fontWeight:'normal'}}>{dataItem.socket_count}</span></div>
                                                         <div style={gridItemStyle}>Current or Active User: <span style={{fontWeight:'normal'}}>{dataItem.current_active_user}</span></div>
-                                                        <div style={gridItemStyle}>Superadmin Commission: <span style={{fontWeight:'normal'}}>{dataItem.superadmin_commission}</span></div>
-                                                        <div style={gridItemStyle}>Reseller Commission: <span style={{fontWeight:'normal'}}>{dataItem.reseller_commission}</span></div>
                                                         <div style={gridItemStyle}>Client Commission: <span style={{fontWeight:'normal'}}>{dataItem.client_commission}</span></div>
                                                         <div style={gridItemStyle}>IP: <span style={{fontWeight:'normal'}}>{dataItem.ip}</span></div>
-                                                        <div style={gridItemStyle}>Latitude: <span style={{fontWeight:'normal'}}>{dataItem.lat}</span></div>
-                                                        <div style={gridItemStyle}>Longitude: <span style={{fontWeight:'normal'}}>{dataItem.long}</span></div>
+                                                        <div style={gridItemStyle}>Lat: <span style={{fontWeight:'normal'}}>{dataItem.lat}</span></div>
+                                                        <div style={gridItemStyle}>Long: <span style={{fontWeight:'normal'}}>{dataItem.long}</span></div>
                                                         <div style={gridItemStyle}>Short Description: <span style={{fontWeight:'normal'}}>{dataItem.short_description}</span></div>   
                                                         <div style={gridItemStyle}>Charger Accessibility: <span style={{fontWeight:'normal'}}>{dataItem.charger_accessibility}</span></div>   
                                                         <div style={gridItemStyle}>Unit Price: <span style={{fontWeight:'normal'}}>{dataItem.unit_price}</span></div> 

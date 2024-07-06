@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect, useRef} from 'react';
 import axios from 'axios';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
@@ -106,15 +106,21 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
 
     const [selectionRoles, setSelectionRoles] = useState([]);
   
+    const fetchSpecificUserRoleForSelectionCalled = useRef(false);
+    const fetchUsersCalled = useRef(false);
+
     useEffect(() => {
-        const url = '/associationadmin/FetchSpecificUserRoleForSelection';
-        axios.get(url)
-            .then((res) => {
-                setSelectionRoles(res.data.data);
-            })
-            .catch((err) => {
-                console.error('Error fetching data:', err);
-            });
+        if (!fetchSpecificUserRoleForSelectionCalled.current) {
+            const url = '/associationadmin/FetchSpecificUserRoleForSelection';
+            axios.get(url)
+                .then((res) => {
+                    setSelectionRoles(res.data.data);
+                })
+                .catch((err) => {
+                    console.error('Error fetching data:', err);
+                });
+            fetchSpecificUserRoleForSelectionCalled.current = true;
+        }
     }, []);
 
     const [data, setData] = useState([]);
@@ -123,18 +129,21 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
     const [filteredData] = useState([]);
     const [posts, setPosts] = useState([]);
 
-    // Get manage user data
+    // Get user data
     useEffect(() => {
-        const url = `/associationadmin/FetchUsers`;
-        axios.get(url).then((res) => {
-            setData(res.data.data);
-            setLoading(false);
-        })
-           .catch((err) => {
-            console.error('Error fetching data:', err);
-            setError('Error fetching data. Please try again.');
-            setLoading(false);
-          });
+        if (!fetchUsersCalled.current) {
+            const url = `/associationadmin/FetchUsers`;
+            axios.get(url).then((res) => {
+                setData(res.data.data);
+                setLoading(false);
+            })
+            .catch((err) => {
+                console.error('Error fetching data:', err);
+                setError('Error fetching data. Please try again.');
+                setLoading(false);
+            });
+            fetchUsersCalled.current = true;
+        }
     }, [updateTrigger]);
 
     // Search data 
