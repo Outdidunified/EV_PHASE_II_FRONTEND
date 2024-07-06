@@ -95,7 +95,7 @@ const ViewUserList = ({ userInfo, handleLogout }) => {
                                                         <div style={gridItemStyle}>Created By: <span style={{fontWeight:'normal'}}>{dataItem.created_by}</span></div> 
                                                         <div style={gridItemStyle}>Created Date: <span style={{fontWeight:'normal'}}>{formatTimestamp(dataItem.created_date)}</span></div>   
                                                         <div style={gridItemStyle}>Modified By: <span style={{fontWeight:'normal'}}>{dataItem.modified_by}</span></div>
-                                                        <div style={gridItemStyle}>Modified Date: <span style={{fontWeight:'normal'}}>{formatTimestamp(dataItem.cmodified_date)}</span></div>
+                                                        <div style={gridItemStyle}>Modified Date: <span style={{fontWeight:'normal'}}>{formatTimestamp(dataItem.modified_date)}</span></div>
                                                         <div style={gridItemStyle}>Status: <span style={{fontWeight:'normal'}}>{dataItem.status===true ? 'Active' : 'DeActive'}</span></div>
                                                     </div>
                                                 </div>
