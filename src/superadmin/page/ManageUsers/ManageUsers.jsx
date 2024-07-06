@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect, useRef} from 'react';
 import axios from 'axios';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
@@ -37,8 +37,9 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
     const [email_id, setemailID] = useState('');
     const [Password, setPassword] = useState('');
     const [phoneNo, setPhone] = useState('');
-    const [walletBal, setWallet] = useState('');
+    // const [walletBal, setWallet] = useState('');
     const [updateTrigger, setUpdateTrigger] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleResellerChange = (e) => {
         const [role_id, role_name] = e.target.value.split('|');
@@ -51,18 +52,40 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
     
     const addManageUser = async (e) => {
         e.preventDefault();
+
+        // Validate phone number
+        const phoneRegex = /^\d{10}$/;
+        if (!phoneNo) {
+            setErrorMessage("Phone can't be empty.");
+            return;
+        }
+        if (!phoneRegex.test(phoneNo)) {
+            setErrorMessage('Oops! Phone must be a 10-digit number.');
+            return;
+        }
+ 
+        // Validate password
+        const passwordRegex = /^\d{4}$/;
+        if (!Password) {
+            setErrorMessage("Password can't be empty.");
+            return;
+        }
+        if (!passwordRegex.test(Password)) {
+            setErrorMessage('Oops! Password must be a 4-digit number.');
+            return;
+        }
         try {
             const roleID = parseInt(role.role_id);
             const resellerID = parseInt(reseller_id);
             const password = parseInt(Password);
             const phone_no = parseInt(phoneNo);
-            const wallet_bal = parseInt(walletBal);
+            // const wallet_bal = parseInt(walletBal);
             const response = await fetch('/superadmin/CreateUser', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ role_id:roleID, reseller_id:resellerID, username, email_id, password, phone_no, wallet_bal, created_by:userInfo.data.username }),
+            body: JSON.stringify({ role_id:roleID, reseller_id:resellerID, username, email_id, password, phone_no, created_by:userInfo.data.username }),
             });
             if (response.ok) {
                 Swal.fire({
@@ -73,7 +96,7 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
                 setemailID(''); 
                 setPassword(''); 
                 setPhone(''); 
-                setWallet(''); 
+                // setWallet(''); 
                 setShowAddForm(false);
             } else {
                 Swal.fire({
@@ -94,27 +117,38 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
 
     const [selectionRoles, setSelectionRoles] = useState([]);
     const [selectionReseller, setSelectionReseller] = useState([]);
-  
+    const fetchSpecificUserRoleForSelectionCalled = useRef(false);
+    const FetchResellerForSelectionCalled = useRef(false);
+    const FetchUsersCalled = useRef(false);
+
+    // Get Specific User
     useEffect(() => {
-        const url = '/superadmin/FetchSpecificUserRoleForSelection';
-        axios.get(url)
-            .then((res) => {
-                setSelectionRoles(res.data.data);
-            })
-            .catch((err) => {
-                console.error('Error fetching data:', err);
-            });
+        if (!fetchSpecificUserRoleForSelectionCalled.current) {
+            const url = '/superadmin/FetchSpecificUserRoleForSelection';
+            axios.get(url)
+                .then((res) => {
+                    setSelectionRoles(res.data.data);
+                })
+                .catch((err) => {
+                    console.error('Error fetching data:', err);
+                });
+            fetchSpecificUserRoleForSelectionCalled.current = true;
+        }
     }, []);
 
+    // Get Reseller data
     useEffect(() => {
-        const url = '/superadmin/FetchResellerForSelection';
-        axios.get(url)
-            .then((res) => {
-                setSelectionReseller(res.data.data);
-            })
-            .catch((err) => {
-                console.error('Error fetching data:', err);
-            });
+        if (!FetchResellerForSelectionCalled.current) {
+            const url = '/superadmin/FetchResellerForSelection';
+            axios.get(url)
+                .then((res) => {
+                    setSelectionReseller(res.data.data);
+                })
+                .catch((err) => {
+                    console.error('Error fetching data:', err);
+                });
+                FetchResellerForSelectionCalled.current = true;
+        }        
     }, []);
 
     const [data, setData] = useState([]);
@@ -123,18 +157,21 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
     const [filteredData] = useState([]);
     const [posts, setPosts] = useState([]);
 
-    // Get manage user data
+    // Get user data
     useEffect(() => {
-        const url = `/superadmin/FetchUsers`;
-        axios.get(url).then((res) => {
-            setData(res.data.data);
-            setLoading(false);
-        })
-           .catch((err) => {
-            console.error('Error fetching data:', err);
-            setError('Error fetching data. Please try again.');
-            setLoading(false);
-          });
+        if (!FetchUsersCalled.current) {
+            const url = `/superadmin/FetchUsers`;
+            axios.get(url).then((res) => {
+                setData(res.data.data);
+                    setLoading(false);
+                })
+                .catch((err) => {
+                    console.error('Error fetching data:', err);
+                    setError('Error fetching data. Please try again.');
+                    setLoading(false);
+                });
+            FetchUsersCalled.current = true;
+        }    
     }, [updateTrigger]);
 
     // Search data 
@@ -318,13 +355,14 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
                                                                     </div>
                                                                     <input type="password" className="form-control" placeholder="Password" value={Password} onChange={(e) => setPassword(e.target.value)} required/>
                                                                 </div>
-                                                                <div className="input-group">
+                                                                {/* <div className="input-group">
                                                                     <div className="input-group-prepend">
                                                                         <span className="input-group-text" style={{color:'black', width:'125px'}}>Wallet</span>
                                                                     </div>
                                                                     <input type="text" className="form-control" placeholder="Wallet" value={walletBal} onChange={(e) => setWallet(e.target.value)} required/>
-                                                                </div>
+                                                                </div> */}
                                                             </div>
+                                                            {errorMessage && <div className="text-danger">{errorMessage}</div>}
                                                             <div style={{textAlign:'center'}}>
                                                                 <button type="submit" className="btn btn-primary mr-2" style={{marginTop:'10px'}}>Add</button>
                                                             </div>

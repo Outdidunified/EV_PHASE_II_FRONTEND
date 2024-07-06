@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef} from 'react';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 import Footer from '../../components/Footer';
@@ -11,6 +11,7 @@ const AssignCharger = ({ userInfo, handleLogout }) => {
     const [data, setData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [posts, setPosts] = useState([]);
+    const FetchChargerDetailsWithSessionCalled = useRef(false);
 
     useEffect(() => {
         const fetchAssignedClients = async () => {
@@ -35,12 +36,12 @@ const AssignCharger = ({ userInfo, handleLogout }) => {
                 console.error('Error:', error);
             }
         };
-        if (dataItem?.reseller_id) {
+       
+        if (!FetchChargerDetailsWithSessionCalled.current && dataItem && dataItem.reseller_id) {
             fetchAssignedClients();
-        } else {
-            console.error('Reseller ID not found in dataItem');
+            FetchChargerDetailsWithSessionCalled.current = true; // Mark fetchProfile as called
         }
-    }, [dataItem?.reseller_id]);
+    }, [dataItem]);
 
     const navigate = useNavigate();
 

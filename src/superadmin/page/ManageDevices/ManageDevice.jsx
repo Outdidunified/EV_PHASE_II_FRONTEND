@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import axios from 'axios';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
@@ -29,22 +29,26 @@ const ManageDevice = ({ userInfo, handleLogout }) => {
     const [error, setError] = useState(null);
     const [filteredData] = useState([]);
     const [posts, setPosts] = useState([]);
+    const fetchDataCalled = useRef(false);
 
     // Get manage charger data
     useEffect(() => {
-        const url = `/superadmin/FetchCharger`;
-        axios.get(url).then((res) => {
-            setData(res.data.data);
-            setLoading(false);
-            // console.log(JSON.stringify(res.data) + ' charger data');
-        })
-           .catch((err) => {
-            console.error('Error fetching data:', err);
-            setError('Error fetching data. Please try again.');
-            setLoading(false);
-          });
+        if (!fetchDataCalled.current) {
+            const url = `/superadmin/FetchCharger`;
+            axios.get(url)
+                .then((res) => {
+                    setData(res.data.data);
+                    setLoading(false);
+                })
+                .catch((err) => {
+                    console.error('Error fetching data:', err);
+                    setError('Error fetching data. Please try again.');
+                    setLoading(false);
+                });
+                fetchDataCalled.current = true;
+        }
     }, []);
-
+    
     // Search data 
     const handleSearchInputChange = (e) => {
         const inputValue = e.target.value.toUpperCase();

@@ -27,10 +27,35 @@ const EditUserList = ({ userInfo, handleLogout }) => {
     const [phone_no, setPhoneNumber] = useState(dataItem?.phone_no || '');
     const [email_id, setEmailID] = useState(dataItem?.email_id || '');
     const [password, setPassword] = useState(dataItem?.password || '');
-    const [wallet_bal, setWallet] =useState(dataItem?.wallet_bal || '');
+    const [wallet_bal, setWallet] =useState(dataItem?.wallet_bal || '0');
+    const [errorMessage, setErrorMessage] = useState('');
 
+    
     const editManageUser = async (e) => {
         e.preventDefault();
+
+        // Validate phone number
+        const phoneRegex = /^\d{10}$/;
+        if (!phone_no) {
+            setErrorMessage("Phone can't be empty.");
+            return;
+        }
+        if (!phoneRegex.test(phone_no)) {
+            setErrorMessage('Oops! Phone must be a 10-digit number.');
+            return;
+        }
+ 
+        // Validate password
+        const passwordRegex = /^\d{4}$/;
+        if (!password) {
+            setErrorMessage("Password can't be empty.");
+            return;
+        }
+        if (!passwordRegex.test(password)) {
+            setErrorMessage('Oops! Password must be a 4-digit number.');
+            return;
+        }
+        
         try {
             const Password = parseInt(password);
             const PhoneNo = parseInt(phone_no);
@@ -116,7 +141,7 @@ const EditUserList = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Phone Number</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Phone Number" pattern="[0-9]{10}" value={phone_no} onChange={(e) => setPhoneNumber(e.target.value)} required/>
+                                                                        <input type="text" className="form-control" placeholder="Phone Number" value={phone_no} onChange={(e) => setPhoneNumber(e.target.value)} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -171,6 +196,7 @@ const EditUserList = ({ userInfo, handleLogout }) => {
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        {errorMessage && <div className="text-danger">{errorMessage}</div>}
                                                         <div style={{textAlign:'center'}}>
                                                             <button type="submit" className="btn btn-primary mr-2">Update</button>
                                                         </div>

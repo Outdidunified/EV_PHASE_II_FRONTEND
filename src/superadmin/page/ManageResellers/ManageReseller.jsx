@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import axios from 'axios';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
@@ -36,19 +36,23 @@ const ManageReseller = ({ userInfo, handleLogout }) => {
     const [posts, setPosts] = useState([]);
     const [updateTrigger, setUpdateTrigger] = useState(false);
     //const [errorMessage, setErrorMessage] = useState('');
+    const FetchResellersCalled = useRef(false);
 
     // Get manage reseller data
     useEffect(() => {
-        const url = `/superadmin/FetchResellers`;
-        axios.get(url).then((res) => {
-            setData(res.data.data); 
-            setLoading(false);
-        })
-           .catch((err) => {
-            console.error('Error fetching data:', err);
-            setError('Error fetching data. Please try again.');
-            setLoading(false);
-          });
+        if (!FetchResellersCalled.current) {
+            const url = `/superadmin/FetchResellers`;
+            axios.get(url).then((res) => {
+                setData(res.data.data); 
+                setLoading(false);
+            })
+            .catch((err) => {
+                console.error('Error fetching data:', err);
+                setError('Error fetching data. Please try again.');
+                setLoading(false);
+            });
+            FetchResellersCalled.current = true;
+        }
     },  [updateTrigger]);
 
     // Search data 
@@ -242,7 +246,6 @@ const ManageReseller = ({ userInfo, handleLogout }) => {
                                                                 <td>{formatTimestamp(dataItem.created_date)}</td>
                                                                 <td>{formatTimestamp(dataItem.modified_date)}</td>
                                                                 <td>{dataItem.status===true ? <span className="text-success">Active</span> : <span className="text-danger">DeActive</span>}</td>
-                                                               
                                                                 <td>
                                                                     <div className='form-group' style={{paddingTop:'13px'}}> 
                                                                         {dataItem.status===true ?
