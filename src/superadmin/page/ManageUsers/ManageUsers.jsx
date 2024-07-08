@@ -9,10 +9,12 @@ import Swal from 'sweetalert2';
 const ManageUsers = ({ userInfo, handleLogout }) => {
     const navigate = useNavigate();
     
+    // View user list
     const handleViewUser = (dataItem) => {
         navigate('/superadmin/ViewUserList', { state: { dataItem } });
     };
 
+    // View edit user liat
     const handleEditUser = (dataItem) => {
         navigate('/superadmin/EditUserList', { state: { dataItem } });
     };
@@ -214,6 +216,7 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
         return formattedDate;
     } 
 
+    // DeActive
     const changeDeActivate = async (e, user_id) => {
         e.preventDefault();
         try {
@@ -246,6 +249,7 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
         }
     };
 
+    // Active
     const changeActivate = async (e, user_id) => {
         e.preventDefault();
         try {
@@ -476,7 +480,7 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
                 </div>         
             </div>    
         </div>
-    )
-}   
+    );
+}; 
                  
 export default ManageUsers
