@@ -1,110 +1,103 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, {useState} from 'react';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 import Footer from '../../components/Footer';
+import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
-const EditManageUsers = ({ userInfo, handleLogout }) => {
+const EditUserList = ({ userInfo, handleLogout }) => {
     const location = useLocation();
+    const dataItem = location.state?.dataItem;    
+
     const navigate = useNavigate();
-
-    const [editUser, setEditUser] = useState({
-        username: '', email_id: '', password: '', phone_no: '', user_id: '', status: '',
-    });
-
-    const [errorMessage, setErrorMessage] = useState('');
-    const [selectStatus, setSelectedStatus] = useState(editUser.status ? 'true' : 'false');
-
-    // User data
-    useEffect(() => {
-        const { dataItem } = location.state || {};
-        if (dataItem) {
-            setEditUser({
-                username: dataItem.username || '', email_id: dataItem.email_id || '', password: dataItem.password || '', phone_no: dataItem.phone_no || '', user_id: dataItem.user_id || '', status: dataItem.status || '',
-            });
-            setSelectedStatus(dataItem.status ? 'true' : 'false');
-            localStorage.setItem('editUserData', JSON.stringify(dataItem));
-        } else {
-            const savedData = JSON.parse(localStorage.getItem('editUserData'));
-            if (savedData) {
-                setEditUser(savedData);
-                setSelectedStatus(savedData.status ? 'true' : 'false');
-            }
-        }
-    }, [location]);
-
-    /// Selected status
-    const handleStatusChange = (e) => {
-        setSelectedStatus(e.target.value);
-    };
-
-    // Back Manage user page 
-    const backManageUser = () => {
+    
+    const backManageUser= () => {
         navigate('/associationadmin/ManageUsers');
     };
+    
+    const [selectStatus, setSelected] = useState(dataItem.status ? 'true' : 'false');
 
-    // Update manage user
+    const handleselection = (e) => {
+        setSelected(e.target.value);
+    };
+
+    // Edit users
+    const [username, setUserName] = useState(dataItem?.username || '');
+    const [phone_no, setPhoneNumber] = useState(dataItem?.phone_no || '');
+    const [email_id, setEmailID] = useState(dataItem?.email_id || '');
+    const [password, setPassword] = useState(dataItem?.password || '');
+    const [errorMessage, setErrorMessage] = useState('');
+
     const editManageUser = async (e) => {
         e.preventDefault();
 
+        // Validate phone number
         const phoneRegex = /^\d{10}$/;
-        if (!editUser.phone_no || !phoneRegex.test(editUser.phone_no)) {
-            setErrorMessage('Phone number must be a 10-digit number.');
+        if (!phone_no) {
+            setErrorMessage("Phone can't be empty.");
             return;
         }
-
+        if (!phoneRegex.test(phone_no)) {
+            setErrorMessage('Oops! Phone must be a 10-digit number.');
+            return;
+        }
+  
+        // Validate password
         const passwordRegex = /^\d{4}$/;
-        if (!editUser.password || !passwordRegex.test(editUser.password)) {
-            setErrorMessage('Password must be a 4-digit number.');
+        if (!password) {
+            setErrorMessage("Password can't be empty.");
             return;
         }
-
+        if (!passwordRegex.test(password)) {
+            setErrorMessage('Oops! Password must be a 4-digit number.');
+            return;
+        }
         try {
-            const updatedUser = {
-                user_id: editUser.user_id,
-                username: editUser.username,
-                phone_no: parseInt(editUser.phone_no),
-                password: parseInt(editUser.password),
-                status: selectStatus === 'true',
-                wallet_bal: parseInt(editUser.wallet_bal),
-                modified_by: userInfo.data.association_name,
-            };
-            const response = await fetch('/associationadmin/UpdateUser', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updatedUser),
-            });
+            const Password = parseInt(password);
+            const PhoneNo = parseInt(phone_no);
+            const Status = Boolean(selectStatus);
 
+            const response = await fetch('/associationadmin/UpdateUser', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_id:dataItem.user_id, username, phone_no:PhoneNo, password:Password, status:Status, modified_by: userInfo.data.association_name }),
+            });
             if (response.ok) {
                 Swal.fire({
-                    title: 'User updated successfully',
-                    icon: 'success',
+                    title: "Charger added successfully",
+                    icon: "success"
                 });
+                setUserName(''); 
+                setPhoneNumber(''); 
+                setEmailID(''); 
+                setPassword(''); 
                 backManageUser();
             } else {
                 Swal.fire({
-                    title: 'Error',
-                    text: 'Failed to update user',
-                    icon: 'error',
+                    title: "Error",
+                    text: "Failed to add charger",
+                    icon: "error"
                 });
             }
-        } catch (error) {
+        }catch (error) {
             Swal.fire({
-                title: 'Error',
-                text: 'An error occurred while updating the user',
-                icon: 'error',
+                title: "Error:", error,
+                text: "An error occurred while adding the charger",
+                icon: "error"
             });
         }
-    };
-
+    };  
+    
     return (
         <div className='container-scroller'>
             {/* Header */}
-            <Header userInfo={userInfo} handleLogout={handleLogout} />
+            <Header userInfo={userInfo} handleLogout={handleLogout}/>
             <div className="container-fluid page-body-wrapper">
                 {/* Sidebar */}
-                <Sidebar />
+                <Sidebar/>
                 <div className="main-panel">
                     <div className="content-wrapper">
                         <div className="row">
@@ -115,9 +108,7 @@ const EditManageUsers = ({ userInfo, handleLogout }) => {
                                     </div>
                                     <div className="col-12 col-xl-4">
                                         <div className="justify-content-end d-flex">
-                                            <button type="button" className="btn btn-success" onClick={backManageUser}>
-                                                Back
-                                            </button>
+                                            <button type="button" className="btn btn-success" onClick={backManageUser}>Back</button>
                                         </div>
                                     </div>
                                 </div>
@@ -137,7 +128,7 @@ const EditManageUsers = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">User Name</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" value={editUser.username} onChange={(e) => setEditUser({ ...editUser, username: e.target.value })} required/>
+                                                                        <input type="text" className="form-control" placeholder="User Name" value={username}  onChange={(e) => setUserName(e.target.value)} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -145,7 +136,7 @@ const EditManageUsers = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Phone Number</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" value={editUser.phone_no} onChange={(e) => setEditUser({ ...editUser, phone_no: e.target.value })} required/>
+                                                                        <input type="text" className="form-control" placeholder="Phone Number" value={phone_no} onChange={(e) => setPhoneNumber(e.target.value)} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -155,7 +146,7 @@ const EditManageUsers = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Email ID</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="email" className="form-control" value={editUser.email_id} readOnly required/>
+                                                                        <input type="email" className="form-control" placeholder="Email ID" value={email_id}  onChange={(e) => setEmailID(e.target.value)} readOnly required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -163,7 +154,7 @@ const EditManageUsers = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Password</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" value={editUser.password} onChange={(e) => setEditUser({ ...editUser, password: e.target.value })} required />
+                                                                        <input type="text" className="form-control" placeholder="Password" value={password} maxLength={150} onChange={(e) => setPassword(e.target.value)} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -173,16 +164,27 @@ const EditManageUsers = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Status</label>
                                                                     <div className="col-sm-9">
-                                                                        <select className="form-control" value={selectStatus} onChange={handleStatusChange}  required >
-                                                                            <option value="true">Active</option>
-                                                                            <option value="false">Deactive</option>
-                                                                        </select>
+                                                                        <div className="input-group">
+                                                                            <select className="form-control" value={selectStatus} onChange={handleselection}>
+                                                                                {dataItem.status ? (
+                                                                                    <>
+                                                                                        <option value="true">Active</option>
+                                                                                        <option value="false">DeActive</option>
+                                                                                    </>
+                                                                                ) : (
+                                                                                    <>
+                                                                                        <option value="false">DeActive</option>
+                                                                                        <option value="true">Active</option>
+                                                                                    </>
+                                                                                )}
+                                                                            </select>                                                             
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         {errorMessage && <div className="text-danger">{errorMessage}</div>}
-                                                        <div style={{ textAlign: 'center' }}>
+                                                        <div style={{textAlign:'center'}}>
                                                             <button type="submit" className="btn btn-primary mr-2">Update</button>
                                                         </div>
                                                     </form>
@@ -196,10 +198,10 @@ const EditManageUsers = ({ userInfo, handleLogout }) => {
                     </div>
                     {/* Footer */}
                     <Footer />
-                </div>
-            </div>
+                </div>         
+            </div>    
         </div>
     );
-};
-
-export default EditManageUsers;
+};   
+                 
+export default EditUserList

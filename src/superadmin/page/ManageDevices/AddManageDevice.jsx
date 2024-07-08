@@ -8,7 +8,6 @@ import Swal from 'sweetalert2';
 const AddManageDevice = ({ userInfo, handleLogout }) => {
     const navigate = useNavigate();
     
-    // Back manage device page
     const backManageDevice = () => {
         navigate('/superadmin/ManageDevice');
     };
@@ -25,7 +24,6 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
     const [socketCount, setsocketCount] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
-    // Add manage device
     const addManageDevice = async (e, ) => {
         e.preventDefault();
 

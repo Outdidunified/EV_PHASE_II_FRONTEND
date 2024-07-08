@@ -9,27 +9,22 @@ import Swal from 'sweetalert2';
 const ManageReseller = ({ userInfo, handleLogout }) => { 
     const navigate = useNavigate();
     
-    // View add manage reseller
     const handleAddReseller = () => {
         navigate('/superadmin/AddManageReseller');
     };
 
-    // View manage reseller
     const handleViewReseller = (dataItem) => {
         navigate('/superadmin/ViewManageReseller', { state: { dataItem } });
     };
 
-    //View edit manage reseller
     const handleEditReseller = (dataItem) => {
         navigate('/superadmin/EditManageReseller', { state: { dataItem } });
     };
 
-    // View assign client
     const handleAssignClient = (dataItem) => {
         navigate('/superadmin/AssignClient', { state: { dataItem } });
     };
 
-    // View assign charger
     const handleAssignCharger = (dataItem) => {
         navigate('/superadmin/AssignCharger', { state: { dataItem } });
     };
@@ -102,7 +97,6 @@ const ManageReseller = ({ userInfo, handleLogout }) => {
         return formattedDate;
     } 
 
-    // DeActive
     const changeDeActivate = async (e, reseller_id) => {
         e.preventDefault();
         try {
@@ -135,7 +129,6 @@ const ManageReseller = ({ userInfo, handleLogout }) => {
         }
     };
 
-    // Active
     const changeActivate = async (e, reseller_id) => {
         e.preventDefault();
         try {
@@ -297,7 +290,7 @@ const ManageReseller = ({ userInfo, handleLogout }) => {
                 </div>         
             </div>    
         </div>
-    );
-}; 
+    )
+}   
                  
 export default ManageReseller

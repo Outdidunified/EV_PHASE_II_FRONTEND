@@ -14,19 +14,16 @@ const ManageDevice = ({ userInfo, handleLogout }) => {
     const [filteredData] = useState([]);
     const [posts, setPosts] = useState([]);
     const [updateTrigger, setUpdateTrigger] = useState(false);
-    const fetchMangeCalled = useRef(false);
+    const fetchMangeCalled = useRef(false); // Ref to track if fetchProfile has been called
     
-    // View manage device
     const handleViewManageDevice = (dataItem) => {
         navigate('/associationadmin/ViewManageDevice', { state: { dataItem } });
     };
-
-    // Edit manage device
     const handleEditManageDevice = (dataItem) => {
         navigate('/associationadmin/EditManageDevice', { state: { dataItem } });
     };
     
-    // Get Allocated charger data
+    // Get manage charger data
     useEffect(() => {
         const fetchProfile = async () => {
             try {
@@ -35,12 +32,12 @@ const ManageDevice = ({ userInfo, handleLogout }) => {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ association_id: userInfo.data.association_id }),
+                    body: JSON.stringify({ client_id: userInfo.data.client_id }),
                 });
 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('Response datasss:', data); 
+                    // console.log('Response datasss:', data); 
                     setData(data.data);
                     setLoading(false);
                 } else {
@@ -56,7 +53,7 @@ const ManageDevice = ({ userInfo, handleLogout }) => {
 
         if (!fetchMangeCalled.current && userInfo && userInfo.data && userInfo.data.user_id) {
             fetchProfile();
-            fetchMangeCalled.current = true;
+            fetchMangeCalled.current = true; // Mark fetchProfile as called
         }
     }, [userInfo, updateTrigger]);
    
@@ -287,7 +284,7 @@ const ManageDevice = ({ userInfo, handleLogout }) => {
                 </div>         
             </div>    
         </div>
-    );
-};  
+    )
+}   
                  
 export default ManageDevice

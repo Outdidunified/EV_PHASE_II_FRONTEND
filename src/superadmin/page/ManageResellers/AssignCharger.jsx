@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef} from 'react';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 import Footer from '../../components/Footer';
@@ -6,8 +6,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 const AssignCharger = ({ userInfo, handleLogout }) => {
     const location = useLocation();
-    const navigate = useNavigate();
-    const dataItem = location.state?.dataItem || JSON.parse(localStorage.getItem('dataItem'));
+    const dataItem = location.state?.dataItem;
 
     const [data, setData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
@@ -26,6 +25,7 @@ const AssignCharger = ({ userInfo, handleLogout }) => {
                 });
                 if (response.ok) {
                     const data = await response.json();
+                    // console.log(data);
                     setData(data.data);
                     setPosts(data.data);
                 } else {
@@ -36,36 +36,30 @@ const AssignCharger = ({ userInfo, handleLogout }) => {
                 console.error('Error:', error);
             }
         };
-
+       
         if (!FetchChargerDetailsWithSessionCalled.current && dataItem && dataItem.reseller_id) {
             fetchAssignedClients();
             FetchChargerDetailsWithSessionCalled.current = true; // Mark fetchProfile as called
         }
     }, [dataItem]);
 
-    // Back manage reseller
+    const navigate = useNavigate();
+
     const backManageReseller = () => {
         navigate('/superadmin/ManageReseller');
     };
 
-    // View session history page
     const handleSessionHistory = (dataItem, sessiondata) => {
-        if (dataItem && sessiondata && sessiondata.length > 0) {
-            navigate('/superadmin/SessignHistory', { state: { dataItem, sessiondata } });
-        } else {
-            console.error('Data item or session data is undefined or empty.');
-            // Handle the case where dataItem or sessiondata is not properly set
-        }
+        navigate('/superadmin/SessignHistory', { state: { dataItem, sessiondata } });
     };
 
-    // Search input
     const handleSearchInputChange = (e) => {
         const inputValue = e.target.value.toUpperCase();
         if (Array.isArray(data)) {
             const filteredData = data.filter((item) =>
                 item.chargerID.toUpperCase().includes(inputValue)
             );
-            setFilteredData(filteredData);
+            setFilteredData('');
             setPosts(filteredData);
         }
     };
@@ -78,19 +72,13 @@ const AssignCharger = ({ userInfo, handleLogout }) => {
         }
     }, [data, filteredData]);
 
-    useEffect(() => {
-        if (dataItem) {
-            localStorage.setItem('dataItem', JSON.stringify(dataItem));
-        }
-    }, [dataItem]);
-
     return (
         <div className='container-scroller'>
             {/* Header */}
             <Header userInfo={userInfo} handleLogout={handleLogout} />
             <div className="container-fluid page-body-wrapper">
                 {/* Sidebar */}
-                <Sidebar />
+                <Sidebar/>
                 <div className="main-panel">
                     <div className="content-wrapper">
                         <div className="row">
@@ -115,7 +103,7 @@ const AssignCharger = ({ userInfo, handleLogout }) => {
                                             <div className="col-md-12 grid-margin">
                                                 <div className="row">
                                                     <div className="col-4 col-xl-8">
-                                                        <h4 className="card-title" style={{ paddingTop: '10px' }}>List Of Chargers</h4>
+                                                        <h4 className="card-title" style={{paddingTop:'10px'}}>List Of Chargers</h4>  
                                                     </div>
                                                     <div className="col-8 col-xl-4">
                                                         <div className="input-group">
@@ -124,7 +112,7 @@ const AssignCharger = ({ userInfo, handleLogout }) => {
                                                                     <i className="icon-search"></i>
                                                                 </span>
                                                             </div>
-                                                            <input type="text" className="form-control" placeholder="Search now" aria-label="search" aria-describedby="search" autoComplete="off" onChange={handleSearchInputChange} />
+                                                            <input type="text" className="form-control" placeholder="Search now" aria-label="search" aria-describedby="search" autoComplete="off" onChange={handleSearchInputChange}/>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -132,15 +120,15 @@ const AssignCharger = ({ userInfo, handleLogout }) => {
                                         </div>
                                         <div className="table-responsive">
                                             <table className="table table-striped">
-                                                <thead style={{ textAlign: 'center' }}>
-                                                    <tr>
+                                                <thead style={{textAlign:'center'}}>
+                                                    <tr> 
                                                         <th>Sl.No</th>
                                                         <th>Charger ID</th>
                                                         <th>Status</th>
                                                         <th>Option</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody style={{ textAlign: 'center' }}>
+                                                <tbody style={{textAlign:'center'}}>
                                                     {posts.length > 0 ? (
                                                         posts.map((post, index) => (
                                                             <tr key={index}>
@@ -148,9 +136,9 @@ const AssignCharger = ({ userInfo, handleLogout }) => {
                                                                 <td>{post.chargerID}</td>
                                                                 <td>{post.status === true ? 'Active' : 'Deactive'}</td>
                                                                 <td>
-                                                                    <button type="button" className="btn btn-outline-success btn-icon-text" onClick={() => handleSessionHistory(dataItem, post.sessiondata)} style={{ marginBottom: '10px', marginRight: '10px' }}>
+                                                                    <button type="button" className="btn btn-outline-success btn-icon-text" onClick={() => handleSessionHistory(dataItem, post.sessiondata)} style={{marginBottom:'10px', marginRight:'10px'}}>
                                                                         <i className="mdi mdi-eye"></i> Session History
-                                                                    </button>
+                                                                    </button> 
                                                                 </td>
                                                             </tr>
                                                         ))
@@ -169,10 +157,10 @@ const AssignCharger = ({ userInfo, handleLogout }) => {
                     </div>
                     {/* Footer */}
                     <Footer />
-                </div>
-            </div>
+                </div>         
+            </div>    
         </div>
     );
-};
+}
 
 export default AssignCharger;

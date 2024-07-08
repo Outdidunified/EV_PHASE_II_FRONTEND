@@ -6,7 +6,6 @@ const Login = ({ handleLogin }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
-  // Login 
   const handleLoginFormSubmit = async (e) => {
     e.preventDefault();
     try {

@@ -8,12 +8,10 @@ import Swal from 'sweetalert2';
 
 const EditManageDevice = ({ userInfo, handleLogout }) => {
     const location = useLocation();
-    const dataItem = location.state?.dataItem || JSON.parse(localStorage.getItem('editDeviceData'));
-    localStorage.setItem('editDeviceData', JSON.stringify(dataItem));
-    
+    const dataItem = location.state?.dataItem;    
+
     const navigate = useNavigate();
     
-    // Back manage device
     const backManageDevice = () => {
         navigate('/superadmin/ManageDevice');
     };
@@ -30,8 +28,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
     const [socket_count, setsocketCount] = useState(dataItem?.socket_count || '');
     const [errorMessage, setErrorMessage] = useState('');
 
-    // Update manage device
-    const editManageDevice = async (e) => {
+    const addManageDevice = async (e) => {
         e.preventDefault();
         // Validate Charger ID
         const chargerIDRegex = /^[a-zA-Z0-9]{1,14}$/;;
@@ -120,7 +117,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                             <div className="card">
                                                 <div className="card-body">
                                                     <h4 className="card-title">Manage Device</h4>
-                                                    <form className="form-sample" onSubmit={editManageDevice}>
+                                                    <form className="form-sample" onSubmit={addManageDevice}>
                                                         <div className="row">
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">

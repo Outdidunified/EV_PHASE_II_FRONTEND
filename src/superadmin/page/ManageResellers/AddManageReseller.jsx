@@ -8,7 +8,6 @@ import Swal from 'sweetalert2';
 const AddManageReseller = ({ userInfo, handleLogout }) => {
     const navigate = useNavigate();
     
-    // Back manage reseller
     const backManageReseller = () => {
         navigate('/superadmin/ManageReseller');
     };
@@ -20,7 +19,6 @@ const AddManageReseller = ({ userInfo, handleLogout }) => {
     const [reseller_address, setAddress] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
-    // Add manage device
     const addManageReseller = async (e) => {
         e.preventDefault();
          

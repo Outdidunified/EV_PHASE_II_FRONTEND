@@ -8,22 +8,18 @@ import { useNavigate } from 'react-router-dom';
 const ManageDevice = ({ userInfo, handleLogout }) => {
     const navigate = useNavigate();
     
-    // View add manage device page
     const handleAddDeviceList = () => {
         navigate('/superadmin/AddManageDevice');
     };
 
-    // View manage device list page
     const handleViewDeviceList = (dataItem) => {
         navigate(`/superadmin/ViewManageDevice`, { state: { dataItem } });
     };
 
-    // View edit manage device page
     const handleEditDeviceList = (dataItem) => {
         navigate('/superadmin/EditManageDevice',  { state: { dataItem } });
     };
 
-    // View assign reseller page
     const handleAssignReseller = () => {
         navigate('/superadmin/AssignReseller');
     };
@@ -205,7 +201,7 @@ const ManageDevice = ({ userInfo, handleLogout }) => {
                 </div>         
             </div>    
         </div>
-    );
-}; 
+    )
+}   
                  
 export default ManageDevice

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 import Footer from '../../components/Footer';
@@ -8,40 +8,11 @@ import { useLocation } from 'react-router-dom';
 const ViewManageReseller = ({ userInfo, handleLogout }) => {
     const location = useLocation();
     // Check if location.state and dataItem exist
-    const [newUser, setNewUser] = useState({
-        reseller_name: '', reseller_email_id: '', reseller_phone_no: '', reseller_address: '',
-        status: '', created_by:'', created_date:'', modified_by:'', modified_date:'', _id: '',
-    });
+    const dataItem = location.state?.dataItem;    
+    // alert(dataItem)
 
-    useEffect(() => {
-        const { dataItem } = location.state || {};
-        if (dataItem) {
-            setNewUser({
-                reseller_name: dataItem.reseller_name || '',
-                reseller_email_id: dataItem.reseller_email_id || '',
-                reseller_phone_no: dataItem.reseller_phone_no || '',
-                reseller_address: dataItem.reseller_address || '',
-                status: dataItem.status || '',
-                created_by: dataItem.created_by || '',
-                created_date: dataItem.created_date || '',
-                modified_by: dataItem.modified_by || '',
-                modified_date: dataItem.modified_date || '',
-                _id: dataItem._id || '',
-            });
-        // Save to localStorage
-        localStorage.setItem('userData', JSON.stringify(dataItem));
-        } else {
-            // Load from localStorage if available
-            const savedData = JSON.parse(localStorage.getItem('userData'));
-            if (savedData) {
-                setNewUser(savedData);
-            }
-        }
-    }, [location]);
-    
     const navigate = useNavigate();
     
-    // Back manage reseller
     const handleBack = () => {
         navigate('/superadmin/ManageReseller');
     };
@@ -115,15 +86,15 @@ const ViewManageReseller = ({ userInfo, handleLogout }) => {
                                                         </div>
                                                     </div>
                                                     <div style={gridContainerStyle}>
-                                                        <div style={gridItemStyle}>Reseller Name: <span style={{fontWeight:'normal'}}>{newUser.reseller_name}</span></div>
-                                                        <div style={gridItemStyle}>Phone Number: <span style={{fontWeight:'normal'}}>{newUser.reseller_phone_no}</span></div>
-                                                        <div style={gridItemStyle}>Emila ID: <span style={{fontWeight:'normal'}}>{newUser.reseller_email_id}</span></div>
-                                                        <div style={gridItemStyle}>Address: <span style={{fontWeight:'normal'}}>{newUser.reseller_address}</span></div>        
-                                                        <div style={gridItemStyle}>Created By: <span style={{fontWeight:'normal'}}>{newUser.created_by}</span></div>                                                  
-                                                        <div style={gridItemStyle}>Created Date: <span style={{fontWeight:'normal'}}>{formatTimestamp(newUser.created_date)}</span></div>
-                                                        <div style={gridItemStyle}>Modified By: <span style={{fontWeight:'normal'}}>{newUser.modified_by}</span></div>
-                                                        <div style={gridItemStyle}>Modified Date: <span style={{fontWeight:'normal'}}>{formatTimestamp(newUser.modified_date)}</span></div>
-                                                        <div style={gridItemStyle}>Status: <span style={{fontWeight:'normal'}}>{newUser.status ? 'Active' : 'DeActive'}</span></div>
+                                                        <div style={gridItemStyle}>Reseller Name: <span style={{fontWeight:'normal'}}>{dataItem.reseller_name}</span></div>
+                                                        <div style={gridItemStyle}>Phone Number: <span style={{fontWeight:'normal'}}>{dataItem.reseller_phone_no}</span></div>
+                                                        <div style={gridItemStyle}>Emila ID: <span style={{fontWeight:'normal'}}>{dataItem.reseller_email_id}</span></div>
+                                                        <div style={gridItemStyle}>Address: <span style={{fontWeight:'normal'}}>{dataItem.reseller_address}</span></div>        
+                                                        <div style={gridItemStyle}>Created By: <span style={{fontWeight:'normal'}}>{dataItem.created_by}</span></div>                                                  
+                                                        <div style={gridItemStyle}>Created Date: <span style={{fontWeight:'normal'}}>{formatTimestamp(dataItem.created_date)}</span></div>
+                                                        <div style={gridItemStyle}>Modified By: <span style={{fontWeight:'normal'}}>{dataItem.modified_by}</span></div>
+                                                        <div style={gridItemStyle}>Modified Date: <span style={{fontWeight:'normal'}}>{formatTimestamp(dataItem.modified_date)}</span></div>
+                                                        <div style={gridItemStyle}>Status: <span style={{fontWeight:'normal'}}>{dataItem.status ? 'Active' : 'DeActive'}</span></div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -139,7 +110,7 @@ const ViewManageReseller = ({ userInfo, handleLogout }) => {
                 </div>         
             </div>    
         </div>
-    );
-};   
+    )
+}   
                  
 export default ViewManageReseller

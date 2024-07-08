@@ -1,45 +1,42 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 import Footer from '../../components/Footer';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const SessignHistory = ({ userInfo, handleLogout }) => {
-    const navigate = useNavigate();
     const location = useLocation();
     const dataItem = location.state?.dataItem;
-    const sessiondatass = useMemo(() => {
-        return location.state?.sessiondata || JSON.parse(localStorage.getItem('sessiondata')) || [];
-    }, [location.state]);
+    const sessiondatass = location.state?.sessiondata;
 
-    // const [filteredData, setFilteredData] = useState([]);
-    const [posts, setPosts] = useState(sessiondatass);
+    const navigate = useNavigate();
+
+    const [filteredData, setFilteredData] = useState([]);
+    const [posts, setPosts] = useState(sessiondatass || []);
 
     useEffect(() => {
-        // Update posts whenever sessiondatass changes
-        setPosts(sessiondatass);
-        // Save sessiondatass to localStorage
-        localStorage.setItem('sessiondata', JSON.stringify(sessiondatass));
-    }, [sessiondatass]);
+        if (filteredData.length > 0) {
+            setPosts(filteredData);
+        } else {
+            setPosts(sessiondatass);
+        }
+    }, [sessiondatass, filteredData]);
 
-    // Search input
     const handleSearchInputChange = (e) => {
         const inputValue = e.target.value.toUpperCase();
         if (Array.isArray(sessiondatass)) {
             const filteredData = sessiondatass.filter((item) =>
                 item.user.toUpperCase().includes(inputValue)
             );
-            // setFilteredData(filteredData);
-            setPosts(filteredData); // Update posts with filtered data
+            setFilteredData('');
+            setPosts(filteredData);
         }
     };
 
-    // Back manage reseller
     const backManageReseller = (dataItem) => {
         navigate('/superadmin/AssignCharger', { state: { dataItem } });
     };
 
-    // formatTimestamp 
     const formatTimestamp = (originalTimestamp) => {
         const date = new Date(originalTimestamp);
         const day = String(date.getDate()).padStart(2, '0');
@@ -59,10 +56,8 @@ const SessignHistory = ({ userInfo, handleLogout }) => {
 
     return (
         <div className='container-scroller'>
-            {/* Header */}
             <Header userInfo={userInfo} handleLogout={handleLogout} />
             <div className="container-fluid page-body-wrapper">
-                {/* Sidebar */}
                 <Sidebar />
                 <div className="main-panel">
                     <div className="content-wrapper">
@@ -70,7 +65,7 @@ const SessignHistory = ({ userInfo, handleLogout }) => {
                             <div className="col-md-12 grid-margin">
                                 <div className="row">
                                     <div className="col-12 col-xl-8 mb-4 mb-xl-0">
-                                        <h3 className="font-weight-bold">Session History</h3>
+                                        <h3 className="font-weight-bold">Session History's</h3>
                                     </div>
                                     <div className="col-12 col-xl-4">
                                         <div className="justify-content-end d-flex">
@@ -88,7 +83,7 @@ const SessignHistory = ({ userInfo, handleLogout }) => {
                                             <div className="col-md-12 grid-margin">
                                                 <div className="row">
                                                     <div className="col-4 col-xl-8">
-                                                        <h4 className="card-title" style={{ paddingTop: '10px' }}>List Of History</h4>
+                                                        <h4 className="card-title" style={{ paddingTop: '10px' }}>List Of History's</h4>
                                                     </div>
                                                     <div className="col-8 col-xl-4">
                                                         <div className="input-group">
@@ -97,7 +92,15 @@ const SessignHistory = ({ userInfo, handleLogout }) => {
                                                                     <i className="icon-search"></i>
                                                                 </span>
                                                             </div>
-                                                            <input type="text" className="form-control" placeholder="Search now" aria-label="search" aria-describedby="search" autoComplete="off" onChange={handleSearchInputChange}/>
+                                                            <input
+                                                                type="text"
+                                                                className="form-control"
+                                                                placeholder="Search now"
+                                                                aria-label="search"
+                                                                aria-describedby="search"
+                                                                autoComplete="off"
+                                                                onChange={handleSearchInputChange}
+                                                            />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -135,7 +138,7 @@ const SessignHistory = ({ userInfo, handleLogout }) => {
                                                         ))
                                                     ) : (
                                                         <tr>
-                                                            <td colSpan="9" style={{ marginTop: '50px', textAlign: 'center' }}>No sessions found</td>
+                                                            <td colSpan="9" style={{ marginTop: '50px', textAlign: 'center' }}>No Assign client found</td>
                                                         </tr>
                                                     )}
                                                 </tbody>
@@ -146,7 +149,6 @@ const SessignHistory = ({ userInfo, handleLogout }) => {
                             </div>
                         </div>
                     </div>
-                    {/* Footer */}
                     <Footer />
                 </div>
             </div>
