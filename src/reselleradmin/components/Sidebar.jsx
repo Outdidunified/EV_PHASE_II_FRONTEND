@@ -12,7 +12,9 @@ const Sidebar = () => {
     const isManageDeviceActive = [
         '/reselleradmin/Allocateddevice',
         '/reselleradmin/Unallocateddevice',
-        '/reselleradmin/Assigntoclients'
+        '/reselleradmin/Assigntoclients',
+        '/reselleradmin/ViewAlloc',
+        '/reselleradmin/ViewUnalloc'
     ].includes(location.pathname);
 
     return (
@@ -52,7 +54,7 @@ const Sidebar = () => {
                     </div>
                 </li>
 
-                <li className={location.pathname === '/reselleradmin/ManageClient' || location.pathname === '/reselleradmin/CreateClients' || location.pathname === '/reselleradmin/viewclient' || location.pathname === '/reselleradmin/updateclient' || location.pathname === '/reselleradmin/Asssigntoass' || location.pathname === '/reselleradmin/Assigneddevicesclient'? 'nav-item active' : 'nav-item'} key="ManageClient">
+                <li className={location.pathname === '/reselleradmin/ManageClient' || location.pathname === '/reselleradmin/CreateClients' || location.pathname === '/reselleradmin/viewclient' || location.pathname === '/reselleradmin/updateclient' || location.pathname === '/reselleradmin/Asssigntoass' || location.pathname === '/reselleradmin/Assigneddevicesclient'|| location.pathname === '/reselleradmin/Sessionhistoryclient'? 'nav-item active' : 'nav-item'} key="ManageClient">
                     <Link className="nav-link" to={{ pathname: "/reselleradmin/ManageClient" }}>
                         <i className="icon-head menu-icon mdi mdi-account-multiple"></i>
                         <span className="menu-title">Manage Client</span>

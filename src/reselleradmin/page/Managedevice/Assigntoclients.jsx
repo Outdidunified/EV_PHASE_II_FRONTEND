@@ -1,85 +1,111 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import Header from '../../components/Header';
-import Sidebar from '../../components/Sidebar';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Footer from '../../components/Footer';
 import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
+import Sidebar from '../../components/Sidebar';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 
 const Assigntoclients = ({ userInfo, handleLogout }) => {
-    const [client, setClient] = useState('');
-    const [charger, setCharger] = useState('');
+    const [selectedClientId, setSelectedClientId] = useState('');
+    const [selectedChargers, setSelectedChargers] = useState([]);
     const [commission, setCommission] = useState('');
+    const [reloadPage, setReloadPage] = useState(false); // State to trigger page reload
+    const [chargersLoading, setChargersLoading] = useState(true); // State to manage loading state
+    const [unallocatedChargers, setUnallocatedChargers] = useState([]);
+    const [clientsList, setClientsList] = useState([]);
+
     const navigate = useNavigate();
 
-    // State to hold fetched clients and unallocated chargers
-    const [clientsList, setClientsList] = useState([]);
-    const [unallocatedChargers, setUnallocatedChargers] = useState([]);
-
-    // Memoized fetch functions using useCallback
-    const fetchClients = useCallback(async () => {
-        try {
-            const response = await axios.post('/reselleradmin/FetchClientUserToAssginCharger', {
-                reseller_id: userInfo.data.reseller_id
-            });
-            setClientsList(response.data.data || []);
-        } catch (error) {
-            console.error('Error fetching clients:', error);
-            setClientsList([]);
-        }
-    }, [userInfo]);
-
-    const fetchUnAllocatedChargerDetails = useCallback(async () => {
-        try {
-            const response = await axios.post('/reselleradmin/FetchUnAllocatedChargerToAssgin',{
-                reseller_id: userInfo.data.reseller_id,
-            });
-            setUnallocatedChargers(response.data.data || []);
-        } catch (error) {
-            console.error('Error fetching allocated charger details:', error);
-            setUnallocatedChargers([]);
-        }
-    }, [userInfo]);
-
     useEffect(() => {
-        fetchClients(); // Fetch clients on component mount or when userInfo changes
-    }, [userInfo, fetchClients]); // Dependency on userInfo and fetchClients
+        const fetchClients = async () => {
+            try {
+                const response = await axios.post('/reselleradmin/FetchClientUserToAssginCharger', {
+                    reseller_id: userInfo.data.reseller_id
+                });
+                setClientsList(response.data.data || []);
+               
+            } catch (error) {
+                console.error('Error fetching clients:', error);
+                setClientsList([]);
+            }
+        };
 
-    useEffect(() => {
-        fetchUnAllocatedChargerDetails(); // Fetch unallocated chargers on component mount
-    }, [fetchUnAllocatedChargerDetails]); // Dependency on fetchUnAllocatedChargerDetails
+        const fetchUnallocatedChargers = async () => {
+            try {
+                const response = await axios.post('/reselleradmin/FetchUnAllocatedChargerToAssgin', {
+                    reseller_id: userInfo.data.reseller_id,
+                });
+                console.log(response.data)
+                
+                setUnallocatedChargers(response.data.data || []);
+            } catch (error) {
+                console.error('Error fetching unallocated charger details:', error);
+                setUnallocatedChargers([]);
+            } finally {
+                setChargersLoading(false);
+            }
+        };
+
+        fetchClients();
+        fetchUnallocatedChargers();
+    }, [userInfo, reloadPage]); // Include reloadPage in dependencies to trigger fetch on reload
 
     const handleClientChange = (e) => {
-        setClient(e.target.value);
+        const selectedClientId = e.target.value;
+        setSelectedClientId(selectedClientId);
     };
 
-    const handleChargerChange = (e) => {
-        setCharger(e.target.value);
+    const handleChargerChange = (chargerId, checked) => {
+        if (checked) {
+            setSelectedChargers(prevState => [...prevState, chargerId]);
+        } else {
+            setSelectedChargers(prevState => prevState.filter(id => id !== chargerId));
+        }
     };
 
     const handleCommissionChange = (e) => {
         setCommission(e.target.value);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        Submitassign(); // Call Submitassign function on form submit
+
+        if (selectedChargers.length === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'No Chargers Selected',
+                text: 'Please select at least one charger.',
+                timer: 2000,
+                timerProgressBar: true
+            });
+            return;
+        }
+
+        // Confirm selected chargers
+        Swal.fire({
+            title: 'Confirm Selection',
+            text: `You have selected chargers: ${selectedChargers.join(', ')}`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Confirm',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                submitAssign();
+            }
+        });
     };
 
-    const goBack = () => {
-        navigate(-1); // Assuming `navigate` is imported or defined somewhere for navigation
-    };
-
-    const Submitassign = async () => {
+    const submitAssign = async () => {
         try {
             const response = await axios.post('/reselleradmin/AssginChargerToClient', {
-                client_id: parseInt(client),
-                charger_id: charger,
+                client_id: parseInt(selectedClientId),
+                charger_id: selectedChargers,
+                reseller_commission: commission,
                 modified_by: userInfo.data.reseller_name,
-                reseller_commission: commission
             });
-    
-            // Assuming the response structure includes a 'status' field
+
             if (response.data.status === 'Success') {
                 Swal.fire({
                     icon: 'success',
@@ -87,9 +113,10 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
                     timer: 2000,
                     timerProgressBar: true,
                     onClose: () => {
-                        navigate(-1);
+                        setReloadPage(true); // Set reloadPage state to trigger page reload
                     }
                 });
+                navigate('/reselleradmin/Allocateddevice')
             } else {
                 Swal.fire({
                     icon: 'error',
@@ -109,6 +136,17 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
                 timerProgressBar: true
             });
         }
+    };
+
+    useEffect(() => {
+        if (reloadPage) {
+            setReloadPage(false); // Reset reloadPage state
+            window.location.reload(); // Reload the page after success
+        }
+    }, [reloadPage]);
+
+    const goBack = () => {
+        navigate(-1);
     };
 
     return (
@@ -155,7 +193,8 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
                                                                     <div className="col-sm-9">
                                                                         <select
                                                                             className="form-control"
-                                                                            value={client}
+                                                                            value={selectedClientId}
+                                                                            style={{color:'black'}}
                                                                             onChange={handleClientChange}
                                                                         >
                                                                             <option value="">Select Client</option>
@@ -170,26 +209,59 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
                                                             </div>
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Select Charger</label>
+                                                                    <label className="col-sm-3 col-form-label">Select Chargers</label>
                                                                     <div className="col-sm-9">
-                                                                        <select
-                                                                            className="form-control"
-                                                                            value={charger}
-                                                                            onChange={handleChargerChange}
-                                                                        >
-                                                                            <option value="">Select Charger</option>
-                                                                            {unallocatedChargers.map((chargerObj) => (
-                                                                                <option key={chargerObj.charger_id} value={chargerObj.charger_id}>
-                                                                                    {chargerObj.charger_id}
-                                                                                </option>
-                                                                            ))}
-                                                                        </select>
+                                                                        {chargersLoading ? (
+                                                                            <p>Loading chargers...</p>
+                                                                        ) : (
+                                                                            <div className="dropdown">
+                                                                                <button
+                                                                                    className="btn btn-secondary dropdown-toggle"
+                                                                                    type="button"
+                                                                                    id="dropdownMenuButton"
+                                                                                    data-toggle="dropdown"
+                                                                                    aria-haspopup="true"
+                                                                                    aria-expanded="false"
+                                                                                    style={{ backgroundColor: 'white', color: 'black' }}
+                                                                                >
+                                                                                    {unallocatedChargers.length > 0 ? (
+                                                                                        selectedChargers.length > 0 ? `${selectedChargers.length} Chargers Selected` : 'Select Chargers'
+                                                                                    ) : (
+                                                                                        <span className="text-danger">No Chargers Available</span>
+                                                                                    )}
+                                                                                </button>
+                                                                                <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                                                    {unallocatedChargers.length > 0 ? (
+                                                                                        unallocatedChargers.map((chargerObj) => (
+                                                                                            <div key={chargerObj.charger_id} className="dropdown-item">
+                                                                                                <div className="form-check">
+                                                                                                    <input
+                                                                                                        className="form-check-input"
+                                                                                                        type="checkbox"
+                                                                                                        id={`charger-${chargerObj.charger_id}`}
+                                                                                                        checked={selectedChargers.includes(chargerObj.charger_id)}
+                                                                                                        onChange={(e) => handleChargerChange(chargerObj.charger_id, e.target.checked)}
+                                                                                                    />
+                                                                                                    <label className="form-check-label" htmlFor={`charger-${chargerObj.charger_id}`}>
+                                                                                                        {chargerObj.charger_id}
+                                                                                                    </label>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        ))
+                                                                                    ) : (
+                                                                                        <div className="dropdown-item">No Chargers Found</div>
+                                                                                    )}
+                                                                                </div>
+                                                                            </div>
+                                                                        )}
                                                                     </div>
                                                                 </div>
                                                             </div>
+                                                        </div>
+                                                        <div className="row">
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Enter Commission</label>
+                                                                    <label className="col-sm-3 col-form-label">Commission</label>
                                                                     <div className="col-sm-9">
                                                                         <input
                                                                             type="text"
@@ -200,8 +272,21 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
                                                                     </div>
                                                                 </div>
                                                             </div>
+                                                            <div className="col-md-6">
+                                                                <div className="form-group row">
+                                                                    <label className="col-sm-3 col-form-label">Selected Chargers</label>
+                                                                    <div className="col-sm-9">
+                                                                        <textarea
+                                                                            className="form-control"
+                                                                            value={selectedChargers.join(', ')}
+                                                                            readOnly
+                                                                            rows={4}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        <div style={{ textAlign: 'center' }}>
+                                                        <div className="text-center">
                                                             <button type="submit" className="btn btn-primary mr-2">Submit</button>
                                                         </div>
                                                     </form>

@@ -9,6 +9,7 @@ import ManageUsers from '../associationadmin/page/ManageUser/ManageUsers';
 import EditManageUsers from '../associationadmin/page/ManageUser/EditManageUsers'
 import Wallet from '../associationadmin/page/Wallet';
 import Profile from '../associationadmin/page/Profile';
+import Assignuser from '../associationadmin/page/Assignuser';
 
 const AssociationaAdminApp = () => {
   const storedUser = JSON.parse(sessionStorage.getItem('associationAdminUser'));
@@ -89,6 +90,14 @@ const AssociationaAdminApp = () => {
         )}
       />
       <Route
+        path="/Assignuser"
+        element={loggedIn ? (
+          <Assignuser userInfo={userInfo} handleLogout={handleLogout} />
+        ) : (
+          <Navigate to="/associationadmin" />
+        )}
+      />
+       <Route
         path="/Wallet"
         element={loggedIn ? (
           <Wallet userInfo={userInfo} handleLogout={handleLogout} />

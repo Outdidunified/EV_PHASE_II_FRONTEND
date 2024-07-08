@@ -8,40 +8,26 @@ const Sessionhistoryclient = ({ userInfo, handleLogout }) => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const [, setNewSession] = useState({
-        charger_id: '',
-        created_date: '',
-        price: '',
-        session_id: '',
-        start_time: '',
-        stop_time: '',
-        unit_consumed: '',
-        user: '',
-    });
-
     const [sessions, setSessions] = useState([]);
 
     useEffect(() => {
         const { sessiondata } = location.state || {};
         if (sessiondata) {
-            setNewSession({
+            // Prepare the session object based on the received data
+            const session = {
                 charger_id: sessiondata.charger_id || '',
                 created_date: sessiondata.created_date || '',
                 price: sessiondata.price || '',
                 session_id: sessiondata.session_id || '',
                 start_time: sessiondata.start_time || '',
                 stop_time: sessiondata.stop_time || '',
-                unit_consumed: sessiondata.unit_consumed || '',
+                unit_consumed: sessiondata.unit_consummed || '',
                 user: sessiondata.user || '',
-            });
+            };
+            setSessions([session]); // Assuming session data is an array, otherwise adjust accordingly
+        } else {
+            setSessions([]); // Clear sessions if no data is provided
         }
-
-        // Example: Fetch sessions data from an API or set from props
-        const fetchedSessions = [
-            { _id: '1', charger_id: '390606000999', session_id: 1, start_time: null, stop_time: '2024-03-21T12:30:34.026Z', unit_consummed: 10.9, user: 'vivek' },
-            // Add more session objects as needed
-        ];
-        setSessions(fetchedSessions);
     }, [location.state]);
 
     const goBack = () => {
@@ -97,13 +83,13 @@ const Sessionhistoryclient = ({ userInfo, handleLogout }) => {
                                                 <tbody style={{ textAlign: 'center' }}>
                                                     {sessions.length > 0 ? (
                                                         sessions.map((session, index) => (
-                                                            <tr key={session._id}>
+                                                            <tr key={index}>
                                                                 <td>{index + 1}</td>
                                                                 <td>{session.charger_id}</td>
                                                                 <td>{session.session_id}</td>
                                                                 <td>{session.start_time ? new Date(session.start_time).toLocaleString() : ''}</td>
                                                                 <td>{session.stop_time ? new Date(session.stop_time).toLocaleString() : ''}</td>
-                                                                <td>{session.unit_consummed}</td>
+                                                                <td>{session.unit_consumed}</td>
                                                                 <td>{session.user}</td>
                                                             </tr>
                                                         ))

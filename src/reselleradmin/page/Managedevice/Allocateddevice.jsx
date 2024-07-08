@@ -73,6 +73,7 @@ const Allocateddevice = ({ userInfo, handleLogout }) => {
             const response = await axios.post('/reselleradmin/FetchAllocatedCharger', {
                 reseller_id: userInfo.data.reseller_id
             });
+            console.log(response);
 
             setAllocatedChargers(response.data.data || []);
         } catch (error) {

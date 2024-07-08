@@ -28,6 +28,7 @@ const Assigneddevicesclient = ({ userInfo, handleLogout }) => {
             const response = await axios.post('/reselleradmin/FetchChargerDetailsWithSession', {
                 client_id: client_id
             });
+           
 
             if (response.data.status === 'Success' && response.data.data.length > 0) {
                 const fetchedData = response.data.data.map(item => ({
@@ -62,6 +63,7 @@ const Assigneddevicesclient = ({ userInfo, handleLogout }) => {
     };
 
     const navigateToSessionHistory = (item) => {
+       
         const sessiondata = item.sessiondata[0];
         navigate('/reselleradmin/Sessionhistoryclient', { state: { sessiondata } });
     };
