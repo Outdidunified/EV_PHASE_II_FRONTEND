@@ -335,11 +335,11 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
                                                 <tbody style={{textAlign:'center'}}>
                                                     {loading ? (
                                                         <tr>
-                                                            <td colSpan="8" style={{ marginTop: '50px', textAlign: 'center' }}>Loading...</td>
+                                                            <td colSpan="9" style={{ marginTop: '50px', textAlign: 'center' }}>Loading...</td>
                                                         </tr>
                                                     ) : error ? (
                                                         <tr>
-                                                            <td colSpan="8" style={{ marginTop: '50px', textAlign: 'center' }}>Error: {error}</td>
+                                                            <td colSpan="9" style={{ marginTop: '50px', textAlign: 'center' }}>Error: {error}</td>
                                                         </tr>
                                                     ) : (
                                                         Array.isArray(posts) && posts.length > 0 ? (
@@ -372,7 +372,7 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
                                                         ))
                                                         ) : (
                                                         <tr>
-                                                            <td colSpan="8" style={{ marginTop: '50px', textAlign: 'center' }}>No devices found</td>
+                                                            <td colSpan="9" style={{ marginTop: '50px', textAlign: 'center' }}>No devices found</td>
                                                         </tr>
                                                         )
                                                     )}
@@ -414,7 +414,7 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
                 </div>         
             </div>    
         </div>
-    )
-}   
+    );
+};  
                  
 export default ManageUserRole
