@@ -31,6 +31,12 @@ const Sidebar = () => {
                         <span className="menu-title">Wallet</span>
                     </Link>
                 </li>
+                <li className={location.pathname === '/associationadmin/Assignuser' ? 'nav-item active' : 'nav-item'} key="Profile">
+                    <Link className="nav-link" to={{ pathname: "/associationadmin/Assignuser" }}>
+                        <i className="icon-head menu-icon mdi mdi-account-circle"></i>
+                        <span className="menu-title">Assign User </span>
+                    </Link>
+                </li>
                 <li className={location.pathname === '/associationadmin/Profile' ? 'nav-item active' : 'nav-item'} key="Profile">
                     <Link className="nav-link" to={{ pathname: "/associationadmin/Profile" }}>
                         <i className="icon-head menu-icon mdi mdi-account-circle"></i>

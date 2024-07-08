@@ -9,19 +9,18 @@ import Swal from 'sweetalert2';
 const AssignReseller = ({ userInfo, handleLogout }) => {
     const navigate = useNavigate();
     
+    // Back manage device
     const backManageDevice = () => {
         navigate('/superadmin/ManageDevice');
     };
 
     const [chargers, setChargers] = useState([]);
     const [resellers, setResellers] = useState([]);
-
     const [reseller_id, setSelectedReseller] = useState('');
     const [charger_ids, setSelectedChargers] = useState([]);
     const FetchSpecificUserRoleForSelectionCalled = useRef(false);
     const FetchUnAllocatedChargerToAssginCalled = useRef(false);
 
-   
     // Fetch Reseller
     useEffect(() => {
         if (!FetchSpecificUserRoleForSelectionCalled.current) {
@@ -52,6 +51,7 @@ const AssignReseller = ({ userInfo, handleLogout }) => {
         }
     }, []);
 
+    // Selected status
     const handleResellerChange = (e) => {
         setSelectedReseller(e.target.value);
     };
@@ -65,6 +65,7 @@ const AssignReseller = ({ userInfo, handleLogout }) => {
         );
     };
 
+    // Assgin charger update
     const handleSubmit = async (e) => {
         e.preventDefault();
         const resellerID = parseInt(reseller_id);
@@ -95,7 +96,6 @@ const AssignReseller = ({ userInfo, handleLogout }) => {
             });
         }
     };
-
    
     return (
         <div className='container-scroller'>
@@ -153,13 +153,7 @@ const AssignReseller = ({ userInfo, handleLogout }) => {
                                                                         {chargers.map((charger) => (
                                                                             <div className="form-check form-check-success" key={charger.charger_id}>
                                                                                 <label className="form-check-label">
-                                                                                    <input
-                                                                                        style={{ textAlign: 'center' }}
-                                                                                        type="checkbox"
-                                                                                        className="form-check-input"
-                                                                                        value={charger.charger_id}
-                                                                                        onChange={handleChargerChange}
-                                                                                    />
+                                                                                    <input style={{ textAlign: 'center' }} type="checkbox" className="form-check-input" value={charger.charger_id} onChange={handleChargerChange}/>
                                                                                     {charger.charger_id}
                                                                                     <i className="input-helper"></i>
                                                                                 </label>
@@ -172,9 +166,7 @@ const AssignReseller = ({ userInfo, handleLogout }) => {
                                                         </div>
                                                     </div>
                                                     <div style={{ textAlign: 'center' }}>
-                                                        <button type="submit" className="btn btn-primary mr-2">
-                                                            Submit
-                                                        </button>
+                                                        <button type="submit" className="btn btn-primary mr-2">Submit</button>
                                                     </div>
                                                 </form>
                                             </div>

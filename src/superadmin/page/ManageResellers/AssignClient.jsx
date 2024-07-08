@@ -7,10 +7,11 @@ import { useLocation } from 'react-router-dom';
 
 const AssignClient = ({ userInfo, handleLogout }) => {
     const location = useLocation();
-    const dataItem = location.state?.dataItem;    
+    const dataItem = location.state?.dataItem || JSON.parse(localStorage.getItem('dataItem'));   
 
     const navigate = useNavigate();
     
+    // Back manage reseller
     const backManageReseller = () => {
         navigate('/superadmin/ManageReseller');
     };
@@ -20,6 +21,7 @@ const AssignClient = ({ userInfo, handleLogout }) => {
     const [posts, setPosts] = useState([]);
     const FetchAssignedClientsCalled = useRef(false);
 
+    // Fetch assign clients data
     useEffect(() => {
         const fetchAssignedClients = async () => {
             try {
@@ -48,8 +50,14 @@ const AssignClient = ({ userInfo, handleLogout }) => {
             FetchAssignedClientsCalled.current = true; // Mark fetchProfile as called
         }
     }, [dataItem]);
-    
 
+    useEffect(() => {
+        if (dataItem) {
+            localStorage.setItem('dataItem', JSON.stringify(dataItem));
+        }
+    }, [dataItem]);
+
+    // Search input
     const handleSearchInputChange = (e) => {
         const inputValue = e.target.value.toUpperCase();
         // Ensure data is an array before filtering
@@ -158,7 +166,7 @@ const AssignClient = ({ userInfo, handleLogout }) => {
                 </div>         
             </div>    
         </div>
-    )
-}   
+    );
+};   
                  
 export default AssignClient 
