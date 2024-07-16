@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 import Footer from '../../components/Footer';
@@ -20,6 +20,7 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
     const [errorMessage, setErrorMessage] = useState('');
     const [selectChargerType, setSelectedChargerType] = useState('');
     const [data, setData] = useState([]);
+    const fetchDataCalled = useRef(false);
 
     // Clone data
     const handleClone = (cloneModel) => {
@@ -121,6 +122,7 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
     };
 
     useEffect(() => {
+        if (!fetchDataCalled.current) {
         const url = `/superadmin/FetchCharger`;
         axios.get(url)
             .then((res) => {
@@ -130,6 +132,8 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
                 console.error('Error fetching data:', err);
                 setErrorMessage('Error fetching data. Please try again.');
             });
+            fetchDataCalled.current = true;
+        }
     }, []);
 
     return (
@@ -198,9 +202,10 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Model</label>
                                                                     <div className="col-sm-9">
+                                                                        {/* <input type="text" className="form-control" placeholder="Model" value={model} onChange={(e) => setModel(e.target.value)} required/> */}
                                                                         <select className="form-control" value={model} onChange={handleModel} required>
                                                                             <option value="">Select model</option>
-                                                                            <option value="3.5">3.5 KW</option>
+                                                                            <option value="3.4">3.4 KW</option>
                                                                             <option value="7.4">7.4 KW</option>
                                                                             <option value="11">11 KW</option>
                                                                             <option value="22">22 KW</option>

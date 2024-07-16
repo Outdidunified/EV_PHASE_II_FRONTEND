@@ -42,6 +42,7 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
                 created_date: dataItem.created_date || '',
                 modified_by: dataItem.modified_by || '',
                 modified_date: dataItem.modified_date || '',
+                status: dataItem.status || '',
                 _id: dataItem._id || '',
             });
         // Save to localStorage
