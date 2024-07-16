@@ -103,10 +103,10 @@ const SessignHistory = ({ userInfo, handleLogout }) => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="table-responsive">
+                                        <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
                                             <table className="table table-striped">
-                                                <thead style={{ textAlign: 'center' }}>
-                                                    <tr>
+                                                <thead style={{ textAlign: 'center', position: 'sticky', tableLayout: 'fixed', top: 0, backgroundColor: 'white', zIndex: 1 }}>
+                                                    <tr> 
                                                         <th>Sl.No</th>
                                                         <th>User</th>
                                                         <th>Charger ID</th>
@@ -123,14 +123,14 @@ const SessignHistory = ({ userInfo, handleLogout }) => {
                                                         posts.map((post, index) => (
                                                             <tr key={index}>
                                                                 <td>{index + 1}</td>
-                                                                <td>{post.user}</td>
-                                                                <td>{post.charger_id}</td>
-                                                                <td>{post.session_id}</td>
-                                                                <td>{formatTimestamp(post.created_date)}</td>
-                                                                <td>{post.price}</td>
-                                                                <td>{post.unit_consumed}</td>
-                                                                <td>{formatTimestamp(post.start_time)}</td>
-                                                                <td>{formatTimestamp(post.stop_time)}</td>
+                                                                <td>{post.user ? post.user : '-'}</td>
+                                                                <td>{post.charger_id ? post.charger_id : '-'}</td>
+                                                                <td>{post.session_id ? post.session_id : '-'}</td>
+                                                                <td>{post.created_date ? formatTimestamp(post.created_date) : '-'}</td>
+                                                                <td>{post.price ? post.price :'-'}</td>
+                                                                <td>{post.unit_consumed ? post.unit_consumed : '-'}</td>
+                                                                <td>{post.start_time ? formatTimestamp(post.start_time) : '-'}</td>
+                                                                <td>{post.stop_time ? formatTimestamp(post.stop_time) : '-'}</td>
                                                             </tr>
                                                         ))
                                                     ) : (

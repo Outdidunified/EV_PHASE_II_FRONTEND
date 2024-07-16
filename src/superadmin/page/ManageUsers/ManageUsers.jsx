@@ -14,11 +14,6 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
         navigate('/superadmin/ViewUserList', { state: { dataItem } });
     };
 
-    // View edit user liat
-    const handleEditUser = (dataItem) => {
-        navigate('/superadmin/EditUserList', { state: { dataItem } });
-    };
-    
     // Add Chargers start 
     const [showAddForm, setShowAddForm] = useState(false);
 
@@ -39,8 +34,6 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
     const [email_id, setemailID] = useState('');
     const [Password, setPassword] = useState('');
     const [phoneNo, setPhone] = useState('');
-    // const [walletBal, setWallet] = useState('');
-    const [updateTrigger, setUpdateTrigger] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
     const handleResellerChange = (e) => {
@@ -174,7 +167,7 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
                 });
             FetchUsersCalled.current = true;
         }    
-    }, [updateTrigger]);
+    }, []);
 
     // Search data 
     const handleSearchInputChange = (e) => {
@@ -198,89 +191,6 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
                 break;
         }
     }, [data, filteredData]);
-
-    // Timestamp data 
-    function formatTimestamp(originalTimestamp) {
-        const date = new Date(originalTimestamp);
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        let hours = date.getHours();
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        const seconds = String(date.getSeconds()).padStart(2, '0');
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12;
-        hours = hours ? hours : 12; // the hour '0' should be '12'
-        hours = String(hours).padStart(2, '0');
-        const formattedDate = `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
-        return formattedDate;
-    } 
-
-    // DeActive
-    const changeDeActivate = async (e, user_id) => {
-        e.preventDefault();
-        try {
-            const response = await fetch('/superadmin/DeActivateUser', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ user_id, status:false, modified_by: userInfo.data.username }),
-            });
-            if (response.ok) {
-                Swal.fire({
-                    title: "DeActivate successfully",
-                    icon: "success"
-                });
-                setUpdateTrigger((prev) => !prev);
-            } else {
-                Swal.fire({
-                    title: "Error",
-                    text: "Failed to DeActivate",
-                    icon: "error"
-                });
-            }
-        }catch (error) {
-            Swal.fire({
-                title: "Error:", error,
-                text: "An error occurred while updating user status.",
-                icon: "error"
-            });
-        }
-    };
-
-    // Active
-    const changeActivate = async (e, user_id) => {
-        e.preventDefault();
-        try {
-            const response = await fetch('/superadmin/DeActivateUser', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ user_id, status:true, modified_by: userInfo.data.username }),
-            });
-            if (response.ok) {
-                Swal.fire({
-                    title: "Activate successfully",
-                    icon: "success"
-                });
-                setUpdateTrigger((prev) => !prev);
-            } else {
-                Swal.fire({
-                    title: "Error",
-                    text: "Failed to Activate",
-                    icon: "error"
-                });
-            }
-        }catch (error) {
-            Swal.fire({
-                title: "Error:", error,
-                text: "An error occurred while updating user status.",
-                icon: "error"
-            });
-        }
-    };
 
     return (
         <div className='container-scroller'>
@@ -359,12 +269,6 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
                                                                     </div>
                                                                     <input type="password" className="form-control" placeholder="Password" value={Password} onChange={(e) => setPassword(e.target.value)} required/>
                                                                 </div>
-                                                                {/* <div className="input-group">
-                                                                    <div className="input-group-prepend">
-                                                                        <span className="input-group-text" style={{color:'black', width:'125px'}}>Wallet</span>
-                                                                    </div>
-                                                                    <input type="text" className="form-control" placeholder="Wallet" value={walletBal} onChange={(e) => setWallet(e.target.value)} required/>
-                                                                </div> */}
                                                             </div>
                                                             {errorMessage && <div className="text-danger">{errorMessage}</div>}
                                                             <div style={{textAlign:'center'}}>
@@ -403,67 +307,42 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="table-responsive">
+                                        <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
                                             <table className="table table-striped">
-                                                <thead style={{textAlign:'center'}}>
+                                                <thead style={{ textAlign: 'center', position: 'sticky', tableLayout: 'fixed', top: 0, backgroundColor: 'white', zIndex: 1 }}>
                                                     <tr> 
                                                         <th>Sl.No</th>
                                                         <th>User Name</th>
                                                         <th>Email ID</th>
-                                                        <th>Assigned Reseller</th>
-                                                        <th>Assigned Client</th>
-                                                        <th>Assigned Association</th>
-                                                        <th>Created By</th>
-                                                        <th>Created Date</th>
                                                         <th>Status</th>
-                                                        <th>Active/DeActive</th>
                                                         <th>Option</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody style={{textAlign:'center'}}>
                                                     {loading ? (
                                                         <tr>
-                                                            <td colSpan="11" style={{ marginTop: '50px', textAlign: 'center' }}>Loading...</td>
+                                                            <td colSpan="8" style={{ marginTop: '50px', textAlign: 'center' }}>Loading...</td>
                                                         </tr>
                                                     ) : error ? (
                                                         <tr>
-                                                            <td colSpan="11" style={{ marginTop: '50px', textAlign: 'center' }}>Error: {error}</td>
+                                                            <td colSpan="8" style={{ marginTop: '50px', textAlign: 'center' }}>Error: {error}</td>
                                                         </tr>
                                                     ) : (
                                                         Array.isArray(posts) && posts.length > 0 ? (
                                                             posts.map((dataItem, index) => (
                                                             <tr key={index}>
                                                                 <td>{index + 1}</td>
-                                                                <td>{dataItem.username}</td>
-                                                                <td>{dataItem.email_id}</td>
-                                                                <td>{dataItem.reseller_id}</td>
-                                                                <td>{dataItem.client_id}</td>
-                                                                <td>{dataItem.association_id}</td>
-                                                                <td>{dataItem.created_by}</td> 
-                                                                <td>{formatTimestamp(dataItem.created_date)}</td>
+                                                                <td>{dataItem.username ? dataItem.username : '-'}</td>
+                                                                <td>{dataItem.email_id ? dataItem.email_id : '-'}</td>                                                              
                                                                 <td>{dataItem.status===true ? <span className="text-success">Active</span> : <span className="text-danger">DeActive</span>}</td>
                                                                 <td>
-                                                                    <div className='form-group' style={{paddingTop:'13px'}}> 
-                                                                        {dataItem.status===true ?
-                                                                            <div className="form-check form-check-danger">
-                                                                                <label className="form-check-label"><input type="radio" className="form-check-input" name="optionsRadios1" id="optionsRadios2" value={false} onClick={(e) => changeDeActivate(e, dataItem.user_id)}/>DeActive<i className="input-helper"></i></label>
-                                                                            </div>
-                                                                        :
-                                                                            <div className="form-check form-check-success">
-                                                                                <label className="form-check-label"><input type="radio" className="form-check-input" name="optionsRadios1" id="optionsRadios1" value={true} onClick={(e) => changeActivate(e, dataItem.user_id)}/>Active<i className="input-helper"></i></label>
-                                                                            </div>
-                                                                        }
-                                                                    </div>
-                                                                </td>      
-                                                                <td>
                                                                     <button type="button" className="btn btn-outline-success btn-icon-text"  onClick={() => handleViewUser(dataItem)} style={{marginBottom:'10px', marginRight:'10px'}}><i className="mdi mdi-eye"></i>View</button> 
-                                                                    <button type="button" className="btn btn-outline-primary btn-icon-text"  onClick={() => handleEditUser(dataItem)} style={{marginBottom:'10px', marginRight:'10px'}}><i className="mdi mdi-pencil btn-icon-prepend"></i>Edit</button><br/>
                                                                 </td>
                                                             </tr>
                                                         ))
                                                         ) : (
                                                             <tr>
-                                                                <td colSpan="11" style={{ marginTop: '50px', textAlign: 'center' }}>No devices found</td>
+                                                                <td colSpan="8" style={{ marginTop: '50px', textAlign: 'center' }}>No devices found</td>
                                                             </tr>
                                                         )
                                                     )}

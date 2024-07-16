@@ -20,7 +20,7 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
         if (!fetchUserRoleCalled.current) {
             const url = `/superadmin/FetchUserRoles`;
             axios.get(url).then((res) => {
-                    setData(res.data.data);
+                setData(res.data.data);
                     // console.log(res.data.data);
                     setLoading(false);
                 })
@@ -33,8 +33,8 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
         }
     }, [updateTrigger]);
 
-     // Search data 
-     const handleSearchInputChange = (e) => {
+    // Search data 
+    const handleSearchInputChange = (e) => {
         const inputValue = e.target.value.toUpperCase();
         if (Array.isArray(data)) {
             const filteredData = data.filter((item) =>
@@ -73,7 +73,7 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
     
         const formattedDate = `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
         return formattedDate;
-    } 
+    }
 
     // Add user role start 
     const [showAddForm, setShowAddForm] = useState(false);
@@ -95,11 +95,11 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
         e.preventDefault();
         try {
             const response = await fetch('/superadmin/CreateUserRole', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ rolename, created_by: userInfo.data.username }),
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ rolename, created_by: userInfo.data.username }),
             });
             if (response.ok) {
                 Swal.fire({
@@ -141,7 +141,6 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
         display: showEditForm ? 'block' : 'none',
     }
  
-
     // Edit user role
     const [roleEditname, setEdituserRole] = useState('');
     
@@ -289,6 +288,31 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
                                                 </div>
                                             </div>
                                             {/* Add role end */}
+                                            {/* Edit role start */}
+                                            <div className="modalStyle" style={modalEditStyle}>
+                                                <div className="modalContentStyle" style={{ maxHeight: '680px', overflowY: 'auto' }}>
+                                                    <span onClick={closeEditModal} style={{ float: 'right', cursor: 'pointer', fontSize:'30px' }}>&times;</span>
+                                                    <form className="pt-3" onSubmit={editUserRole}>
+                                                        <div className="card-body">
+                                                            <div style={{textAlign:'center'}}>
+                                                                <h4 className="card-title">Edit Role's</h4>
+                                                            </div>
+                                                            <div className="table-responsive pt-3">
+                                                                <div className="input-group">
+                                                                    <div className="input-group-prepend">
+                                                                        <span className="input-group-text" style={{color:'black', width:'125px'}}>Role Name</span>
+                                                                    </div>
+                                                                    <input type="text" className="form-control" placeholder="Role Name" id="roleEditname" value={roleEditname} onChange={(e) => setEdituserRole(e.target.value)} />
+                                                                </div>
+                                                            </div>
+                                                            <div style={{textAlign:'center'}}>
+                                                                <button type="submit" className="btn btn-primary mr-2" style={{marginTop:'10px'}}>Update</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                            {/* Edit role end */}
                                         </div>
                                     </div>
                                 </div>
@@ -317,9 +341,9 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="table-responsive">
+                                        <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
                                             <table className="table table-striped">
-                                                <thead style={{textAlign:'center'}}>
+                                                <thead style={{ textAlign: 'center', position: 'sticky', tableLayout: 'fixed', top: 0, backgroundColor: 'white', zIndex: 1 }}>
                                                     <tr> 
                                                         <th>Sl.No</th>
                                                         <th>Role Name</th>
@@ -346,11 +370,11 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
                                                             posts.map((dataItem, index) => (
                                                             <tr key={index}>
                                                                 <td>{index + 1}</td>
-                                                                <td>{dataItem.role_name}</td>
-                                                                <td>{dataItem.created_by}</td>
-                                                                <td>{formatTimestamp(dataItem.created_date)}</td>
-                                                                <td>{dataItem.modified_by}</td>
-                                                                <td>{formatTimestamp(dataItem.modified_date)}</td>
+                                                                <td>{dataItem.role_name ? dataItem.role_name : '-'}</td>
+                                                                <td>{dataItem.created_by ? dataItem.created_by : '-'}</td>
+                                                                <td>{dataItem.created_date ? formatTimestamp(dataItem.created_date) : '-'}</td>
+                                                                <td>{dataItem.modified_by ? dataItem.modified_by : '-'}</td>
+                                                                <td>{dataItem.modified_date ?  formatTimestamp(dataItem.modified_date) : '-'}</td>
                                                                 <td>{dataItem.status===true ? <span className="text-success">Active</span> : <span className="text-danger">DeActive</span>}</td>
                                                                 <td>
                                                                     <div className='form-group' style={{paddingTop:'13px'}}> 
@@ -376,31 +400,7 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
                                                         </tr>
                                                         )
                                                     )}
-                                                    {/* Edit role start */}
-                                                    <div className="modalStyle" style={modalEditStyle}>
-                                                        <div className="modalContentStyle" style={{ maxHeight: '680px', overflowY: 'auto' }}>
-                                                            <span onClick={closeEditModal} style={{ float: 'right', cursor: 'pointer', fontSize:'30px' }}>&times;</span>
-                                                            <form className="pt-3" onSubmit={editUserRole}>
-                                                                <div className="card-body">
-                                                                    <div style={{textAlign:'center'}}>
-                                                                        <h4 className="card-title">Edit Role's</h4>
-                                                                    </div>
-                                                                    <div className="table-responsive pt-3">
-                                                                        <div className="input-group">
-                                                                            <div className="input-group-prepend">
-                                                                                <span className="input-group-text" style={{color:'black', width:'125px'}}>Role Name</span>
-                                                                            </div>
-                                                                            <input type="text" className="form-control" placeholder="Role Name" id="roleEditname" value={roleEditname} onChange={(e) => setEdituserRole(e.target.value)} />
-                                                                        </div>
-                                                                    </div>
-                                                                    <div style={{textAlign:'center'}}>
-                                                                        <button type="submit" className="btn btn-primary mr-2" style={{marginTop:'10px'}}>Update</button>
-                                                                    </div>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                    {/* Edit role end */}
+                                                    
                                                 </tbody>
                                             </table>
                                         </div>

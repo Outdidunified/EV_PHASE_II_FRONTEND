@@ -18,11 +18,6 @@ const ManageDevice = ({ userInfo, handleLogout }) => {
         navigate(`/superadmin/ViewManageDevice`, { state: { dataItem } });
     };
 
-    // View edit manage device page
-    const handleEditDeviceList = (dataItem) => {
-        navigate('/superadmin/EditManageDevice',  { state: { dataItem } });
-    };
-
     // View assign reseller page
     const handleAssignReseller = () => {
         navigate('/superadmin/AssignReseller');
@@ -76,25 +71,6 @@ const ManageDevice = ({ userInfo, handleLogout }) => {
         }
     }, [data, filteredData]);
 
-    // Timestamp data 
-    function formatTimestamp(originalTimestamp) {
-        const date = new Date(originalTimestamp);
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        
-        let hours = date.getHours();
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        const seconds = String(date.getSeconds()).padStart(2, '0');
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12;
-        hours = hours ? hours : 12; // the hour '0' should be '12'
-        hours = String(hours).padStart(2, '0');
-    
-        const formattedDate = `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
-        return formattedDate;
-    } 
-
     return (
         <div className='container-scroller'>
             {/* Header */}
@@ -142,18 +118,16 @@ const ManageDevice = ({ userInfo, handleLogout }) => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="table-responsive">
+                                        <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
                                             <table className="table table-striped">
-                                                <thead style={{textAlign:'center'}}>
+                                                <thead style={{ textAlign: 'center', position: 'sticky', tableLayout: 'fixed', top: 0, backgroundColor: 'white', zIndex: 1 }}>
                                                     <tr> 
                                                         <th>Sl.No</th>
                                                         <th>Charger ID</th>
                                                         <th>Model</th>
-                                                        <th>Type</th>
+                                                        <th>Charger Type</th>
                                                         <th>Gun Connetor</th>
                                                         <th>Max Current</th>
-                                                        <th>Created By</th>
-                                                        <th>Created Date</th>
                                                         <th>Status</th>
                                                         <th>Option</th>
                                                     </tr>
@@ -161,34 +135,33 @@ const ManageDevice = ({ userInfo, handleLogout }) => {
                                                 <tbody style={{textAlign:'center'}}>
                                                     {loading ? (
                                                         <tr>
-                                                        <td colSpan="10" style={{ marginTop: '50px', textAlign: 'center' }}>Loading...</td>
+                                                        <td colSpan="8" style={{ marginTop: '50px', textAlign: 'center' }}>Loading...</td>
                                                         </tr>
                                                     ) : error ? (
                                                         <tr>
-                                                        <td colSpan="10" style={{ marginTop: '50px', textAlign: 'center' }}>Error: {error}</td>
+                                                        <td colSpan="8" style={{ marginTop: '50px', textAlign: 'center' }}>Error: {error}</td>
                                                         </tr>
                                                     ) : (
                                                         Array.isArray(posts) && posts.length > 0 ? (
                                                             posts.map((dataItem, index) => (
                                                             <tr key={index}>
                                                                 <td>{index + 1}</td>
-                                                                <td>{dataItem.charger_id}</td>
-                                                                <td>{dataItem.model}</td>
-                                                                <td>{dataItem.type}</td>
-                                                                <td>{dataItem.gun_connector}</td>
-                                                                <td>{dataItem.max_current}</td>
-                                                                <td>{dataItem.created_by}</td>
-                                                                <td>{formatTimestamp(dataItem.created_date)}</td>
+                                                                <td>{dataItem.charger_id ? dataItem.charger_id : '-'}</td>
+                                                                <td className="py-1">
+                                                                    <img src={`../../images/dashboard/${dataItem.model ? dataItem.model : '-'}kw.png`} alt="img" />
+                                                                </td>  
+                                                                <td>{dataItem.type ? dataItem.type : '-'}</td>
+                                                                <td>{dataItem.gun_connector ? dataItem.gun_connector : '-'}</td>
+                                                                <td>{dataItem.max_current ? dataItem.max_current : '-'}</td>
                                                                 <td>{dataItem.status===true ? <span className="text-success">Active</span> : <span className="text-danger">DeActive</span>}</td>
                                                                 <td>
                                                                     <button type="button" className="btn btn-outline-success btn-icon-text" onClick={() => handleViewDeviceList(dataItem)} style={{marginBottom:'10px', marginRight:'10px'}}><i className="mdi mdi-eye"></i>View</button> 
-                                                                    <button type="button" className="btn btn-outline-primary btn-icon-text" onClick={() => handleEditDeviceList(dataItem)} style={{marginBottom:'10px', marginRight:'10px'}}><i className="mdi mdi-pencil btn-icon-prepend"></i>Edit</button>
                                                                 </td>
                                                             </tr>
                                                         ))
                                                         ) : (
                                                         <tr>
-                                                            <td colSpan="10" style={{ marginTop: '50px', textAlign: 'center' }}>No devices found</td>
+                                                            <td colSpan="8" style={{ marginTop: '50px', textAlign: 'center' }}>No devices found</td>
                                                         </tr>
                                                         )
                                                     )}

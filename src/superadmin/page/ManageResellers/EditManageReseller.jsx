@@ -39,8 +39,13 @@ const EditManageReseller = ({ userInfo, handleLogout }) => {
         setSelectedStatus(e.target.value);
     };
 
-    // Back manage reseller
+    // Back view manage reseller
     const backManageReseller = () => {
+        navigate('/superadmin/ViewManageReseller');
+    };
+
+    // Edit back manage reseller
+    const EditBackManageResellers = () => {
         navigate('/superadmin/ManageReseller');
     };
 
@@ -74,7 +79,7 @@ const EditManageReseller = ({ userInfo, handleLogout }) => {
                     title: 'Reseller updated successfully',
                     icon: 'success',
                 });
-                backManageReseller();
+                EditBackManageResellers();
             } else {
                 Swal.fire({
                     title: 'Error',

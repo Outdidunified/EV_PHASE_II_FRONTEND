@@ -7,10 +7,9 @@ import { useLocation } from 'react-router-dom';
 
 const ViewManageReseller = ({ userInfo, handleLogout }) => {
     const location = useLocation();
-    // Check if location.state and dataItem exist
     const [newUser, setNewUser] = useState({
         reseller_name: '', reseller_email_id: '', reseller_phone_no: '', reseller_address: '',
-        status: '', created_by:'', created_date:'', modified_by:'', modified_date:'', _id: '',
+        status: '', created_by: '', created_date: '', modified_by: '', modified_date: '', _id: '',
     });
 
     useEffect(() => {
@@ -28,8 +27,8 @@ const ViewManageReseller = ({ userInfo, handleLogout }) => {
                 modified_date: dataItem.modified_date || '',
                 _id: dataItem._id || '',
             });
-        // Save to localStorage
-        localStorage.setItem('userData', JSON.stringify(dataItem));
+            // Save to localStorage
+            localStorage.setItem('userData', JSON.stringify(dataItem));
         } else {
             // Load from localStorage if available
             const savedData = JSON.parse(localStorage.getItem('userData'));
@@ -38,28 +37,20 @@ const ViewManageReseller = ({ userInfo, handleLogout }) => {
             }
         }
     }, [location]);
-    
+
     const navigate = useNavigate();
-    
+
     // Back manage reseller
     const handleBack = () => {
         navigate('/superadmin/ManageReseller');
     };
 
-    const gridContainerStyle = {
-        display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
-        gridGap: '10px',
-        padding: '10px',
-        // textAlign:'center'
-    };
-    
-    const gridItemStyle = {
-        padding: '10px',
-        fontWeight: 'bold',
+    //View edit manage reseller
+    const handleEditReseller = (newUser) => {
+        navigate('/superadmin/EditManageReseller', { state: { newUser } });
     };
 
-    // Timestamp data 
+    // Timestamp
     function formatTimestamp(originalTimestamp) {
         const date = new Date(originalTimestamp);
         const day = String(date.getDate()).padStart(2, '0');
@@ -71,20 +62,20 @@ const ViewManageReseller = ({ userInfo, handleLogout }) => {
         const seconds = String(date.getSeconds()).padStart(2, '0');
         const ampm = hours >= 12 ? 'PM' : 'AM';
         hours = hours % 12;
-        hours = hours ? hours : 12; // the hour '0' should be '12'
+        hours = hours ? hours : 12;
         hours = String(hours).padStart(2, '0');
-    
+
         const formattedDate = `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
         return formattedDate;
-    } 
+    }
 
     return (
         <div className='container-scroller'>
             {/* Header */}
             <Header userInfo={userInfo} handleLogout={handleLogout} />
             <div className="container-fluid page-body-wrapper">
-                {/* Sidebar */}
-                <Sidebar/>
+               {/* Sidebar */}
+                <Sidebar />
                 <div className="main-panel">
                     <div className="content-wrapper">
                         <div className="row">
@@ -95,6 +86,7 @@ const ViewManageReseller = ({ userInfo, handleLogout }) => {
                                     </div>
                                     <div className="col-12 col-xl-4">
                                         <div className="justify-content-end d-flex">
+                                            <button type="button" className="btn btn-outline-primary btn-icon-text" onClick={() => handleEditReseller(newUser)} style={{marginRight:'10px'}}><i className="mdi mdi-pencil btn-icon-prepend"></i>Edit</button>
                                             <button type="button" className="btn btn-success" onClick={handleBack}>Back</button>
                                         </div>
                                     </div>
@@ -110,20 +102,60 @@ const ViewManageReseller = ({ userInfo, handleLogout }) => {
                                                 <div className="row">
                                                     <div className="col-12 col-xl-12">
                                                         <div style={{textAlign:'center'}}>
-                                                            <h4 className="card-title" style={{paddingTop:'10px'}}>Reseller all list</h4>  
+                                                            <h4 className="card-title" style={{paddingTop:'10px'}}>Reseller Details</h4>
                                                             <hr></hr>
                                                         </div>
                                                     </div>
-                                                    <div style={gridContainerStyle}>
-                                                        <div style={gridItemStyle}>Reseller Name: <span style={{fontWeight:'normal'}}>{newUser.reseller_name}</span></div>
-                                                        <div style={gridItemStyle}>Phone Number: <span style={{fontWeight:'normal'}}>{newUser.reseller_phone_no}</span></div>
-                                                        <div style={gridItemStyle}>Emila ID: <span style={{fontWeight:'normal'}}>{newUser.reseller_email_id}</span></div>
-                                                        <div style={gridItemStyle}>Address: <span style={{fontWeight:'normal'}}>{newUser.reseller_address}</span></div>        
-                                                        <div style={gridItemStyle}>Created By: <span style={{fontWeight:'normal'}}>{newUser.created_by}</span></div>                                                  
-                                                        <div style={gridItemStyle}>Created Date: <span style={{fontWeight:'normal'}}>{formatTimestamp(newUser.created_date)}</span></div>
-                                                        <div style={gridItemStyle}>Modified By: <span style={{fontWeight:'normal'}}>{newUser.modified_by}</span></div>
-                                                        <div style={gridItemStyle}>Modified Date: <span style={{fontWeight:'normal'}}>{formatTimestamp(newUser.modified_date)}</span></div>
-                                                        <div style={gridItemStyle}>Status: <span style={{fontWeight:'normal'}}>{newUser.status ? 'Active' : 'DeActive'}</span></div>
+                                                    <div className="row col-12 col-xl-12">
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Reseller Name: <span style={{ fontWeight: 'normal' }}>{newUser.reseller_name ? newUser.reseller_name : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Phone Number:  <span style={{ fontWeight: 'normal' }}>{newUser.reseller_phone_no ? newUser.reseller_phone_no : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Email ID: <span style={{ fontWeight: 'normal' }}>{newUser.reseller_email_id ? newUser.reseller_email_id : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="row col-12 col-xl-12">
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Address: <span style={{ fontWeight: 'normal' }}>{newUser.reseller_address ? newUser.reseller_address : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Created By: <span style={{ fontWeight: 'normal' }}>{newUser.created_by ? newUser.created_by : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Created Date: <span style={{ fontWeight: 'normal' }}>{newUser.created_date ? formatTimestamp(newUser.created_date) : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="row col-12 col-xl-12">
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Modified By: <span style={{ fontWeight: 'normal' }}>{newUser.modified_by ? newUser.modified_by : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Modified Date: <span style={{ fontWeight: 'normal' }}>{newUser.modified_date ? formatTimestamp(newUser.modified_date) : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Status: <span style={{ fontWeight: 'normal' }}>{newUser.status===true ? <span className="text-success">Active</span> : <span className="text-danger">DeActive</span>}</span></div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -132,14 +164,13 @@ const ViewManageReseller = ({ userInfo, handleLogout }) => {
                                 </div>
                             </div>
                         </div>
-                        
                     </div>
                     {/* Footer */}
                     <Footer />
-                </div>         
-            </div>    
+                </div>
+            </div>
         </div>
     );
-};   
-                 
-export default ViewManageReseller
+};
+
+export default ViewManageReseller;

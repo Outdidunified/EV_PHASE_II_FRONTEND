@@ -18,6 +18,7 @@ const AssignReseller = ({ userInfo, handleLogout }) => {
     const [resellers, setResellers] = useState([]);
     const [reseller_id, setSelectedReseller] = useState('');
     const [charger_ids, setSelectedChargers] = useState([]);
+    const [selectedModel, setSelectedModel] = useState('');
     const FetchSpecificUserRoleForSelectionCalled = useRef(false);
     const FetchUnAllocatedChargerToAssginCalled = useRef(false);
 
@@ -56,6 +57,7 @@ const AssignReseller = ({ userInfo, handleLogout }) => {
         setSelectedReseller(e.target.value);
     };
 
+    // charger select
     const handleChargerChange = (e) => {
         const value = e.target.value;
         setSelectedChargers(prevState =>
@@ -64,6 +66,14 @@ const AssignReseller = ({ userInfo, handleLogout }) => {
                 : [...prevState, value]
         );
     };
+
+    // Select model
+    const handleModelChange = (model) => {
+        setSelectedModel(model);
+    };
+
+    // Charger list filter
+    const filteredChargers = selectedModel ? chargers.filter(charger => charger.model === selectedModel) : chargers;
 
     // Assgin charger update
     const handleSubmit = async (e) => {
@@ -114,6 +124,17 @@ const AssignReseller = ({ userInfo, handleLogout }) => {
                                     </div>
                                     <div className="col-12 col-xl-4">
                                         <div className="justify-content-end d-flex">
+                                            <div className="dropdown">
+                                                <button className="btn btn-outline-warning btn-icon-text dropdown-toggle" type="button" style={{marginRight:'10px'}} id="dropdownMenuIconButton1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <i className="ti-file btn-icon-prepend"></i>Select Model
+                                                </button>
+                                                <div className="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
+                                                    <h6 className="dropdown-header">Select Model</h6>
+                                                    {Array.from(new Set(chargers.map(item => item.model))).map((uniqueModel, index) => (
+                                                        <p key={index} className="dropdown-item" onClick={() => handleModelChange(uniqueModel)}>{uniqueModel} KW</p>
+                                                    ))}
+                                                </div>
+                                            </div>
                                             <button type="button" className="btn btn-success" onClick={backManageDevice}>Back</button>
                                         </div>
                                     </div>
@@ -150,7 +171,7 @@ const AssignReseller = ({ userInfo, handleLogout }) => {
                                                                 <h4 className="card-title">Charger List</h4>
                                                                 <div className="template-demo"  style={{paddingLeft:'50px'}}>
                                                                     <div className="form-group" style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                                                                        {chargers.map((charger) => (
+                                                                        {filteredChargers.map((charger) => (
                                                                             <div className="form-check form-check-success" key={charger.charger_id}>
                                                                                 <label className="form-check-label">
                                                                                     <input style={{ textAlign: 'center' }} type="checkbox" className="form-check-input" value={charger.charger_id} onChange={handleChargerChange}/>

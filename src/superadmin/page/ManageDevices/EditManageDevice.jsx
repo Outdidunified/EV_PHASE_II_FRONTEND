@@ -8,16 +8,20 @@ import Swal from 'sweetalert2';
 
 const EditManageDevice = ({ userInfo, handleLogout }) => {
     const location = useLocation();
-    const dataItem = location.state?.dataItem || JSON.parse(localStorage.getItem('editDeviceData'));
+    const dataItem = location.state?.newUser || JSON.parse(localStorage.getItem('editDeviceData'));
     localStorage.setItem('editDeviceData', JSON.stringify(dataItem));
     
     const navigate = useNavigate();
     
-    // Back manage device
+    // Back view manage device
     const backManageDevice = () => {
+        navigate('/superadmin/ViewManageDevice');
+    };
+    
+    // Edit back manage device
+    const editBackManageDevice = () => {
         navigate('/superadmin/ManageDevice');
     };
-
     // Edit manage device
     const [charger_id, setChargerID] = useState(dataItem?.charger_id || '');
     const [tag_id, setTagID] = useState(dataItem?.tag_id || '');
@@ -29,6 +33,11 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
     const [max_power, setMaxPower] = useState(dataItem?.max_power || '');
     const [socket_count, setsocketCount] = useState(dataItem?.socket_count || '');
     const [errorMessage, setErrorMessage] = useState('');
+
+    // Selected charger type
+    const handleChargerType = (e) => {
+        setType(e.target.value);
+    };
 
     // Update manage device
     const editManageDevice = async (e) => {
@@ -71,7 +80,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                     title: "Charger added successfully",
                     icon: "success"
                 });
-                backManageDevice();
+                editBackManageDevice();
             } else {
                 Swal.fire({
                     title: "Error",
@@ -150,9 +159,12 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                             </div>
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Type</label>
+                                                                    <label className="col-sm-3 col-form-label">Charger Type</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Type" value={type}  onChange={(e) => setType(e.target.value)} required/>
+                                                                        <select className="form-control" value={type} onChange={handleChargerType} required >
+                                                                            <option value="AC">AC</option>
+                                                                            <option value="DC">DC</option>
+                                                                        </select>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -180,7 +192,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Max Current</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="number" className="form-control" placeholder="Max Current" value={max_current}  onChange={(e) => setMaxCurrent(e.target.value)} required/>
+                                                                        <input type="number" className="form-control" placeholder="Max Current" value={max_current} min={1} max={32} onChange={(e) => setMaxCurrent(e.target.value)} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -188,7 +200,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Max Power</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="number" className="form-control" placeholder="Max Power" value={max_power}  onChange={(e) => setMaxPower(e.target.value)} required/>
+                                                                        <input type="number" className="form-control" placeholder="Max Power" value={max_power} min={1} onChange={(e) => setMaxPower(e.target.value)} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -198,7 +210,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Socket Count</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="number" className="form-control" placeholder="Socket Count" value={socket_count}  onChange={(e) => setsocketCount(e.target.value)} required/>
+                                                                        <input type="number" className="form-control" placeholder="Socket Count" value={socket_count} min={1} max={4} onChange={(e) => setsocketCount(e.target.value)} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>

@@ -33,8 +33,14 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
         setSelectedStatus(e.target.value);
     };
 
+    // Back view manage device
     const backManageDevice = () => {
-        navigate('/associationadmin/ManageDevice');
+        navigate('/associationadmin/ViewManageDevice');
+    };
+
+    // Back manage device
+    const editBackManageDevice = () => {
+        navigate('/associationadmin/ViewManageDevice');
     };
 
     // Update manage device
@@ -65,7 +71,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                 setLongitude('');
                 setWifiUsername('');
                 setWifiPassword('');
-                backManageDevice();
+                editBackManageDevice();
             } else {
                 Swal.fire({
                     title: "Error",

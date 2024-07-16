@@ -38,25 +38,6 @@ const Dashboard = ({ userInfo, handleLogout }) => {
     const toggleBoxVisibility = () => {
       setIsBoxVisible(!isBoxVisible);
     };
-
-    // // Timestamp data 
-    function formatTimestamp(originalTimestamp) {
-        const date = new Date(originalTimestamp);
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        
-        let hours = date.getHours();
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        const seconds = String(date.getSeconds()).padStart(2, '0');
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12;
-        hours = hours ? hours : 12; // the hour '0' should be '12'
-        hours = String(hours).padStart(2, '0');
-    
-        const formattedDate = `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
-        return formattedDate;
-    }
     
     // Search data 
     const handleSearchInputChange = (e) => {
@@ -80,23 +61,19 @@ const Dashboard = ({ userInfo, handleLogout }) => {
                 break;
         }
     }, [data, filteredData]);
-  
-    // // Online, Offline and Faulty charger lengths 
-    const onlineStatus = 'true'; // Define the status for online chargers
-    const offlineStatuses = [' ', 'pending', 'Available']; // Define other statuses for offline chargers
-    const faultyStatus = 'Faulted'; // Define other statuses for faulty chargers
     
-    const onlineChargers = data.filter((status) => status === true && status === onlineStatus);
-    const offlineChargers = data.filter((status) => (status === false || status === null) && offlineStatuses.includes(status));
-    const faultyChargers = data.filter((status) => status === faultyStatus);
+    // Online, Offline and Faulty charger lengths 
+    const onlineChargers = data.filter((post) => post.status === true || post.status === 'true');
+    const offlineChargers = data.filter((post) => post.status === false || post.status === 'false');
+    const faultyChargers = data.filter((post) => post.status === 'Faulted');
 
-    // // Total, Online, Offline, and Faulted progressbar with data length
-    const totalChargers = data.length + onlineChargers.length + offlineChargers.length + faultyChargers.length;
+    // Total chargers count
+    const totalChargers = data.length;
 
-    const totalPercentage = (data.length / totalChargers) * 100;
-    const onlinePercentage = (onlineChargers.length / totalChargers) * 100;
-    const offlinePercentage = (offlineChargers.length / totalChargers) * 100;
-    const faultyPercentage = (faultyChargers.length / totalChargers) * 100;
+    const totalPercentage = (data.length / totalChargers) * 10;
+    const onlinePercentage = (onlineChargers.length / totalChargers) * 10;
+    const offlinePercentage = (offlineChargers.length / totalChargers) * 10;
+    const faultyPercentage = (faultyChargers.length / totalChargers) * 10;
     
     // // Chart data 
     useEffect(() => {
@@ -366,16 +343,14 @@ const Dashboard = ({ userInfo, handleLogout }) => {
                                         </div>
                                         <div className="table-responsive" style={{ maxHeight: '300px', overflowY: 'auto' }}>
                                             <table className="table table-striped">
-                                                <thead style={{textAlign:'center'}}>
+                                                <thead style={{ textAlign: 'center', tableLayout: 'fixed', position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 1 }}>
                                                     <tr> 
                                                         <th>Sl.No</th>
                                                         <th>Charger ID</th>
                                                         <th>Model</th>
-                                                        <th>Type</th>
+                                                        <th>Charger Type</th>
                                                         <th>Gun Connetor</th>
                                                         <th>Max Current</th>
-                                                        <th>Created By</th>
-                                                        <th>Created Date</th>
                                                         <th>Status</th>
                                                     </tr>
                                                 </thead>
@@ -399,12 +374,15 @@ const Dashboard = ({ userInfo, handleLogout }) => {
                                                                         <span>-</span> 
                                                                     )}
                                                                 </td>
-                                                                <td>{dataItem.model ? (
+                                                                <td className="py-1">
+                                                                    <img src={`../../images/dashboard/${dataItem.model ? dataItem.model : '-'}kw.png`} alt="img" />
+                                                                </td>
+                                                                {/* <td>{dataItem.model ? (
                                                                     <span>{dataItem.model}</span>
                                                                     ): (
                                                                         <span>-</span> 
                                                                     )}
-                                                                </td>
+                                                                </td> */}
                                                                 <td>{dataItem.type ? (
                                                                     <span>{dataItem.type}</span>
                                                                     ): (
@@ -423,19 +401,6 @@ const Dashboard = ({ userInfo, handleLogout }) => {
                                                                     <span>-</span>
                                                                     )}
                                                                 </td>
-                                                                <td>{dataItem.created_by ? (
-                                                                    <span>{dataItem.created_by}</span>
-                                                                    ) : (
-                                                                    <span>-</span>
-                                                                    )}
-                                                                </td>
-                                                                <td>{dataItem.created_date ? (
-                                                                    <span>{formatTimestamp(dataItem.created_date)}</span>
-                                                                    ) : (
-                                                                    <span>-</span>
-                                                                    )}
-                                                                </td>
-                                                                
                                                                 <td>{dataItem.status === true ? (
                                                                         <span className="text-success">Active</span>
                                                                     ) : dataItem.status === false ? (

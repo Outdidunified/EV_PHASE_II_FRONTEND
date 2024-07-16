@@ -62,16 +62,9 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
         navigate('/associationadmin/ManageDevice');
     };
 
-    const gridContainerStyle = {
-        display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
-        gridGap: '10px',
-        padding: '10px',
-    };
-    
-    const gridItemStyle = {
-        padding: '10px',
-        fontWeight: 'bold',
+    // Edit manage device
+    const handleEditManageDevice = (deviceData) => {
+        navigate('/associationadmin/EditManageDevice', { state: { deviceData } });
     };
 
     // Timestamp data 
@@ -110,6 +103,7 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
                                     </div>
                                     <div className="col-12 col-xl-4">
                                         <div className="justify-content-end d-flex">
+                                            <button type="button" className="btn btn-outline-primary btn-icon-text"  onClick={() => handleEditManageDevice(deviceData)} style={{marginRight:'10px'}}><i className="mdi mdi-pencil btn-icon-prepend"></i>Edit</button>
                                             <button type="button" className="btn btn-success" onClick={handleBack}>Back</button>
                                         </div>
                                     </div>
@@ -129,30 +123,136 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
                                                             <hr></hr>
                                                         </div>
                                                     </div>
-                                                    <div style={gridContainerStyle}>
-                                                        <div style={gridItemStyle}>Charger ID: <span style={{ fontWeight: 'normal' }}>{deviceData.charger_id}</span></div>
-                                                        <div style={gridItemStyle}>Model: <span style={{ fontWeight: 'normal' }}>{deviceData.model}</span></div>
-                                                        <div style={gridItemStyle}>Type: <span style={{ fontWeight: 'normal' }}>{deviceData.type}</span></div>
-                                                        <div style={gridItemStyle}>Vendor: <span style={{ fontWeight: 'normal' }}>{deviceData.vendor}</span></div>
-                                                        <div style={gridItemStyle}>Gun Connector: <span style={{ fontWeight: 'normal' }}>{deviceData.gun_connector}</span></div>
-                                                        <div style={gridItemStyle}>Max Current: <span style={{ fontWeight: 'normal' }}>{deviceData.max_current}</span></div>
-                                                        <div style={gridItemStyle}>Max Power: <span style={{ fontWeight: 'normal' }}>{deviceData.max_power}</span></div>
-                                                        <div style={gridItemStyle}>Socket Count: <span style={{ fontWeight: 'normal' }}>{deviceData.socket_count}</span></div>
-                                                        <div style={gridItemStyle}>Current or Active User: <span style={{ fontWeight: 'normal' }}>{deviceData.current_active_user}</span></div>
-                                                        <div style={gridItemStyle}>Client Commission: <span style={{ fontWeight: 'normal' }}>{deviceData.client_commission}</span></div>
-                                                        <div style={gridItemStyle}>IP: <span style={{ fontWeight: 'normal' }}>{deviceData.ip}</span></div>
-                                                        <div style={gridItemStyle}>Lat: <span style={{ fontWeight: 'normal' }}>{deviceData.lat}</span></div>
-                                                        <div style={gridItemStyle}>Long: <span style={{ fontWeight: 'normal' }}>{deviceData.long}</span></div>
-                                                        <div style={gridItemStyle}>Short Description: <span style={{ fontWeight: 'normal' }}>{deviceData.short_description}</span></div>
-                                                        <div style={gridItemStyle}>Charger Accessibility: <span style={{ fontWeight: 'normal' }}>{deviceData.charger_accessibility}</span></div>
-                                                        <div style={gridItemStyle}>Unit Price: <span style={{ fontWeight: 'normal' }}>{deviceData.unit_price}</span></div>
-                                                        <div style={gridItemStyle}>Assigned User: <span style={{ fontWeight: 'normal' }}>{deviceData.assigned_user}</span></div>
-                                                        <div style={gridItemStyle}>Wifi Password: <span style={{ fontWeight: 'normal' }}>{deviceData.wifi_password}</span></div>
-                                                        <div style={gridItemStyle}>Created By: <span style={{ fontWeight: 'normal' }}>{deviceData.created_by}</span></div>
-                                                        <div style={gridItemStyle}>Created Date: <span style={{ fontWeight: 'normal' }}>{formatTimestamp(deviceData.created_date)}</span></div>
-                                                        <div style={gridItemStyle}>Modified By: <span style={{ fontWeight: 'normal' }}>{deviceData.modified_by}</span></div>
-                                                        <div style={gridItemStyle}>Modified Date: <span style={{ fontWeight: 'normal' }}>{formatTimestamp(deviceData.modified_date)}</span></div>
-                                                        <div style={gridItemStyle}>Status: <span style={{ fontWeight: 'normal' }}>{deviceData.status ? 'Active' : 'UnActive'}</span></div>
+                                                    <div className="row col-12 col-xl-12">
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Charger ID: <span style={{fontWeight: 'normal'}}>{deviceData.charger_id ? deviceData.charger_id : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Model: <span style={{fontWeight:'normal'}}>{deviceData.model ? deviceData.model +'KW': '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Charger Type: <span style={{fontWeight: 'normal'}}>{deviceData.type ?  deviceData.type : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="row col-12 col-xl-12">
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Vendor: <span style={{fontWeight: 'normal'}}>{deviceData.vendor ? deviceData.vendor : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Gun Connector: <span style={{fontWeight: 'normal'}}>{deviceData.gun_connector ?  deviceData.gun_connector : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Max Current: <span style={{fontWeight: 'normal'}}>{deviceData.max_current ? deviceData.max_current : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="row col-12 col-xl-12">
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Max Power: <span style={{fontWeight: 'normal'}}>{deviceData.max_power ?  deviceData.max_power : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Socket Count: <span style={{fontWeight: 'normal'}}>{deviceData.socket_count ? deviceData.socket_count : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Current or Active User: <span style={{fontWeight: 'normal'}}>{deviceData.current_active_user ? deviceData.current_active_user : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="row col-12 col-xl-12">
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Client Commission: <span style={{fontWeight: 'normal'}}>{deviceData.client_commission ? deviceData.client_commission : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">IP: <span style={{fontWeight: 'normal'}}>{deviceData.ip ? deviceData.ip : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Latitude: <span style={{fontWeight: 'normal'}}>{deviceData.lat ? deviceData.lat : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="row col-12 col-xl-12">
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Longitude: <span style={{fontWeight: 'normal'}}>{deviceData.long ? deviceData.long : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Short Description: <span style={{ fontWeight: 'normal' }}>{deviceData.short_description ? deviceData.short_description : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Charger Accessibility: <span style={{fontWeight: 'normal'}}>{deviceData.charger_accessibility ? deviceData.charger_accessibility : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="row col-12 col-xl-12">
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Unit Price: <span style={{fontWeight: 'normal'}}>{deviceData.unit_price ? deviceData.unit_price : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Assigned User: <span style={{fontWeight: 'normal'}}>{deviceData.assigned_user ? deviceData.assigned_user : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Wifi Password: <span style={{fontWeight: 'normal'}}>{deviceData.wifi_password ? deviceData.wifi_password : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="row col-12 col-xl-12">
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Created By: <span style={{fontWeight: 'normal'}}>{deviceData.created_by ? deviceData.created_by : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Created Date: <span style={{fontWeight: 'normal'}}>{deviceData.created_date ? formatTimestamp(deviceData.created_date) : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Modified By: <span style={{fontWeight: 'normal'}}>{deviceData.modified_by ? deviceData.modified_by : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="row col-12 col-xl-12">
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Modified Date: <span style={{fontWeight: 'normal'}}>{deviceData.modified_date ? formatTimestamp(deviceData.modified_date) : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Status: <span style={{fontWeight: 'normal'}}>{deviceData.status ?  <span className="text-success">Active</span> : <span className="text-danger">DeActive</span>}</span></div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>

@@ -48,16 +48,9 @@ const ViewUserList = ({ userInfo, handleLogout }) => {
         navigate('/superadmin/ManageUsers');
     };
 
-    const gridContainerStyle = {
-        display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
-        gridGap: '10px',
-        padding: '10px',
-    };
-    
-    const gridItemStyle = {
-        padding: '10px',
-        fontWeight: 'bold',
+    // View edit user liat
+    const handleEditUser = (newUser) => {
+        navigate('/superadmin/EditUserList', { state: { newUser } });
     };
 
     // Timestamp data 
@@ -96,6 +89,7 @@ const ViewUserList = ({ userInfo, handleLogout }) => {
                                     </div>
                                     <div className="col-12 col-xl-4">
                                         <div className="justify-content-end d-flex">
+                                            <button type="button" className="btn btn-outline-primary btn-icon-text"  onClick={() => handleEditUser(newUser)} style={{marginRight:'10px'}}><i className="mdi mdi-pencil btn-icon-prepend"></i>Edit</button>
                                             <button type="button" className="btn btn-success" onClick={handleBack}>Back</button>
                                         </div>
                                     </div>
@@ -115,21 +109,85 @@ const ViewUserList = ({ userInfo, handleLogout }) => {
                                                             <hr></hr>
                                                         </div>
                                                     </div>
-                                                    <div style={gridContainerStyle}>
-                                                        <div style={gridItemStyle}>User Name: <span style={{fontWeight:'normal'}}>{newUser.username}</span></div>
-                                                        <div style={gridItemStyle}>Email Id: <span style={{fontWeight:'normal'}}>{newUser.email_id}</span></div>   
-                                                        <div style={gridItemStyle}>Phone Number: <span style={{fontWeight:'normal'}}>{newUser.phone_no}</span></div> 
-                                                        <div style={gridItemStyle}>Password: <span style={{fontWeight:'normal'}}>{newUser.password}</span></div>   
-                                                        <div style={gridItemStyle}>Wallet Balance: <span style={{fontWeight:'normal'}}>{newUser.wallet_bal}</span></div>
-                                                        <div style={gridItemStyle}>Role: <span style={{fontWeight:'normal'}}>{newUser.role_id}</span></div>
-                                                        <div style={gridItemStyle}>Assigned Reseller: <span style={{fontWeight:'normal'}}>{newUser.reseller_id}</span></div>
-                                                        <div style={gridItemStyle}>Assigned Client: <span style={{fontWeight:'normal'}}>{newUser.client_id}</span></div>
-                                                        <div style={gridItemStyle}>Assigned Association: <span style={{fontWeight:'normal'}}>{newUser.association_id}</span></div>
-                                                        <div style={gridItemStyle}>Created By: <span style={{fontWeight:'normal'}}>{newUser.created_by}</span></div> 
-                                                        <div style={gridItemStyle}>Created Date: <span style={{fontWeight:'normal'}}>{formatTimestamp(newUser.created_date)}</span></div>   
-                                                        <div style={gridItemStyle}>Modified By: <span style={{fontWeight:'normal'}}>{newUser.modified_by}</span></div>
-                                                        <div style={gridItemStyle}>Modified Date: <span style={{fontWeight:'normal'}}>{formatTimestamp(newUser.modified_date)}</span></div>
-                                                        <div style={gridItemStyle}>Status: <span style={{fontWeight:'normal'}}>{newUser.status===true ? 'Active' : 'DeActive'}</span></div>
+                                                    <div className="row col-12 col-xl-12">
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">User Name: <span style={{fontWeight:'normal'}}>{newUser.username ? newUser.username : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Email Id: <span style={{fontWeight:'normal'}}>{newUser.email_id ? newUser.email_id : '-'}</span></div>  
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Phone Number: <span style={{fontWeight:'normal'}}>{newUser.phone_no ? newUser.phone_no : '-'}</span></div> 
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="row col-12 col-xl-12">
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Password: <span style={{fontWeight:'normal'}}>{newUser.password ? newUser.password : '-'}</span></div>   
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Wallet Balance: <span style={{fontWeight:'normal'}}>{newUser.wallet_bal ? newUser.wallet_bal : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Role: <span style={{fontWeight:'normal'}}>{newUser.role_id ? newUser.role_id : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="row col-12 col-xl-12">
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Assigned Reseller: <span style={{fontWeight:'normal'}}>{newUser.reseller_id ? newUser.reseller_id : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Assigned Client: <span style={{fontWeight:'normal'}}>{newUser.client_id ? newUser.client_id : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Assigned Association: <span style={{fontWeight:'normal'}}>{newUser.association_id ? newUser.association_id :'-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="row col-12 col-xl-12">
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Created By: <span style={{fontWeight:'normal'}}>{newUser.created_by ? newUser.created_by : '-'}</span></div> 
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Created Date: <span style={{fontWeight:'normal'}}>{newUser.created_date ? formatTimestamp(newUser.created_date) : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Modified By: <span style={{fontWeight:'normal'}}>{newUser.modified_by ? newUser.modified_by : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="row col-12 col-xl-12">
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Modified Date: <span style={{fontWeight:'normal'}}>{newUser.modified_date ? formatTimestamp(newUser.modified_date) : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12">Status: <span style={{fontWeight:'normal'}}>{newUser.status===true ? <span className="text-success">Active</span> : <span className="text-danger">DeActive</span>}</span></div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -138,7 +196,6 @@ const ViewUserList = ({ userInfo, handleLogout }) => {
                                 </div>
                             </div>
                         </div>
-                        
                     </div>
                     {/* Footer */}
                     <Footer />

@@ -11,7 +11,6 @@ const AssignCharger = ({ userInfo, handleLogout }) => {
 
     const [data, setData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
-    const [posts, setPosts] = useState([]);
     const FetchChargerDetailsWithSessionCalled = useRef(false);
 
     useEffect(() => {
@@ -25,9 +24,9 @@ const AssignCharger = ({ userInfo, handleLogout }) => {
                     body: JSON.stringify({ reseller_id: dataItem.reseller_id }),
                 });
                 if (response.ok) {
-                    const data = await response.json();
-                    setData(data.data);
-                    setPosts(data.data);
+                    const responseData = await response.json();
+                    setData(responseData.data);
+                    setFilteredData(responseData.data); // Initialize filtered data with all data
                 } else {
                     console.error('Failed to fetch assigned chargers');
                 }
@@ -40,6 +39,12 @@ const AssignCharger = ({ userInfo, handleLogout }) => {
         if (!FetchChargerDetailsWithSessionCalled.current && dataItem && dataItem.reseller_id) {
             fetchAssignedClients();
             FetchChargerDetailsWithSessionCalled.current = true; // Mark fetchProfile as called
+        }
+    }, [dataItem]);
+
+    useEffect(() => {
+        if (dataItem) {
+            localStorage.setItem('dataItem', JSON.stringify(dataItem));
         }
     }, [dataItem]);
 
@@ -61,28 +66,11 @@ const AssignCharger = ({ userInfo, handleLogout }) => {
     // Search input
     const handleSearchInputChange = (e) => {
         const inputValue = e.target.value.toUpperCase();
-        if (Array.isArray(data)) {
-            const filteredData = data.filter((item) =>
-                item.chargerID.toUpperCase().includes(inputValue)
-            );
-            setFilteredData(filteredData);
-            setPosts(filteredData);
-        }
+        const filteredData = data.filter((item) =>
+            item.chargerID.toUpperCase().includes(inputValue)
+        );
+        setFilteredData(filteredData);
     };
-
-    useEffect(() => {
-        if (filteredData.length > 0) {
-            setPosts(filteredData);
-        } else {
-            setPosts(data);
-        }
-    }, [data, filteredData]);
-
-    useEffect(() => {
-        if (dataItem) {
-            localStorage.setItem('dataItem', JSON.stringify(dataItem));
-        }
-    }, [dataItem]);
 
     return (
         <div className='container-scroller'>
@@ -130,10 +118,10 @@ const AssignCharger = ({ userInfo, handleLogout }) => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="table-responsive">
+                                        <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
                                             <table className="table table-striped">
-                                                <thead style={{ textAlign: 'center' }}>
-                                                    <tr>
+                                                <thead style={{ textAlign: 'center', position: 'sticky', tableLayout: 'fixed', top: 0, backgroundColor: 'white', zIndex: 1 }}>
+                                                    <tr> 
                                                         <th>Sl.No</th>
                                                         <th>Charger ID</th>
                                                         <th>Status</th>
@@ -141,12 +129,12 @@ const AssignCharger = ({ userInfo, handleLogout }) => {
                                                     </tr>
                                                 </thead>
                                                 <tbody style={{ textAlign: 'center' }}>
-                                                    {posts.length > 0 ? (
-                                                        posts.map((post, index) => (
+                                                    {filteredData.length > 0 ? (
+                                                        filteredData.map((post, index) => (
                                                             <tr key={index}>
                                                                 <td>{index + 1}</td>
-                                                                <td>{post.chargerID}</td>
-                                                                <td>{post.status === true ? 'Active' : 'Deactive'}</td>
+                                                                <td>{post.chargerID ? post.chargerID : '-'}</td>
+                                                                <td>{post.status === true ? <span className="text-success">Active</span> : <span className="text-danger">DeActive</span>}</td>
                                                                 <td>
                                                                     <button type="button" className="btn btn-outline-success btn-icon-text" onClick={() => handleSessionHistory(dataItem, post.sessiondata)} style={{ marginBottom: '10px', marginRight: '10px' }}>
                                                                         <i className="mdi mdi-eye"></i> Session History

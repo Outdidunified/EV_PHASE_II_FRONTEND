@@ -40,8 +40,13 @@ const EditUserList = ({ userInfo, handleLogout }) => {
         setSelectedStatus(e.target.value);
     };
 
-    // Back manage user
+    // Back view manage user
     const backManageDevice = () => {
+        navigate('/superadmin/ViewUserList');
+    };
+
+    // Back view manage user
+    const editBackManageDevice = () => {
         navigate('/superadmin/ManageUsers');
     };
 
@@ -82,7 +87,7 @@ const EditUserList = ({ userInfo, handleLogout }) => {
                     title: 'User updated successfully',
                     icon: 'success',
                 });
-                backManageDevice();
+                editBackManageDevice();
             } else {
                 Swal.fire({
                     title: 'Error',

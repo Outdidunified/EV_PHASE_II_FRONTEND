@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 import Footer from '../../components/Footer';
@@ -7,10 +7,10 @@ import { useLocation } from 'react-router-dom';
 
 const AssignClient = ({ userInfo, handleLogout }) => {
     const location = useLocation();
-    const dataItem = location.state?.dataItem || JSON.parse(localStorage.getItem('dataItem'));   
+    const dataItem = location.state?.dataItem || JSON.parse(localStorage.getItem('dataItem'));
 
     const navigate = useNavigate();
-    
+
     // Back manage reseller
     const backManageReseller = () => {
         navigate('/superadmin/ManageReseller');
@@ -18,7 +18,6 @@ const AssignClient = ({ userInfo, handleLogout }) => {
 
     const [data, setData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
-    const [posts, setPosts] = useState([]);
     const FetchAssignedClientsCalled = useRef(false);
 
     // Fetch assign clients data
@@ -33,8 +32,9 @@ const AssignClient = ({ userInfo, handleLogout }) => {
                     body: JSON.stringify({ reseller_id: dataItem.reseller_id }),
                 });
                 if (response.ok) {
-                    const data = await response.json();
-                    setData(data.data);
+                    const responseData = await response.json();
+                    setData(responseData.data);
+                    setFilteredData(responseData.data); // Initialize filtered data with all data
                 } else {
                     console.error('Failed to fetch assigned clients');
                     console.log('Response status:', response.status);
@@ -44,10 +44,10 @@ const AssignClient = ({ userInfo, handleLogout }) => {
                 console.error('Error:', error);
             }
         };
-    
+
         if (!FetchAssignedClientsCalled.current && dataItem && dataItem.reseller_id) {
             fetchAssignedClients();
-            FetchAssignedClientsCalled.current = true; // Mark fetchProfile as called
+            FetchAssignedClientsCalled.current = true;
         }
     }, [dataItem]);
 
@@ -60,31 +60,19 @@ const AssignClient = ({ userInfo, handleLogout }) => {
     // Search input
     const handleSearchInputChange = (e) => {
         const inputValue = e.target.value.toUpperCase();
-        // Ensure data is an array before filtering
-        if (Array.isArray(data)) {
-            const filtered = data.filter((item) =>
-                item.client_name.toUpperCase().includes(inputValue)
-            );
-            setFilteredData(filtered);
-            setPosts(filtered);
-        }
+        const filteredData = data.filter((item) =>
+            item.client_name.toUpperCase().includes(inputValue)
+        );
+        setFilteredData(filteredData);
     };
 
-    useEffect(() => {
-        if (filteredData.length > 0) {
-            setPosts(filteredData);
-        } else {
-            setPosts(data);
-        }
-    }, [data, filteredData]);
-    
     return (
         <div className='container-scroller'>
             {/* Header */}
             <Header userInfo={userInfo} handleLogout={handleLogout} />
             <div className="container-fluid page-body-wrapper">
                 {/* Sidebar */}
-                <Sidebar/>
+                <Sidebar />
                 <div className="main-panel">
                     <div className="content-wrapper">
                         <div className="row">
@@ -109,27 +97,27 @@ const AssignClient = ({ userInfo, handleLogout }) => {
                                             <div className="col-md-12 grid-margin">
                                                 <div className="row">
                                                     <div className="col-4 col-xl-8">
-                                                        <h4 className="card-title" style={{paddingTop:'10px'}}>List Of Client's</h4>  
+                                                        <h4 className="card-title" style={{ paddingTop: '10px' }}>List Of Client's</h4>
                                                     </div>
                                                     <div className="col-8 col-xl-4">
                                                         <div className="input-group">
                                                             <div className="input-group-prepend hover-cursor" id="navbar-search-icon">
                                                                 <span className="input-group-text" id="search">
-                                                                <i className="icon-search"></i>
+                                                                    <i className="icon-search"></i>
                                                                 </span>
                                                             </div>
-                                                            <input type="text" className="form-control" placeholder="Search now" aria-label="search" aria-describedby="search" autoComplete="off" onChange={handleSearchInputChange}/>
+                                                            <input type="text" className="form-control" placeholder="Search now" aria-label="search" aria-describedby="search" autoComplete="off" onChange={handleSearchInputChange} />
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="table-responsive">
+                                        <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
                                             <table className="table table-striped">
-                                                <thead style={{textAlign:'center'}}>
+                                                <thead style={{ textAlign: 'center', position: 'sticky', tableLayout: 'fixed', top: 0, backgroundColor: 'white', zIndex: 1 }}>
                                                     <tr> 
                                                         <th>Sl.No</th>
-                                                        <th>Reseller Name</th>
+                                                        <th>Client Name</th>
                                                         <th>Phone Number</th>
                                                         <th>Email ID</th>
                                                         <th>Address</th>
@@ -137,20 +125,20 @@ const AssignClient = ({ userInfo, handleLogout }) => {
                                                     </tr>
                                                 </thead>
                                                 <tbody style={{ textAlign: 'center' }}>
-                                                    {posts.length > 0 ? (
-                                                        posts.map((post, index) => (
+                                                    {filteredData.length > 0 ? (
+                                                        filteredData.map((post, index) => (
                                                             <tr key={index}>
                                                                 <td>{index + 1}</td>
-                                                                <td>{post.client_name}</td>
-                                                                <td>{post.client_phone_no}</td>
-                                                                <td>{post.client_email_id}</td>
-                                                                <td>{post.client_address}</td>
-                                                                <td>{post.status===true ? 'Active' : 'DeActive'}</td>
+                                                                <td>{post.client_name ? post.client_name : '-'}</td>
+                                                                <td>{post.client_phone_no ? post.client_phone_no : '-'}</td>
+                                                                <td>{post.client_email_id ? post.client_email_id : '-'}</td>
+                                                                <td>{post.client_address ? post.client_address : '-'}</td>
+                                                                <td>{post.status === true ? <span className="text-success">Active</span> : <span className="text-danger">DeActive</span>}</td>
                                                             </tr>
                                                         ))
                                                     ) : (
                                                         <tr>
-                                                            <td colSpan="6" style={{ marginTop: '50px', textAlign: 'center' }}>No Assign client found</td>
+                                                            <td colSpan="6" style={{ marginTop: '50px', textAlign: 'center' }}>No Assigned clients found</td>
                                                         </tr>
                                                     )}
                                                 </tbody>
@@ -161,12 +149,11 @@ const AssignClient = ({ userInfo, handleLogout }) => {
                             </div>
                         </div>
                     </div>
-                    {/* Footer */}
                     <Footer />
-                </div>         
-            </div>    
+                </div>
+            </div>
         </div>
     );
-};   
-                 
-export default AssignClient 
+};
+
+export default AssignClient;
