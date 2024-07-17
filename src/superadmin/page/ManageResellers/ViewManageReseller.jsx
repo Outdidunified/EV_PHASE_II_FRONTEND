@@ -8,7 +8,7 @@ import { useLocation } from 'react-router-dom';
 const ViewManageReseller = ({ userInfo, handleLogout }) => {
     const location = useLocation();
     const [newUser, setNewUser] = useState({
-        reseller_name: '', reseller_email_id: '', reseller_phone_no: '', reseller_address: '',
+        reseller_name: '', reseller_email_id: '', reseller_phone_no: '', reseller_address: '', reseller_id: '',
         status: '', created_by: '', created_date: '', modified_by: '', modified_date: '', _id: '',
     });
 
@@ -20,6 +20,7 @@ const ViewManageReseller = ({ userInfo, handleLogout }) => {
                 reseller_email_id: dataItem.reseller_email_id || '',
                 reseller_phone_no: dataItem.reseller_phone_no || '',
                 reseller_address: dataItem.reseller_address || '',
+                reseller_id: dataItem.reseller_id || '',
                 status: dataItem.status || '',
                 created_by: dataItem.created_by || '',
                 created_date: dataItem.created_date || '',

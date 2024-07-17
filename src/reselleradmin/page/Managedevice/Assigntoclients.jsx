@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
@@ -17,6 +17,9 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
 
     const navigate = useNavigate();
 
+    const fetchClientsCalled = useRef(false); 
+    const fetchUnallocatedChargersCalled = useRef(false); 
+
     useEffect(() => {
         const fetchClients = async () => {
             try {
@@ -24,7 +27,6 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
                     reseller_id: userInfo.data.reseller_id
                 });
                 setClientsList(response.data.data || []);
-               
             } catch (error) {
                 console.error('Error fetching clients:', error);
                 setClientsList([]);
@@ -36,8 +38,7 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
                 const response = await axios.post('/reselleradmin/FetchUnAllocatedChargerToAssgin', {
                     reseller_id: userInfo.data.reseller_id,
                 });
-                console.log(response.data)
-                
+                console.log(response.data);
                 setUnallocatedChargers(response.data.data || []);
             } catch (error) {
                 console.error('Error fetching unallocated charger details:', error);
@@ -47,9 +48,16 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
             }
         };
 
-        fetchClients();
-        fetchUnallocatedChargers();
-    }, [userInfo, reloadPage]); // Include reloadPage in dependencies to trigger fetch on reload
+        if (!fetchClientsCalled.current) {
+            fetchClients();
+            fetchClientsCalled.current = true;
+        }
+
+        if (!fetchUnallocatedChargersCalled.current) {
+            fetchUnallocatedChargers();
+            fetchUnallocatedChargersCalled.current = true;
+        }
+    }, [userInfo.data.reseller_id]); // Use userInfo.data.reseller_id as the dependency
 
     const handleClientChange = (e) => {
         const selectedClientId = e.target.value;

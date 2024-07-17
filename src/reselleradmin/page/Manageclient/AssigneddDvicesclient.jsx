@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 import axios from 'axios';
@@ -9,20 +9,20 @@ const Assigneddevicesclient = ({ userInfo, handleLogout }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [data, setData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
-    const [,setClientId] = useState(null);
 
     const navigate = useNavigate();
     const location = useLocation();
 
+    const fetchAsssigntoassDataCalled = useRef(false); 
+
     useEffect(() => {
         const { client_id } = location.state || {};
-        if (client_id) {
-            setClientId(client_id);
+        if (!fetchAsssigntoassDataCalled.current && client_id) {
             fetchAsssigntoassData(client_id);
+            fetchAsssigntoassDataCalled.current = true;
         }
-    }, [location, setClientId]);
+    }, [location]);
     
-
     const fetchAsssigntoassData = async (client_id) => {
         try {
             const response = await axios.post('/reselleradmin/FetchChargerDetailsWithSession', {
@@ -63,7 +63,6 @@ const Assigneddevicesclient = ({ userInfo, handleLogout }) => {
     };
 
     const navigateToSessionHistory = (item) => {
-       
         const sessiondata = item.sessiondata[0];
         navigate('/reselleradmin/Sessionhistoryclient', { state: { sessiondata } });
     };

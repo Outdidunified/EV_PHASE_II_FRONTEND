@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer';
-import { useNavigate } from 'react-router-dom';
 
 const Wallet = ({ userInfo, handleLogout }) => {
     const [commissionAmount, setCommissionAmount] = useState('');
-    const navigate = useNavigate();
+    const fetchCommissionAmountCalled = useRef(false); // Ref to track if fetchCommissionAmount has been called
 
     useEffect(() => {
         const fetchCommissionAmount = async () => {
@@ -25,13 +24,11 @@ const Wallet = ({ userInfo, handleLogout }) => {
             }
         };
 
-        fetchCommissionAmount(); // Call the function directly within useEffect
-
+        if (!fetchCommissionAmountCalled.current && userInfo.data.user_id) {
+            fetchCommissionAmount();
+            fetchCommissionAmountCalled.current = true; // Mark fetchCommissionAmount as called
+        }
     }, [userInfo.data.user_id]); // Include userInfo.data.user_id in the dependency array
-
-    const goBack = () => {
-        navigate(-1);
-    };
 
     return (
         <div className='container-scroller'>
@@ -45,18 +42,6 @@ const Wallet = ({ userInfo, handleLogout }) => {
                                 <div className="row">
                                     <div className="col-12 col-xl-8 mb-4 mb-xl-0">
                                         <h3 className="font-weight-bold">Wallet</h3>
-                                    </div>
-                                    <div className="col-12 col-xl-4">
-                                        <div className="justify-content-end d-flex">
-                                            <button
-                                                type="button"
-                                                className="btn btn-success"
-                                                onClick={goBack}
-                                                style={{ marginRight: '10px' }}
-                                            >
-                                                Go Back
-                                            </button>
-                                        </div>
                                     </div>
                                 </div>
                             </div>

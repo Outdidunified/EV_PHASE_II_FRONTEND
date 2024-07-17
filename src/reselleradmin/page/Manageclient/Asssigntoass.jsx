@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 import axios from 'axios';
@@ -9,26 +9,27 @@ const Asssigntoass = ({ userInfo, handleLogout }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [data, setData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
-    const [, setClientId] = useState(null);
-    const [, setAssociationName] = useState('');
 
     const navigate = useNavigate();
     const location = useLocation();
 
     useEffect(() => {
         const { client_id } = location.state || {};
-        if (client_id) {
-            setClientId(client_id);
+        if (!fetchAsssigntoassDataCalled.current && client_id) {
             fetchAsssigntoassData(client_id);
+            fetchAsssigntoassDataCalled.current = true;
         }
     }, [location]);
+
+
+    const fetchAsssigntoassDataCalled = useRef(false); 
 
     const fetchAsssigntoassData = async (client_id) => {
         try {
             const response = await axios.post('/reselleradmin/FetchAssignedAssociation', {
                 client_id: client_id
             });
-    
+
             // Check if response status is success and data is present
             if (response.data.status === 'Success' && response.data.data.length > 0) {
                 const fetchedData = response.data.data.map(item => ({
@@ -36,15 +37,10 @@ const Asssigntoass = ({ userInfo, handleLogout }) => {
                     charger_id: item.charger_id
                     // Add other fields you want to fetch from the response
                 }));
-        
+
                 setData(fetchedData);
                 setFilteredData(fetchedData);
-        
-                // Set association name from the first item in the response data
-                if (response.data.data[0].association_name) {
-                    setAssociationName(response.data.data[0].association_name);
-                }
-        
+
             } else {
                 console.log('No data available');
                 setData([]); // Clear existing data
@@ -55,6 +51,10 @@ const Asssigntoass = ({ userInfo, handleLogout }) => {
             // Handle error appropriately
         }
     };
+
+   
+    
+
     
     const handleSearch = (e) => {
         const query = e.target.value.toLowerCase();
@@ -118,7 +118,7 @@ const Asssigntoass = ({ userInfo, handleLogout }) => {
                                                         <input
                                                             type="text"
                                                             className="form-control"
-                                                            placeholder="Search by  Association_name"
+                                                            placeholder="Search now"
                                                             value={searchQuery}
                                                             onChange={handleSearch}
                                                         />
@@ -139,7 +139,7 @@ const Asssigntoass = ({ userInfo, handleLogout }) => {
                                                         filteredData.map((item, index) => (
                                                             <tr key={index} style={{ textAlign: 'center' }}>
                                                                 <td>{index + 1}</td>
-                                                                <td>{item.association_name}</td>
+                                                                <td>{item.association_name ? item.association_name : '-'}</td>
                                                             </tr>
                                                         ))
                                                     ) : (

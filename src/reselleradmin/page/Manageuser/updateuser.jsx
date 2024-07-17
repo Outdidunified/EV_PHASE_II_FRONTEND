@@ -17,7 +17,6 @@ const UpdateUser = ({ userInfo, handleLogout }) => {
     });
     const navigate = useNavigate();
     const location = useLocation();
-
     useEffect(() => {
         const { user } = location.state || {};
         if (user) {

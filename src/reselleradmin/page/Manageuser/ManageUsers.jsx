@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Sidebar from '../../components/Sidebar';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import Swal from 'sweetalert2';
+// import Swal from 'sweetalert2';
 
 const ManageUsers = ({ userInfo, handleLogout, children }) => {
     const [users, setUsers] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const navigate = useNavigate();
+    const fetchUsersCalled = useRef(false); 
 
     const fetchUsers = async () => {
         try {
@@ -22,44 +23,48 @@ const ManageUsers = ({ userInfo, handleLogout, children }) => {
     };
 
     useEffect(() => {
-        fetchUsers();
+        if (!fetchUsersCalled.current) {
+            fetchUsers();
+            fetchUsersCalled.current = true;
+        }
     }, []);
 
 
-    const handleDeactivateUser = async (user_id, status) => {
-        try {
-          
-            const response = await axios.post('/reselleradmin/DeActivateUser', {
-                user_id: user_id,
-                modified_by: userInfo.data.reseller_name,
-                status: !status // Toggle status
-            });
 
-            if (response.status === 200) {
-                setUsers(prevUsers =>
-                    prevUsers.map(user =>
-                        user.user_id === user_id ? { ...user, status: !status } : user
-                    )
-                );
-                Swal.fire({
-                    title: status ? "Deactivated!" : "Activated!",
-                    icon: "success"
-                });
-            } else {
-                Swal.fire({
-                    title: "Error",
-                    text: "Failed to update user status.",
-                    icon: "error"
-                });
-            }
-        } catch (error) {
-            Swal.fire({
-                title: "Error",
-                text: "An error occurred while updating user status.",
-                icon: "error"
-            });
-        }
-    };
+    // const handleDeactivateUser = async (user_id, status) => {
+    //     try {
+          
+    //         const response = await axios.post('/reselleradmin/DeActivateUser', {
+    //             user_id: user_id,
+    //             modified_by: userInfo.data.reseller_name,
+    //             status: !status // Toggle status
+    //         });
+
+    //         if (response.status === 200) {
+    //             setUsers(prevUsers =>
+    //                 prevUsers.map(user =>
+    //                     user.user_id === user_id ? { ...user, status: !status } : user
+    //                 )
+    //             );
+    //             Swal.fire({
+    //                 title: status ? "Deactivated!" : "Activated!",
+    //                 icon: "success"
+    //             });
+    //         } else {
+    //             Swal.fire({
+    //                 title: "Error",
+    //                 text: "Failed to update user status.",
+    //                 icon: "error"
+    //             });
+    //         }
+    //     } catch (error) {
+    //         Swal.fire({
+    //             title: "Error",
+    //             text: "An error occurred while updating user status.",
+    //             icon: "error"
+    //         });
+    //     }
+    // };
     
     const navigateToCreateUser = () => {
         navigate('/reselleradmin/Createusers');
@@ -78,7 +83,7 @@ const ManageUsers = ({ userInfo, handleLogout, children }) => {
     };
 
     const filteredUsers = users.filter((user) => {
-        const searchFields = ['username', 'phone_no', 'email_id', 'address'];
+        const searchFields = ['username'];
         return searchFields.some((field) =>
             user[field]?.toString().toLowerCase().includes(searchQuery.toLowerCase())
         );
@@ -129,13 +134,7 @@ const ManageUsers = ({ userInfo, handleLogout, children }) => {
                                                                     <i className="icon-search"></i>
                                                                 </span>
                                                             </div>
-                                                            <input
-                                                                type="text"
-                                                                className="form-control"
-                                                                placeholder="Search by name, phone, email, address..."
-                                                                value={searchQuery}
-                                                                onChange={handleSearch}
-                                                            />
+                                                            <input type="text" className="form-control" placeholder="Search by name..." value={searchQuery} onChange={handleSearch} />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -149,8 +148,8 @@ const ManageUsers = ({ userInfo, handleLogout, children }) => {
                                                         <th>User Name</th>
                                                         <th>Phone Number</th>
                                                         <th>Email ID</th>
-                                                        <th>Status</th>
                                                         <th>Role Id</th>
+                                                        <th>Status</th>
                                                         <th>Actions</th>
                                                     </tr>
                                                 </thead>
@@ -159,38 +158,28 @@ const ManageUsers = ({ userInfo, handleLogout, children }) => {
                                                         filteredUsers.map((user, index) => (
                                                             <tr key={user.user_id}>
                                                                 <td>{index + 1}</td>
-                                                                <td>{user.username}</td>
-                                                                <td>{user.phone_no}</td>
-                                                                <td>{user.email_id}</td>
+                                                                <td>{user.username ? user.username : '-'}</td>
+                                                                <td>{user.phone_no ? user.phone_no : '-'}</td>
+                                                                <td>{user.email_id ? user.email_id : '-'}</td>
+                                                                <td>{user.role_id ? user.role_id : '-'}</td>
                                                                 <td style={{ color: user.status ? 'green' : 'red' }}>
                                                                     {user.status ? 'Active' : 'Inactive'}
                                                                 </td>
-                                                                <td>{user.role_id}</td>
                                                                 <td>
-                                                                    <button
-                                                                        type="button"
-                                                                        className="btn btn-outline-dark btn-icon-text"
-                                                                        onClick={() => navigateToViewSession(user)}
-                                                                        style={{ marginBottom: '10px', marginRight: '10px' }}
-                                                                    >
+                                                                    <button type="button" className="btn btn-outline-success btn-icon-text" onClick={() => navigateToViewSession(user)} style={{ marginBottom: '10px', marginRight: '10px' }}>
                                                                         <i className="mdi mdi-eye btn-icon-prepend"></i>View
                                                                     </button>
-                                                                    <button
-                                                                        type="button"
-                                                                        className="btn btn-outline-primary btn-icon-text"
-                                                                        onClick={() => navigateToEditUser(user)}
-                                                                        style={{ marginBottom: '10px', marginRight: '10px' }}
-                                                                    >
+                                                                    <button type="button" className="btn btn-outline-primary btn-icon-text" onClick={() => navigateToEditUser(user)} style={{ marginBottom: '10px', marginRight: '10px' }} >
                                                                         <i className="mdi mdi-pencil btn-icon-prepend"></i>Edit
                                                                     </button>
-                                                                    <button
+                                                                    {/* <button
                                                                         type="button"
                                                                         className={`btn btn-outline-${user.status ? 'danger' : 'success'} btn-icon-text`}
                                                                         onClick={() => handleDeactivateUser(user.user_id, user.status)}
                                                                         style={{ marginBottom: '10px', marginRight: '10px' }}
                                                                     >
                                                                         <i className={`mdi mdi-${user.status ? 'delete' : 'check'} btn-icon-prepend`}></i>{user.status ? 'DEACTIVATE' : 'ACTIVATE'}
-                                                                    </button>
+                                                                    </button> */}
                                                                 </td>
                                                             </tr>
                                                         ))

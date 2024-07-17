@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +11,7 @@ const Allocateddevice = ({ userInfo, handleLogout }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const navigate = useNavigate();
 
+    // Search function
     const handleSearch = (e) => {
         setSearchQuery(e.target.value);
     };
@@ -21,10 +22,12 @@ const Allocateddevice = ({ userInfo, handleLogout }) => {
         );
     }, [searchQuery]);
 
+    // View allocated page
     const navigateToViewChargerDetails = useCallback((charger) => {
         navigate('/reselleradmin/ViewAlloc', { state: { charger } });
     }, [navigate]);
 
+    // Active and deactive charger
     const deactivateCharger = async (chargerId, status) => {
         try {
             const response = await axios.post('/reselleradmin/DeActivateOrActivateCharger', {
@@ -68,10 +71,13 @@ const Allocateddevice = ({ userInfo, handleLogout }) => {
         }
     };
 
+    const fetchAllocatedChargerDetailsCalled = useRef(false); 
+
+    // Fetch allocated charger details
     const fetchAllocatedChargerDetails = useCallback(async () => {
         try {
             const response = await axios.post('/reselleradmin/FetchAllocatedCharger', {
-                reseller_id: userInfo.data.reseller_id
+                reseller_id: userInfo.data.reseller_id,
             });
             console.log(response);
 
@@ -83,16 +89,15 @@ const Allocateddevice = ({ userInfo, handleLogout }) => {
     }, [userInfo.data.reseller_id]);
 
     useEffect(() => {
-        const fetchAllocatedChargers = async () => {
-            await fetchAllocatedChargerDetails();
-        };
+        if (!fetchAllocatedChargerDetailsCalled.current) {
+            const fetchAllocatedChargers = async () => {
+                await fetchAllocatedChargerDetails();
+            };
 
-        fetchAllocatedChargers();
-    }, [fetchAllocatedChargerDetails]);
-
-    const goBack = () => {
-        navigate(-1);
-    };
+            fetchAllocatedChargers();
+            fetchAllocatedChargerDetailsCalled.current = true; // Mark fetchAllocatedChargerDetails as called
+        }
+    }, [fetchAllocatedChargerDetails]); // Include fetchAllocatedChargerDetails in the dependency array
 
     return (
         <div className='container-scroller'>
@@ -106,18 +111,6 @@ const Allocateddevice = ({ userInfo, handleLogout }) => {
                                 <div className="row">
                                     <div className="col-12 col-xl-8 mb-4 mb-xl-0">
                                         <h3 className="font-weight-bold">Manage Devices - Allocated</h3>
-                                    </div>
-                                    <div className="col-12 col-xl-4">
-                                        <div className="justify-content-end d-flex">
-                                            <button
-                                                type="button"
-                                                className="btn btn-success"
-                                                onClick={goBack}
-                                                style={{ marginRight: '10px' }}
-                                            >
-                                                Go Back
-                                            </button>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -137,13 +130,7 @@ const Allocateddevice = ({ userInfo, handleLogout }) => {
                                                             <i className="icon-search"></i>
                                                         </span>
                                                     </div>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control"
-                                                        placeholder="Search by Charger ID..."
-                                                        value={searchQuery}
-                                                        onChange={handleSearch}
-                                                    />
+                                                    <input type="text" className="form-control" placeholder="Search by Charger ID..." value={searchQuery} onChange={handleSearch} />
                                                 </div>
                                             </div>
                                         </div>
@@ -158,7 +145,6 @@ const Allocateddevice = ({ userInfo, handleLogout }) => {
                                                         <th>Gun Connector</th>
                                                         <th>Max Current</th>
                                                         <th>Assigned Client</th>
-                                                        <th>Created Date</th>
                                                         <th>Status</th>
                                                         <th>Actions</th>
                                                     </tr>
@@ -174,23 +160,12 @@ const Allocateddevice = ({ userInfo, handleLogout }) => {
                                                                 <td>{charger.gun_connector}</td>
                                                                 <td>{charger.max_current}</td>
                                                                 <td>{charger.client_name}</td>
-                                                                <td>{charger.created_date ? new Date(charger.created_date).toLocaleString() : ''}</td>
                                                                 <td style={{ color: charger.status ? 'green' : 'red' }}>{charger.status ? 'Active' : 'Inactive'}</td>
                                                                 <td>
-                                                                    <button
-                                                                        type="button"
-                                                                        className="btn btn-outline-dark btn-icon-text"
-                                                                        onClick={() => navigateToViewChargerDetails(charger)}
-                                                                        style={{ marginBottom: '10px', marginRight: '10px' }}
-                                                                    >
+                                                                    <button type="button" className="btn btn-outline-success btn-icon-text" onClick={() => navigateToViewChargerDetails(charger)} style={{ marginBottom: '10px', marginRight: '10px' }}>
                                                                         <i className="mdi mdi-eye btn-icon-prepend"></i>View
                                                                     </button>
-                                                                    <button
-                                                                        type="button"
-                                                                        className={`btn btn-outline-${charger.status ? 'danger' : 'success'} btn-icon-text`}
-                                                                        onClick={() => deactivateCharger(charger.charger_id, charger.status)}
-                                                                        style={{ marginBottom: '10px', marginRight: '10px' }}
-                                                                    >
+                                                                    <button type="button" className={`btn btn-outline-${charger.status ? 'danger' : 'success'} btn-icon-text`} onClick={() => deactivateCharger(charger.charger_id, charger.status)} style={{ marginBottom: '10px', marginRight: '10px' }}>
                                                                         <i className={`mdi mdi-${charger.status ? 'delete' : 'check'} btn-icon-prepend`}></i>{charger.status ? 'DEACTIVATE' : 'ACTIVATE'}
                                                                     </button>
                                                                 </td>

@@ -62,11 +62,19 @@ const ViewAlloc = ({ userInfo, handleLogout }) => {
                 vendor: charger.vendor || '',
                 wifi_password: charger.wifi_password || '',
             });
+        // Save to localStorage
+        localStorage.setItem('userData', JSON.stringify(charger));
+        } else {
+            // Load from localStorage if available
+            const savedData = JSON.parse(localStorage.getItem('userData'));
+            if (savedData) {
+                setNewDevice(savedData);
+            }
         }
     }, [location]);
 
     const goBack = () => {
-        navigate(-1);
+        navigate('/reselleradmin/Allocateddevice');
     };
 
     return (

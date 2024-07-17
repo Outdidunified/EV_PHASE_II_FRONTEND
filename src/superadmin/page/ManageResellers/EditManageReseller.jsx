@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
@@ -8,31 +8,18 @@ import Swal from 'sweetalert2';
 const EditManageReseller = ({ userInfo, handleLogout }) => {
     const location = useLocation();
     const navigate = useNavigate();
+    const dataItem = location.state?.newUser || JSON.parse(localStorage.getItem('editDeviceData'));
+    localStorage.setItem('editDeviceData', JSON.stringify(dataItem));
     
-    const [editReseller, setEditReseller] = useState({
-        reseller_name: '', reseller_phone_no: '', reseller_email_id: '', reseller_address: '', reseller_id: '', status: '', _id: '',
-    });
     const [errorMessage, setErrorMessage] = useState('');
-    const [selectStatus, setSelectedStatus] = useState(editReseller.status ? 'true' : 'false');
+    const [selectStatus, setSelectedStatus] = useState(dataItem?.status ? 'true' : 'false');
 
-    useEffect(() => {
-        const { dataItem } = location.state || {};
-        if (dataItem) {
-            setEditReseller({
-                reseller_name: dataItem.reseller_name || '', reseller_phone_no: dataItem.reseller_phone_no || '', reseller_email_id: dataItem.reseller_email_id || '', reseller_address: dataItem.reseller_address || '', reseller_id: dataItem.reseller_id || '', status: dataItem.status || '', _id: dataItem._id || '',
-            });
-            setSelectedStatus(dataItem.status ? 'true' : 'false');
-            // Save to localStorage
-            localStorage.setItem('editResellerData', JSON.stringify(dataItem));
-        } else {
-            // Load from localStorage if available
-            const savedData = JSON.parse(localStorage.getItem('editResellerData'));
-            if (savedData) {
-                setEditReseller(savedData);
-                setSelectedStatus(savedData.status ? 'true' : 'false');
-            }
-        }
-    }, [location]);
+    // Edit manage device
+    const [reseller_name, setResellerName] = useState(dataItem?.reseller_name || '');
+    const [reseller_phone_no, setResellerPhoneNumber] = useState(dataItem?.reseller_phone_no || '');
+    const [reseller_email_id, setEmilaID] = useState(dataItem?.reseller_email_id || '');
+    const [reseller_address, setResellerAddress] = useState(dataItem?.reseller_address || '');
+    
 
     // Selected status
     const handleStatusChange = (e) => {
@@ -54,18 +41,18 @@ const EditManageReseller = ({ userInfo, handleLogout }) => {
         e.preventDefault();
 
         const phoneRegex = /^\d{10}$/;
-        if (!editReseller.reseller_phone_no || !phoneRegex.test(editReseller.reseller_phone_no)) {
+        if (!reseller_phone_no || !phoneRegex.test(reseller_phone_no)) {
             setErrorMessage('Phone number must be a 10-digit number.');
             return;
         }
 
         try {
             const updatedReseller = {
-                reseller_id: editReseller.reseller_id,
-                reseller_name: editReseller.reseller_name,
-                reseller_phone_no: parseInt(editReseller.reseller_phone_no),
+                reseller_id: dataItem?.reseller_id,
+                reseller_name:reseller_name,
+                reseller_phone_no: parseInt(reseller_phone_no),
                 status: selectStatus === 'true',
-                reseller_address: editReseller.reseller_address,
+                reseller_address:reseller_address,
                 modified_by: userInfo.data.username,
             };
             const response = await fetch('/superadmin/UpdateReseller', {
@@ -133,7 +120,7 @@ const EditManageReseller = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Reseller Name</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" value={editReseller.reseller_name} onChange={(e) => setEditReseller({ ...editReseller, reseller_name: e.target.value })}required />
+                                                                        <input type="text" className="form-control" value={reseller_name} onChange={(e) => setResellerName(e.target.value )}required />
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -141,7 +128,7 @@ const EditManageReseller = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Phone Number</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" value={editReseller.reseller_phone_no} onChange={(e) => setEditReseller({ ...editReseller, reseller_phone_no: e.target.value })} required />
+                                                                        <input type="text" className="form-control" value={reseller_phone_no} onChange={(e) => setResellerPhoneNumber(e.target.value )} required />
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -151,7 +138,7 @@ const EditManageReseller = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Email ID</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="email" className="form-control" value={editReseller.reseller_email_id} readOnly required />
+                                                                        <input type="email" className="form-control" value={reseller_email_id} onChange={(e) => setEmilaID(e.target.value )}readOnly required />
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -159,7 +146,7 @@ const EditManageReseller = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Address</label>
                                                                     <div className="col-sm-9">
-                                                                        <textarea type="text" className="form-control" value={editReseller.reseller_address} maxLength={150} onChange={(e) => setEditReseller({ ...editReseller, reseller_address: e.target.value })}required />
+                                                                        <textarea type="text" className="form-control" value={reseller_address} maxLength={150} onChange={(e) => setResellerAddress(e.target.value )}required />
                                                                     </div>
                                                                 </div>
                                                             </div>

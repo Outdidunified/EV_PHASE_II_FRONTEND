@@ -9,7 +9,7 @@ const ViewUserList = ({ userInfo, handleLogout }) => {
     const location = useLocation();
     const navigate = useNavigate();
     const [newUser, setNewUser] = useState({
-        username: '', email_id: '', password: '', phone_no: '', wallet_bal: '', role_id: '', status: '',
+        username: '', email_id: '', password: '', phone_no: '', wallet_bal: '', role_id: '', user_id: '', status: '',
         client_id: '', reseller_id: '', created_by:'', created_date:'', modified_by:'', modified_date:'', _id: '',
     });
 
@@ -23,6 +23,7 @@ const ViewUserList = ({ userInfo, handleLogout }) => {
                 phone_no: dataItem.phone_no || '',
                 wallet_bal: dataItem.wallet_bal || '',
                 role_id: dataItem.role_id || '',
+                user_id: dataItem.user_id || '',
                 status: dataItem.status || '',
                 client_id: dataItem.client_id || '',
                 reseller_id: dataItem.reseller_id || '',

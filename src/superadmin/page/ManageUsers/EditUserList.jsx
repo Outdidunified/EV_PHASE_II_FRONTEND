@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
@@ -8,36 +8,21 @@ import Swal from 'sweetalert2';
 const EditUserList = ({ userInfo, handleLogout }) => {
     const location = useLocation();
     const navigate = useNavigate();
+    const dataItem = location.state?.newUser || JSON.parse(localStorage.getItem('editDeviceData'));
+    localStorage.setItem('editDeviceData', JSON.stringify(dataItem));
 
-    const [editUser, setEditUser] = useState({
-        username: '', email_id: '', password: '', phone_no: '', wallet_bal: '', user_id: '', status: '', _id: '',
-    });
-
+    // Edit manage device
+    const [username, setUsername] = useState(dataItem?.username || '');
+    const [email_id, setEmailId] = useState(dataItem?.email_id || '');
+    const [passwords, setPassword] = useState(dataItem?.password || '');
+    const [phone_no, setPhoneNo] = useState(dataItem?.phone_no || '');
+    const [wallet_bal, setWalletBal] = useState(dataItem?.wallet_bal || '');
     const [errorMessage, setErrorMessage] = useState('');
-    const [selectStatus, setSelectedStatus] = useState(editUser.status ? 'true' : 'false');
-
-    useEffect(() => {
-        const { dataItem } = location.state || {};
-        if (dataItem) {
-            setEditUser({
-                username: dataItem.username || '', email_id: dataItem.email_id || '', password: dataItem.password || '', phone_no: dataItem.phone_no || '', wallet_bal: dataItem.wallet_bal || '', user_id: dataItem.user_id || '', status: dataItem.status || '', _id: dataItem._id || '',
-            });
-            setSelectedStatus(dataItem.status ? 'true' : 'false');
-            // Save to localStorage
-            localStorage.setItem('editUserData', JSON.stringify(dataItem));
-        } else {
-            // Load from localStorage if available
-            const savedData = JSON.parse(localStorage.getItem('editUserData'));
-            if (savedData) {
-                setEditUser(savedData);
-                setSelectedStatus(savedData.status ? 'true' : 'false');
-            }
-        }
-    }, [location]);
+    const [selectStatus, setSelectStatus] = useState(dataItem?.status ? 'true' : 'false');
 
     // Select status
     const handleStatusChange = (e) => {
-        setSelectedStatus(e.target.value);
+        setSelectStatus(e.target.value);
     };
 
     // Back view manage user
@@ -53,35 +38,36 @@ const EditUserList = ({ userInfo, handleLogout }) => {
     // Update manage user
     const editManageUser = async (e) => {
         e.preventDefault();
-
+    
+        // Validate phone number
         const phoneRegex = /^\d{10}$/;
-        if (!editUser.phone_no || !phoneRegex.test(editUser.phone_no)) {
+        if (!phone_no || !phoneRegex.test(phone_no)) {
             setErrorMessage('Phone number must be a 10-digit number.');
             return;
         }
-
-        const passwordRegex = /^\d{4}$/;
-        if (!editUser.password || !passwordRegex.test(editUser.password)) {
-            setErrorMessage('Password must be a 4-digit number.');
-            return;
+    
+        // Validate password
+        if (passwords) {
+            const passwordRegex = /^\d{4}$/;
+            if (!passwordRegex.test(passwords)) {
+                setErrorMessage('Password must be a 4-digit number.');
+                return;
+            }
         }
-
+    
         try {
-            const updatedUser = {
-                user_id: editUser.user_id,
-                username: editUser.username,
-                phone_no: parseInt(editUser.phone_no),
-                password: parseInt(editUser.password),
-                status: selectStatus === 'true',
-                wallet_bal: parseInt(editUser.wallet_bal),
-                modified_by: userInfo.data.username,
-            };
             const response = await fetch('/superadmin/UpdateUser', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updatedUser),
+                body: JSON.stringify({ user_id: dataItem?.user_id,
+                    username: username,
+                    phone_no: phone_no,
+                    password: passwords,
+                    status: selectStatus === 'true',
+                    wallet_bal: parseInt(wallet_bal),
+                    modified_by: userInfo.data.username}),
             });
-
+    
             if (response.ok) {
                 Swal.fire({
                     title: 'User updated successfully',
@@ -103,6 +89,7 @@ const EditUserList = ({ userInfo, handleLogout }) => {
             });
         }
     };
+    
 
     return (
         <div className='container-scroller'>
@@ -121,9 +108,7 @@ const EditUserList = ({ userInfo, handleLogout }) => {
                                     </div>
                                     <div className="col-12 col-xl-4">
                                         <div className="justify-content-end d-flex">
-                                            <button type="button" className="btn btn-success" onClick={backManageDevice}>
-                                                Back
-                                            </button>
+                                            <button type="button" className="btn btn-success" onClick={backManageDevice}>Back</button>
                                         </div>
                                     </div>
                                 </div>
@@ -143,7 +128,7 @@ const EditUserList = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">User Name</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" value={editUser.username} onChange={(e) => setEditUser({ ...editUser, username: e.target.value })} required />
+                                                                        <input type="text" className="form-control" value={username} onChange={(e) => setUsername(e.target.value)} required />
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -151,7 +136,13 @@ const EditUserList = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Phone Number</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" value={editUser.phone_no} onChange={(e) => setEditUser({ ...editUser, phone_no: e.target.value })} required/>
+                                                                        <input
+                                                                            type="text"
+                                                                            className="form-control"
+                                                                            value={phone_no}
+                                                                            onChange={(e) => setPhoneNo(e.target.value)}
+                                                                            required
+                                                                        />
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -161,7 +152,14 @@ const EditUserList = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Email ID</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="email" className="form-control" value={editUser.email_id} readOnly required />
+                                                                        <input
+                                                                            type="email"
+                                                                            className="form-control"
+                                                                            value={email_id}
+                                                                            onChange={(e) => setEmailId(e.target.value)}
+                                                                            readOnly
+                                                                            required
+                                                                        />
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -169,7 +167,12 @@ const EditUserList = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Password</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" value={editUser.password} onChange={(e) => setEditUser({ ...editUser, password: e.target.value })} required/>
+                                                                        <input
+                                                                            type="text"
+                                                                            className="form-control"
+                                                                            value={passwords}
+                                                                            onChange={(e) => setPassword(e.target.value)}
+                                                                        />
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -179,7 +182,13 @@ const EditUserList = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Wallet</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" value={editUser.wallet_bal} onChange={(e) => setEditUser({ ...editUser, wallet_bal: e.target.value })} required/>
+                                                                        <input
+                                                                            type="text"
+                                                                            className="form-control"
+                                                                            value={wallet_bal}
+                                                                            onChange={(e) => setWalletBal(e.target.value)}
+                                                                            required
+                                                                        />
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -187,7 +196,7 @@ const EditUserList = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Status</label>
                                                                     <div className="col-sm-9">
-                                                                        <select className="form-control" value={selectStatus} onChange={handleStatusChange} required >
+                                                                        <select className="form-control" value={selectStatus} onChange={handleStatusChange} required>
                                                                             <option value="true">Active</option>
                                                                             <option value="false">Deactive</option>
                                                                         </select>

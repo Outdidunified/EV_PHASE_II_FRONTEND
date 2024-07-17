@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -10,6 +10,8 @@ const Manageclient = ({ userInfo, handleLogout }) => {
     const [users, setUsers] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const navigate = useNavigate();
+
+    const fetchUsersCalled = useRef(false); 
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -24,8 +26,12 @@ const Manageclient = ({ userInfo, handleLogout }) => {
             }
         };
 
-        fetchUsers(); // Fetch users on mount or when userInfo changes
-    }, [userInfo]); // Added userInfo as a dependency
+        if (!fetchUsersCalled.current && userInfo.data.reseller_id) {
+            fetchUsers();
+            fetchUsersCalled.current = true;
+        }
+    }, [userInfo.data.reseller_id]);
+
 
     const handleDeactivateUser = async (client_id, status) => {
         try {

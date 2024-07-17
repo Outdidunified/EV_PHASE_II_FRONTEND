@@ -1,25 +1,14 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import axios from 'axios';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer';
-import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
 const Profile = ({ userInfo, handleLogout }) => {
-    const navigate = useNavigate();
-    const [resellerDetails, setResellerDetails] = useState({
-        username: '',
-        email: '',
-        phoneNo: '',
-        address:'',
-    });
-    const [userDetails, setUserDetails] = useState({
-        username: '',
-        email: '',
-        phoneNo: '',
-        pass:'',
-    });
+    const [resellerDetails, setResellerDetails] = useState({ username: '', email: '', phoneNo: '', address:''});
+    const [userDetails, setUserDetails] = useState({ username: '', email: '', phoneNo: '', pass:''});
+    const fetchProfileCalled = useRef(false); // Ref to track if fetch function has been called
 
     // Define fetchResellerUserDetails using useCallback to memoize it
     const fetchResellerUserDetails = useCallback(async () => {
@@ -49,11 +38,14 @@ const Profile = ({ userInfo, handleLogout }) => {
         } catch (error) {
             console.error('Error fetching user details:', error);
         }
-    }, [userInfo.data.user_id]); // Memoize fetchResellerUserDetails with userInfo.data.user_id
+    }, [userInfo.data.user_id]);
 
     useEffect(() => {
-        fetchResellerUserDetails();
-    }, [fetchResellerUserDetails]); // Include fetchResellerUserDetails in the dependency array
+        if (!fetchProfileCalled.current) {
+            fetchResellerUserDetails();
+            fetchProfileCalled.current = true; // Mark fetchResellerUserDetails as called
+        }
+    }, [fetchResellerUserDetails]);
 
     const handleUserFormSubmit = async (e) => {
         e.preventDefault();
@@ -84,10 +76,6 @@ const Profile = ({ userInfo, handleLogout }) => {
                 confirmButtonText: 'OK'
             });
         }
-    };
-
-    const goBack = () => {
-        navigate(-1);
     };
 
     const handleResellerFormSubmit = async (e) => {
@@ -136,18 +124,6 @@ const Profile = ({ userInfo, handleLogout }) => {
                                     <div className="col-12 col-xl-8 mb-4 mb-xl-0">
                                         <h3 className="font-weight-bold">Profile</h3>
                                     </div>
-                                    <div className="col-12 col-xl-4">
-                                        <div className="justify-content-end d-flex">
-                                            <button
-                                                type="button"
-                                                className="btn btn-success"
-                                                onClick={goBack}
-                                                style={{ marginRight: '10px' }}
-                                            >
-                                                Go Back
-                                            </button>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -163,47 +139,20 @@ const Profile = ({ userInfo, handleLogout }) => {
 
                                             <div className="form-group">
                                                 <label htmlFor="exampleInputUsername1">Reseller Name</label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    id="exampleInputUsername1"
-                                                    placeholder="Username"
-                                                    value={resellerDetails.username}
-                                                    onChange={(e) => setResellerDetails({ ...resellerDetails, username: e.target.value })}
-                                                />
+                                                <input type="text" className="form-control" id="exampleInputUsername1" placeholder="Username"
+                                                    value={resellerDetails.username} onChange={(e) => setResellerDetails({ ...resellerDetails, username: e.target.value })}/>
                                             </div>
                                             <div className="form-group">
                                                 <label htmlFor="exampleInputEmail1">Email address</label>
-                                                <input
-                                                    type="email"
-                                                    className="form-control"
-                                                    id="exampleInputEmail1"
-                                                    placeholder="Email"
-                                                    value={resellerDetails.email}
-                                                    readOnly
-                                                />
+                                                <input type="email" className="form-control" id="exampleInputEmail1" placeholder="Email" value={resellerDetails.email} readOnly />
                                             </div>
                                             <div className="form-group">
                                                 <label htmlFor="exampleInputPhoneNo1">Phone Number</label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    id="exampleInputPhoneNo1"
-                                                    placeholder="Phone Number"
-                                                    value={resellerDetails.phoneNo}
-                                                    onChange={(e) => setResellerDetails({ ...resellerDetails, phoneNo: e.target.value })}
-                                                />
+                                                <input type="text" className="form-control" id="exampleInputPhoneNo1" placeholder="Phone Number" value={resellerDetails.phoneNo} onChange={(e) => setResellerDetails({ ...resellerDetails, phoneNo: e.target.value })}/>
                                             </div>
                                             <div className="form-group">
                                                 <label htmlFor="address"> Address</label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    id="address"
-                                                    placeholder="Address"
-                                                    value={resellerDetails.address}
-                                                    onChange={(e) => setResellerDetails({ ...resellerDetails, address: e.target.value })}
-                                                />
+                                                <input type="text" className="form-control" id="address" placeholder="Address" value={resellerDetails.address} onChange={(e) => setResellerDetails({ ...resellerDetails, address: e.target.value })}/>
                                             </div>
                                             <div style={{ display: 'flex', justifyContent: 'center' }}>
                                                 <button type="submit" className="btn btn-primary mr-2">Update</button>
@@ -221,47 +170,19 @@ const Profile = ({ userInfo, handleLogout }) => {
                                             </div>
                                             <div className="form-group">
                                                 <label htmlFor="exampleInputUsername2">Username</label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    id="exampleInputUsername2"
-                                                    placeholder="Username"
-                                                    value={userDetails.username}
-                                                    onChange={(e) => setUserDetails({ ...userDetails, username: e.target.value })}
-                                                />
+                                                <input type="text" className="form-control" id="exampleInputUsername2" placeholder="Username" value={userDetails.username} onChange={(e) => setUserDetails({ ...userDetails, username: e.target.value })}/>
                                             </div>
                                             <div className="form-group">
                                                 <label htmlFor="exampleInputEmail2">Email address</label>
-                                                <input
-                                                    type="email"
-                                                    className="form-control"
-                                                    id="exampleInputEmail2"
-                                                    placeholder="Email"
-                                                    value={userDetails.email}
-                                                    readOnly
-                                                />
+                                                <input type="email" className="form-control" id="exampleInputEmail2" placeholder="Email" value={userDetails.email} readOnly/>
                                             </div>
                                             <div className="form-group">
                                                 <label htmlFor="exampleInputPhoneNo2">Phone Number</label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    id="exampleInputPhoneNo2"
-                                                    placeholder="Phone Number"
-                                                    value={userDetails.phoneNo}
-                                                    onChange={(e) => setUserDetails({ ...userDetails, phoneNo: e.target.value })}
-                                                />
+                                                <input type="text" className="form-control" id="exampleInputPhoneNo2" placeholder="Phone Number" value={userDetails.phoneNo} onChange={(e) => setUserDetails({ ...userDetails, phoneNo: e.target.value })}/>
                                             </div>
                                             <div className="form-group">
                                                 <label htmlFor="exampleInputPassword2">Password</label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    id="exampleInputPassword2"
-                                                    placeholder="Password"
-                                                    value={userDetails.pass}
-                                                    onChange={(e) => setUserDetails({ ...userDetails, pass: e.target.value })}
-                                                />
+                                                <input type="text" className="form-control" id="exampleInputPassword2" placeholder="Password" value={userDetails.pass} onChange={(e) => setUserDetails({ ...userDetails, pass: e.target.value })}/>
                                             </div>
                                             <div style={{ display: 'flex', justifyContent: 'center' }}>
                                                 <button type="submit" className="btn btn-primary mr-2">Update</button>

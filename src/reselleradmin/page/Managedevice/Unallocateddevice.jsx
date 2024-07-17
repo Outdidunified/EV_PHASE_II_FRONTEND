@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar';
@@ -24,6 +24,8 @@ const Unallocateddevice = ({ userInfo, handleLogout }) => {
         navigate('/reselleradmin/ViewUnalloc', { state: { charger } });
     };
 
+    const fetchUnAllocatedChargerDetailsCalled = useRef(false); 
+
     const fetchUnAllocatedChargerDetails = useCallback(async () => {
         try {
             const response = await axios.post('/reselleradmin/FetchUnAllocatedCharger', {
@@ -38,8 +40,11 @@ const Unallocateddevice = ({ userInfo, handleLogout }) => {
     }, [userInfo.data.reseller_id]); // Include dependencies for useCallback
 
     useEffect(() => {
-        fetchUnAllocatedChargerDetails();
-    }, [fetchUnAllocatedChargerDetails]); // Include fetchUnAllocatedChargerDetails in dependency array
+        if (!fetchUnAllocatedChargerDetailsCalled.current) {
+            fetchUnAllocatedChargerDetails();
+            fetchUnAllocatedChargerDetailsCalled.current = true; // Mark fetchUnAllocatedChargerDetails as called
+        }
+    }, [fetchUnAllocatedChargerDetails]); //// Include fetchUnAllocatedChargerDetails in dependency array
 
     const goBack = () => {
         navigate(-1);
