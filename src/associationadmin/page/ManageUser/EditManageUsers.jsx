@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
@@ -8,31 +8,17 @@ import Swal from 'sweetalert2';
 const EditManageUsers = ({ userInfo, handleLogout }) => {
     const location = useLocation();
     const navigate = useNavigate();
-
-    const [editUser, setEditUser] = useState({
-        username: '', email_id: '', password: '', phone_no: '', user_id: '', status: '',
-    });
+    const dataItem = location.state?.dataItem || JSON.parse(localStorage.getItem('editDeviceData'));
+    localStorage.setItem('editDeviceData', JSON.stringify(dataItem));
 
     const [errorMessage, setErrorMessage] = useState('');
-    const [selectStatus, setSelectedStatus] = useState(editUser.status ? 'true' : 'false');
+    const [selectStatus, setSelectedStatus] = useState(dataItem.status ? 'true' : 'false');
 
-    // User data
-    useEffect(() => {
-        const { dataItem } = location.state || {};
-        if (dataItem) {
-            setEditUser({
-                username: dataItem.username || '', email_id: dataItem.email_id || '', password: dataItem.password || '', phone_no: dataItem.phone_no || '', user_id: dataItem.user_id || '', status: dataItem.status || '',
-            });
-            setSelectedStatus(dataItem.status ? 'true' : 'false');
-            localStorage.setItem('editUserData', JSON.stringify(dataItem));
-        } else {
-            const savedData = JSON.parse(localStorage.getItem('editUserData'));
-            if (savedData) {
-                setEditUser(savedData);
-                setSelectedStatus(savedData.status ? 'true' : 'false');
-            }
-        }
-    }, [location]);
+     // Edit manage device
+     const [username, setUsername] = useState(dataItem?.username || '');
+     const [password, setPassword] = useState(dataItem?.password || '');
+     const [phone_no, setPhoneNumber] = useState(dataItem?.phone_no || '');
+
 
     /// Selected status
     const handleStatusChange = (e) => {
@@ -49,25 +35,24 @@ const EditManageUsers = ({ userInfo, handleLogout }) => {
         e.preventDefault();
 
         const phoneRegex = /^\d{10}$/;
-        if (!editUser.phone_no || !phoneRegex.test(editUser.phone_no)) {
+        if (!dataItem.phone_no || !phoneRegex.test(dataItem.phone_no)) {
             setErrorMessage('Phone number must be a 10-digit number.');
             return;
         }
 
         const passwordRegex = /^\d{4}$/;
-        if (!editUser.password || !passwordRegex.test(editUser.password)) {
+        if (!dataItem.password || !passwordRegex.test(dataItem.password)) {
             setErrorMessage('Password must be a 4-digit number.');
             return;
         }
 
         try {
             const updatedUser = {
-                user_id: editUser.user_id,
-                username: editUser.username,
-                phone_no: parseInt(editUser.phone_no),
-                password: parseInt(editUser.password),
+                user_id: dataItem.user_id,
+                username: username,
+                phone_no: parseInt(phone_no),
+                password: parseInt(password),
                 status: selectStatus === 'true',
-                wallet_bal: parseInt(editUser.wallet_bal),
                 modified_by: userInfo.data.association_name,
             };
             const response = await fetch('/associationadmin/UpdateUser', {
@@ -137,7 +122,7 @@ const EditManageUsers = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">User Name</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" value={editUser.username} onChange={(e) => setEditUser({ ...editUser, username: e.target.value })} required/>
+                                                                        <input type="text" className="form-control" value={username} onChange={(e) => setUsername(e.target.value )} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -145,7 +130,7 @@ const EditManageUsers = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Phone Number</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" value={editUser.phone_no} onChange={(e) => setEditUser({ ...editUser, phone_no: e.target.value })} required/>
+                                                                        <input type="text" className="form-control" value={phone_no} onChange={(e) => setPhoneNumber( e.target.value )} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -155,7 +140,7 @@ const EditManageUsers = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Email ID</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="email" className="form-control" value={editUser.email_id} readOnly required/>
+                                                                        <input type="email" className="form-control" value={dataItem.email_id} readOnly required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -163,7 +148,7 @@ const EditManageUsers = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Password</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" value={editUser.password} onChange={(e) => setEditUser({ ...editUser, password: e.target.value })} required />
+                                                                        <input type="text" className="form-control" value={password} onChange={(e) => setPassword( e.target.value )} required />
                                                                     </div>
                                                                 </div>
                                                             </div>

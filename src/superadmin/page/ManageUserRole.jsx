@@ -85,6 +85,10 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
     };
     const closeAddModal = () => {
         setShowAddForm(false); // Close the form
+        setTheadsticky('sticky');
+        setTheadfixed('fixed');
+        setTheadBackgroundColor('white');
+
     };
     const modalAddStyle = {
         display: showAddForm ? 'block' : 'none',
@@ -111,6 +115,10 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
                 setuserRole(''); 
                 setShowAddForm(false);
                 closeAddModal();
+                fetchUserRoles();
+                setTheadsticky('sticky');
+                setTheadfixed('fixed');
+                setTheadBackgroundColor('white');
             } else {
                 Swal.fire({
                     title: "Error",
@@ -139,6 +147,8 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
 
     const closeEditModal = () => {
         setShowEditForm(false); // Close the form
+        setTheadsticky('sticky');
+        setTheadfixed('fixed');
         setTheadBackgroundColor('white');
     };
 
@@ -147,11 +157,24 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
     }
  
     const [theadBackgroundColor, setTheadBackgroundColor] = useState('white');
+    const [theadsticky, setTheadsticky] = useState('sticky');
+    const [theadfixed, setTheadfixed] = useState('fixed');
 
+    // Edit button thead bgcolor
     const handleEditUserAndToggleBackground = (dataItem) => {
         handleEditUser(dataItem);
+        setTheadsticky(theadsticky === 'sticky' ? '' : 'sticky');
+        setTheadfixed(theadfixed === 'fixed' ? 'transparent' : 'fixed');
         setTheadBackgroundColor(theadBackgroundColor === 'white' ? 'transparent' : 'white');
     };
+
+    // Add button thead bgcolor
+    const handleAddUserAndToggleBackground = () => {
+        addChargers();
+        setTheadsticky(theadsticky === 'sticky' ? '' : 'sticky');
+        setTheadfixed(theadfixed === 'fixed' ? 'transparent' : 'fixed');
+        setTheadBackgroundColor(theadBackgroundColor === 'white' ? 'transparent' : 'white');
+    }
 
     // Edit user role
     const [roleEditname, setEdituserRole] = useState('');
@@ -175,6 +198,8 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
                 setShowEditForm(false);
                 closeEditModal();
                 fetchUserRoles();
+                setTheadsticky('sticky');
+                setTheadfixed('fixed');
                 setTheadBackgroundColor('white');
             } else {
                 Swal.fire({
@@ -275,7 +300,7 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
                                     </div>
                                     <div className="col-12 col-xl-4">
                                         <div className="justify-content-end d-flex">
-                                            <button type="button" className="btn btn-success" onClick={addChargers}>Add Role's</button>
+                                            <button type="button" className="btn btn-success" onClick={handleAddUserAndToggleBackground}>Add Role's</button>
                                             {/* Add role start */}
                                             <div className="modalStyle" style={modalAddStyle}>
                                                 <div className="modalContentStyle" style={{ maxHeight: '680px', overflowY: 'auto' }}>
@@ -356,7 +381,7 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
                                         </div>
                                         <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
                                             <table className="table table-striped">
-                                                <thead style={{ textAlign: 'center', position: 'sticky', tableLayout: 'fixed', top: 0, zIndex: 1, backgroundColor: theadBackgroundColor}}>
+                                                <thead style={{ textAlign: 'center', position: theadsticky, tableLayout: theadfixed, top: 0, zIndex: 1, backgroundColor: theadBackgroundColor}}>
                                                     <tr> 
                                                         <th>Sl.No</th>
                                                         <th>Role Name</th>

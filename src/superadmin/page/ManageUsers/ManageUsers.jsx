@@ -22,6 +22,9 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
     };
     const closeAddModal = () => {
         setShowAddForm(false);
+        setTheadsticky('sticky');
+        setTheadfixed('fixed');
+        setTheadBackgroundColor('white');
     };
     const modalAddStyle = {
         display: showAddForm ? 'block' : 'none',
@@ -44,6 +47,18 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
     const handleselectionReseller = (e) => {
         setSelectedReseller(e.target.value);
     };
+
+    const [theadsticky, setTheadsticky] = useState('sticky');
+    const [theadfixed, setTheadfixed] = useState('fixed');
+    const [theadBackgroundColor, setTheadBackgroundColor] = useState('white');
+
+    // Add button thead bgcolor
+    const handleAddUser = () => {
+        addChargers();
+        setTheadsticky(theadsticky === 'sticky' ? '' : 'sticky');
+        setTheadfixed(theadfixed === 'fixed' ? 'transparent' : 'fixed');
+        setTheadBackgroundColor(theadBackgroundColor === 'white' ? 'transparent' : 'white');
+    }
     
     const addManageUser = async (e) => {
         e.preventDefault();
@@ -93,6 +108,9 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
                 setPhone(''); 
                 // setWallet(''); 
                 setShowAddForm(false);
+                setTheadsticky('sticky');
+                setTheadfixed('fixed');
+                setTheadBackgroundColor('white');
             } else {
                 Swal.fire({
                     title: "Error",
@@ -209,7 +227,7 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
                                     </div>
                                     <div className="col-12 col-xl-4">
                                         <div className="justify-content-end d-flex">
-                                            <button type="button" className="btn btn-success" onClick={addChargers}>Add User's</button>
+                                            <button type="button" className="btn btn-success" onClick={handleAddUser}>Add User's</button>
                                             {/* Add user start */}
                                             <div className="modalStyle" style={modalAddStyle}>
                                                 <div className="modalContentStyle" style={{ maxHeight: '680px', overflowY: 'auto' }}>
@@ -309,7 +327,7 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
                                         </div>
                                         <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
                                             <table className="table table-striped">
-                                                <thead style={{ textAlign: 'center', position: 'sticky', tableLayout: 'fixed', top: 0, backgroundColor: 'white', zIndex: 1 }}>
+                                                <thead style={{ textAlign: 'center', position: theadsticky, tableLayout: theadfixed, top: 0, backgroundColor: theadBackgroundColor, zIndex: 1 }}>
                                                     <tr> 
                                                         <th>Sl.No</th>
                                                         <th>User Name</th>
