@@ -14,11 +14,10 @@ const EditManageUsers = ({ userInfo, handleLogout }) => {
     const [errorMessage, setErrorMessage] = useState('');
     const [selectStatus, setSelectedStatus] = useState(dataItem.status ? 'true' : 'false');
 
-     // Edit manage device
-     const [username, setUsername] = useState(dataItem?.username || '');
-     const [password, setPassword] = useState(dataItem?.password || '');
-     const [phone_no, setPhoneNumber] = useState(dataItem?.phone_no || '');
-
+    // Edit manage device
+    const [username, setUsername] = useState(dataItem?.username || '');
+    const [password, setPassword] = useState(dataItem?.password || '');
+    const [phone_no, setPhoneNumber] = useState(dataItem?.phone_no || '');
 
     /// Selected status
     const handleStatusChange = (e) => {
