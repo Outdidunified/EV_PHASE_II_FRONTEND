@@ -46,6 +46,16 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
         setModel(e.target.value);
     };
 
+    // Select socket
+    const handleSocket = (e) => {
+        setSocketCount(e.target.value);
+    };
+
+    // Select Gunconnetor
+    const handleGunconnetor = (e) => {
+        setGunConnector(e.target.value);
+    };
+
     // Select charger type
     const handleChargerType = (e) => {
         setSelectedChargerType(e.target.value);
@@ -202,10 +212,9 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Model</label>
                                                                     <div className="col-sm-9">
-                                                                        {/* <input type="text" className="form-control" placeholder="Model" value={model} onChange={(e) => setModel(e.target.value)} required/> */}
                                                                         <select className="form-control" value={model} onChange={handleModel} required>
                                                                             <option value="">Select model</option>
-                                                                            <option value="3.4">3.4 KW</option>
+                                                                            <option value="3.5">3.5 KW</option>
                                                                             <option value="7.4">7.4 KW</option>
                                                                             <option value="11">11 KW</option>
                                                                             <option value="22">22 KW</option>
@@ -239,7 +248,12 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Gun Connector</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="number" className="form-control" placeholder="Gun Connector" value={gunConnector} onChange={(e) => setGunConnector(e.target.value)} required/>
+                                                                        <select className="form-control" value={gunConnector} onChange={handleGunconnetor} required>
+                                                                            <option value="">Select Gun connetor</option>
+                                                                            <option value="3">3 phase socket </option>
+                                                                            <option value="2">CSS Type 2</option>
+                                                                            <option value="1">Single phase socket</option>
+                                                                        </select>                                                                     
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -267,7 +281,13 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Socket Count</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="number" className="form-control" placeholder="Socket Count" value={socketCount} min={1} max={4} onChange={(e) => setSocketCount(e.target.value)} required/>
+                                                                        <select className="form-control" value={socketCount} onChange={handleSocket} required>
+                                                                            <option value="">Select socket</option>
+                                                                            <option value="1">1 Socket</option>
+                                                                            <option value="2">2 Sockets</option>
+                                                                            <option value="3">3 Sockets</option>
+                                                                            <option value="4">4 Sockets</option>
+                                                                        </select>
                                                                     </div>
                                                                 </div>
                                                             </div>

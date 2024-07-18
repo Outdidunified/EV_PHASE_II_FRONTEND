@@ -44,7 +44,7 @@ const ManageDevice = ({ userInfo, handleLogout }) => {
                     setError('Error fetching data. Please try again.');
                     setLoading(false);
                 });
-                fetchDataCalled.current = true;
+            fetchDataCalled.current = true;
         }
     }, []);
     

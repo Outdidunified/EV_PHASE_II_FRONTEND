@@ -12,26 +12,28 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
     const [error, setError] = useState(null);
     const [filteredData] = useState([]);
     const [posts, setPosts] = useState([]);
-    const [updateTrigger, setUpdateTrigger] = useState(false);
     const fetchUserRoleCalled = useRef(false); // Ref to track if fetchProfile has been called
 
-    // Get manage user role
+    // Fetch user roles
+    const fetchUserRoles = async () => {
+        try {
+            const res = await axios.get('/superadmin/FetchUserRoles');
+            setData(res.data.data);
+            setLoading(false);
+        } catch (err) {
+            console.error('Error fetching data:', err);
+            setError('Error fetching data. Please try again.');
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         if (!fetchUserRoleCalled.current) {
-            const url = `/superadmin/FetchUserRoles`;
-            axios.get(url).then((res) => {
-                setData(res.data.data);
-                    // console.log(res.data.data);
-                    setLoading(false);
-                })
-                .catch((err) => {
-                    console.error('Error fetching data:', err);
-                    setError('Error fetching data. Please try again.');
-                    setLoading(false);
-                });
+            fetchUserRoles();
             fetchUserRoleCalled.current = true;
         }
-    }, [updateTrigger]);
+    }, []);
+
 
     // Search data 
     const handleSearchInputChange = (e) => {
@@ -134,13 +136,23 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
         setEdituserRole(dataItem.role_name); // Set role name for editing
         setShowEditForm(true); // Open the form
     };
+
     const closeEditModal = () => {
         setShowEditForm(false); // Close the form
+        setTheadBackgroundColor('white');
     };
+
     const modalEditStyle = {
         display: showEditForm ? 'block' : 'none',
     }
  
+    const [theadBackgroundColor, setTheadBackgroundColor] = useState('white');
+
+    const handleEditUserAndToggleBackground = (dataItem) => {
+        handleEditUser(dataItem);
+        setTheadBackgroundColor(theadBackgroundColor === 'white' ? 'transparent' : 'white');
+    };
+
     // Edit user role
     const [roleEditname, setEdituserRole] = useState('');
     
@@ -162,7 +174,8 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
                 setEdituserRole(''); 
                 setShowEditForm(false);
                 closeEditModal();
-                setUpdateTrigger(prev => !prev);
+                fetchUserRoles();
+                setTheadBackgroundColor('white');
             } else {
                 Swal.fire({
                     title: "Error",
@@ -195,7 +208,7 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
                     title: "DeActivate successfully",
                     icon: "success"
                 });
-                setUpdateTrigger((prev) => !prev);
+                fetchUserRoles();
             } else {
                 Swal.fire({
                     title: "Error",
@@ -228,7 +241,7 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
                     title: "Activate successfully",
                     icon: "success"
                 });
-                setUpdateTrigger((prev) => !prev);
+                fetchUserRoles();
             } else {
                 Swal.fire({
                     title: "Error",
@@ -343,7 +356,7 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
                                         </div>
                                         <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
                                             <table className="table table-striped">
-                                                <thead style={{ textAlign: 'center', position: 'sticky', tableLayout: 'fixed', top: 0, zIndex: 1 }}>
+                                                <thead style={{ textAlign: 'center', position: 'sticky', tableLayout: 'fixed', top: 0, zIndex: 1, backgroundColor: theadBackgroundColor}}>
                                                     <tr> 
                                                         <th>Sl.No</th>
                                                         <th>Role Name</th>
@@ -390,7 +403,7 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
                                                                     </div>
                                                                 </td>
                                                                 <td>
-                                                                    <button type="button" className="btn btn-outline-primary btn-icon-text"  onClick={() => handleEditUser(dataItem)} style={{marginBottom:'10px', marginRight:'10px'}}><i className="mdi mdi-pencil btn-icon-prepend"></i>Edit</button><br/>
+                                                                    <button type="button" className="btn btn-outline-primary btn-icon-text"  onClick={() => handleEditUserAndToggleBackground(dataItem)} style={{marginBottom:'10px', marginRight:'10px'}}><i className="mdi mdi-pencil btn-icon-prepend"></i>Edit</button><br/>
                                                                 </td>                                                    
                                                             </tr>
                                                         ))
@@ -400,7 +413,6 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
                                                         </tr>
                                                         )
                                                     )}
-                                                    
                                                 </tbody>
                                             </table>
                                         </div>

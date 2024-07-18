@@ -120,7 +120,7 @@ const EditManageReseller = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Reseller Name</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" value={reseller_name} onChange={(e) => setResellerName(e.target.value )}required />
+                                                                        <input type="text" className="form-control" value={reseller_name} onChange={(e) => setResellerName(e.target.value )}readOnly required />
                                                                     </div>
                                                                 </div>
                                                             </div>

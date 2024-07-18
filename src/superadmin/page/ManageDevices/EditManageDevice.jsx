@@ -31,9 +31,24 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
     const [gun_connector, setGunConnetor] = useState(dataItem?.gun_connector || '');
     const [max_current, setMaxCurrent] = useState(dataItem?.max_current || '');
     const [max_power, setMaxPower] = useState(dataItem?.max_power || '');
-    const [socket_count, setsocketCount] = useState(dataItem?.socket_count || '');
+    const [socket_count, setSocketCount] = useState(dataItem?.socket_count || '');
     const [errorMessage, setErrorMessage] = useState('');
 
+    // Select model 
+    const handleModel = (e) => {
+        setModel(e.target.value);
+    };
+    
+    // Select socket
+    const handleSocket = (e) => {
+        setSocketCount(e.target.value);
+    };
+
+    // Select Gunconnetor
+    const handleGunconnetor = (e) => {
+        setGunConnetor(e.target.value);
+    };
+    
     // Selected charger type
     const handleChargerType = (e) => {
         setType(e.target.value);
@@ -153,7 +168,13 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Model</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Model" value={model}  onChange={(e) => setModel(e.target.value)} required/>
+                                                                        <select className="form-control" value={model} onChange={handleModel} required>
+                                                                            <option value="">Select model</option>
+                                                                            <option value="3.5">3.5 KW</option>
+                                                                            <option value="7.4">7.4 KW</option>
+                                                                            <option value="11">11 KW</option>
+                                                                            <option value="22">22 KW</option>
+                                                                        </select>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -182,7 +203,12 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row"> 
                                                                     <label className="col-sm-3 col-form-label">Gun Connetor</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="number" className="form-control" placeholder="Gun Connetor" value={gun_connector}  onChange={(e) => setGunConnetor(e.target.value)} required/>
+                                                                        <select className="form-control" value={gun_connector} onChange={handleGunconnetor} required>
+                                                                            <option value="">Select Gun connetor</option>
+                                                                            <option value="3">3 phase socket </option>
+                                                                            <option value="2">CSS Type 2</option>
+                                                                            <option value="1">Single phase socket</option>
+                                                                        </select> 
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -210,7 +236,13 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Socket Count</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="number" className="form-control" placeholder="Socket Count" value={socket_count} min={1} max={4} onChange={(e) => setsocketCount(e.target.value)} required/>
+                                                                        <select className="form-control" value={socket_count} onChange={handleSocket} required>
+                                                                            <option value="">Select socket</option>
+                                                                            <option value="1">1 Socket</option>
+                                                                            <option value="2">2 Sockets</option>
+                                                                            <option value="3">3 Sockets</option>
+                                                                            <option value="4">4 Sockets</option>
+                                                                        </select>                                                                    
                                                                     </div>
                                                                 </div>
                                                             </div>
