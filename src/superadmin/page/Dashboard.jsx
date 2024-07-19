@@ -48,9 +48,9 @@ const Dashboard = ({ userInfo, handleLogout }) => {
         );
         // Update the search state with the filtered results
         setPosts(filteredData); // Set posts to the filteredData
-      };
+    };
 
-    // // Update table data 'data', and 'filteredData' 
+    // Update table data 'data', and 'filteredData' 
     useEffect(() => {
         switch (data) {
             case 'filteredData':

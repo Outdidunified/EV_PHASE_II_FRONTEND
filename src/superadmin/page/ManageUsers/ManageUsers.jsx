@@ -271,7 +271,7 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
                                                                 </div>
                                                                 <div className="input-group">
                                                                     <div className="input-group-prepend">
-                                                                        <span className="input-group-text" style={{color:'black', width:'125px'}}>Emial ID</span>
+                                                                        <span className="input-group-text" style={{color:'black', width:'125px'}}>Email ID</span>
                                                                     </div>
                                                                     <input type="email" className="form-control" placeholder="Email ID" value={email_id} onChange={(e) => setemailID(e.target.value)} required/>
                                                                 </div>
