@@ -86,7 +86,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
             return;
         }
         if (!vendorRegex.test(vendor)) {
-            setErrorMessage('Oops! Vendor name must be 1 to 20 characters and contain only alphanumeric characters.');
+            setErrorMessage('Oops! Vendor name must be 1 to 20 characters and contain alphanumeric and numbers.');
             return;
         }
 

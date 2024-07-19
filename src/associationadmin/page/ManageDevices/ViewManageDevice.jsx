@@ -149,7 +149,7 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
                                                         </div>
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Gun Connector: <span style={{fontWeight: 'normal'}}>{deviceData.gun_connector ?  deviceData.gun_connector : '-'}</span></div>
+                                                                <div className="col-sm-12">Gun Connector: <span style={{ fontWeight: 'normal' }}>{deviceData.gun_connector === 1 ? 'Single phase' : deviceData.gun_connector === 2 ? 'CSS Type 2' : deviceData.gun_connector === 3 ? '3 phase socket' : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4">
@@ -166,7 +166,7 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
                                                         </div>
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Socket Count: <span style={{fontWeight: 'normal'}}>{deviceData.socket_count ? deviceData.socket_count : '-'}</span></div>
+                                                                <div className="col-sm-12">Socket Count: <span style={{fontWeight:'normal'}}>{deviceData.socket_count === 1 ? '1 Socket ' : deviceData.socket_count === 2 ? '2 Sockets' : deviceData.socket_count === 3 ? '3 Sockets' : deviceData.socket_count === 4 ? '4 Sockets' : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4">

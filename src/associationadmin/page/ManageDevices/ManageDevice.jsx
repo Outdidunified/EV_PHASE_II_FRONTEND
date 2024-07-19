@@ -216,7 +216,15 @@ const ManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <td>{dataItem.charger_id ? dataItem.charger_id : '-'}</td>
                                                                 <td>{dataItem.model ? dataItem.model : '-'}</td>
                                                                 <td>{dataItem.type ?  dataItem.type : '-'}</td>
-                                                                <td>{dataItem.gun_connector ? dataItem.gun_connector : '-'}</td>
+                                                                <td>
+                                                                    {dataItem.gun_connector === 1
+                                                                        ? 'Single phase'
+                                                                        : dataItem.gun_connector === 2
+                                                                        ? 'CSS Type 2'
+                                                                        : dataItem.gun_connector === 3
+                                                                        ? '3 phase socket'
+                                                                    : '-'}
+                                                                </td>
                                                                 <td>{dataItem.max_current ? dataItem.max_current : '-'}</td>
                                                                 <td>{dataItem.status===true ? <span className="text-success">Active</span> : <span className="text-danger">DeActive</span>}</td>
                                                                 <td>

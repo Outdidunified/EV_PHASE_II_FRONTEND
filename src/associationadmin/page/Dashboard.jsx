@@ -403,11 +403,14 @@ const Dashboard = ({ userInfo, handleLogout }) => {
                                                                         <span>-</span> 
                                                                     )}
                                                                 </td>
-                                                                <td>{dataItem.gun_connector ? (
-                                                                    <span>{dataItem.gun_connector}</span>
-                                                                    ): (
-                                                                        <span>-</span> 
-                                                                    )}
+                                                                <td>
+                                                                    {dataItem.gun_connector === 1
+                                                                        ? 'Single phase'
+                                                                        : dataItem.gun_connector === 2
+                                                                        ? 'CSS Type 2'
+                                                                        : dataItem.gun_connector === 3
+                                                                        ? '3 phase socket'
+                                                                    : '-'}
                                                                 </td>
                                                                 <td>{dataItem.max_current ? (
                                                                     <span>{dataItem.max_current}</span>
