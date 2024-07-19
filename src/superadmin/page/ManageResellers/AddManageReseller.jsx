@@ -56,16 +56,17 @@ const AddManageReseller = ({ userInfo, handleLogout }) => {
                 setAddress(''); 
                 backManageReseller();
             } else {
+                const responseData = await response.json();
                 Swal.fire({
                     title: "Error",
-                    text: "Failed to add charger",
+                    text: "Failed to add reseller " + responseData.message,
                     icon: "error"
                 });
             }
         }catch (error) {
             Swal.fire({
                 title: "Error:", error,
-                text: "An error occurred while adding the charger",
+                text: "An error occurred while adding the reseller",
                 icon: "error"
             });
         }

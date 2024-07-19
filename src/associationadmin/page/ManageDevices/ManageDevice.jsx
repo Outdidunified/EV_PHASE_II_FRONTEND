@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 import Footer from '../../components/Footer';
@@ -13,7 +13,6 @@ const ManageDevice = ({ userInfo, handleLogout }) => {
     const [error, setError] = useState(null);
     const [filteredData] = useState([]);
     const [posts, setPosts] = useState([]);
-    const [updateTrigger, setUpdateTrigger] = useState(false);
     const fetchMangeCalled = useRef(false);
     
     // View manage device
@@ -22,40 +21,39 @@ const ManageDevice = ({ userInfo, handleLogout }) => {
     };
     
     // Get Allocated charger data
-    useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const response = await fetch('/associationadmin/FetchAllocatedChargerByClientToAssociation', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ association_id: userInfo.data.association_id }),
-                });
+    const FetchAllocatedCharger = useCallback(async () => {
+        try {
+            const response = await fetch('/associationadmin/FetchAllocatedChargerByClientToAssociation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ association_id: userInfo.data.association_id }),
+            });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('Response datasss:', data); 
-                    setData(data.data);
-                    setLoading(false);
-                } else {
-                    setError('Failed to fetch profile');
-                    console.error('Failed to fetch profile:', response.statusText);
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-                setError('Error fetching data. Please try again.');
+            if (response.ok) {
+                const data = await response.json();
+                // console.log('Response data:', data);
+                setData(data.data);
                 setLoading(false);
+            } else {
+                setError('Failed to fetch profile');
+                console.error('Failed to fetch profile:', response.statusText);
             }
-        };
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            setError('Error fetching data. Please try again.');
+            setLoading(false);
+        }
+    }, [userInfo.data.association_id]);
 
+    useEffect(() => {
         if (!fetchMangeCalled.current && userInfo && userInfo.data && userInfo.data.user_id) {
-            fetchProfile();
+            FetchAllocatedCharger();
             fetchMangeCalled.current = true;
         }
-    }, [userInfo, updateTrigger]);
+    }, [userInfo, FetchAllocatedCharger]);
    
-
     // Search data 
     const handleSearchInputChange = (e) => {
         const inputValue = e.target.value.toUpperCase();
@@ -80,7 +78,7 @@ const ManageDevice = ({ userInfo, handleLogout }) => {
     }, [data, filteredData]);
 
     // DeActive
-    const changeDeActivate = async (e, charger_id) => {
+    const changeDeActivate = async (e, dataItem) => {
         e.preventDefault();
         try {
             const response = await fetch('/associationadmin/DeActivateOrActivateCharger', {
@@ -88,14 +86,14 @@ const ManageDevice = ({ userInfo, handleLogout }) => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ charger_id, status:false, modified_by: userInfo.data.association_name }),
+            body: JSON.stringify({ charger_id:dataItem.charger_id, status:false, modified_by: userInfo.data.association_name }),
             });
             if (response.ok) {
                 Swal.fire({
                     title: "DeActivate successfully",
                     icon: "success"
                 });
-                setUpdateTrigger((prev) => !prev);
+                FetchAllocatedCharger();
             } else {
                 Swal.fire({
                     title: "Error",
@@ -113,7 +111,7 @@ const ManageDevice = ({ userInfo, handleLogout }) => {
     };
 
     // Active
-    const changeActivate = async (e, charger_id) => {
+    const changeActivate = async (e, dataItem) => {
         e.preventDefault();
         try {
             const response = await fetch('/associationadmin/DeActivateOrActivateCharger', {
@@ -121,14 +119,14 @@ const ManageDevice = ({ userInfo, handleLogout }) => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ charger_id, status:true, modified_by: userInfo.data.association_name }),
+            body: JSON.stringify({ charger_id:dataItem.charger_id, status:true, modified_by: userInfo.data.association_name }),
             });
             if (response.ok) {
                 Swal.fire({
                     title: "Activate successfully",
                     icon: "success"
                 });
-                setUpdateTrigger((prev) => !prev);
+                FetchAllocatedCharger();
             } else {
                 Swal.fire({
                     title: "Error",
@@ -218,18 +216,26 @@ const ManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <td>{dataItem.charger_id ? dataItem.charger_id : '-'}</td>
                                                                 <td>{dataItem.model ? dataItem.model : '-'}</td>
                                                                 <td>{dataItem.type ?  dataItem.type : '-'}</td>
-                                                                <td>{dataItem.gun_connector ? dataItem.gun_connector : '-'}</td>
+                                                                <td>
+                                                                    {dataItem.gun_connector === 1
+                                                                        ? 'Single phase'
+                                                                        : dataItem.gun_connector === 2
+                                                                        ? 'CSS Type 2'
+                                                                        : dataItem.gun_connector === 3
+                                                                        ? '3 phase socket'
+                                                                    : '-'}
+                                                                </td>
                                                                 <td>{dataItem.max_current ? dataItem.max_current : '-'}</td>
                                                                 <td>{dataItem.status===true ? <span className="text-success">Active</span> : <span className="text-danger">DeActive</span>}</td>
                                                                 <td>
                                                                     <div className='form-group' style={{paddingTop:'13px'}}> 
                                                                         {dataItem.status===true ?
                                                                             <div className="form-check form-check-danger">
-                                                                                <label className="form-check-label"><input type="radio" className="form-check-input" name="optionsRadios1" id="optionsRadios2" value={false} onClick={(e) => changeDeActivate(e, dataItem.charger_id)}/>DeActive<i className="input-helper"></i></label>
+                                                                                <label className="form-check-label"><input type="radio" className="form-check-input" name="optionsRadios1" id="optionsRadios2" value={false} onClick={(e) => changeDeActivate(e, dataItem)}/>DeActive<i className="input-helper"></i></label>
                                                                             </div>
                                                                         :
                                                                             <div className="form-check form-check-success">
-                                                                                <label className="form-check-label"><input type="radio" className="form-check-input" name="optionsRadios1" id="optionsRadios1" value={true} onClick={(e) => changeActivate(e, dataItem.charger_id)}/>Active<i className="input-helper"></i></label>
+                                                                                <label className="form-check-label"><input type="radio" className="form-check-input" name="optionsRadios1" id="optionsRadios1" value={true} onClick={(e) => changeActivate(e, dataItem)}/>Active<i className="input-helper"></i></label>
                                                                             </div>
                                                                         }
                                                                     </div>

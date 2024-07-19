@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
@@ -7,26 +7,15 @@ import Swal from 'sweetalert2';
 
 const EditManageDevice = ({ userInfo, handleLogout }) => {
     const location = useLocation();
-    const dataItem = location.state?.dataItem || JSON.parse(localStorage.getItem('editDeviceData'));
+    const dataItem = location.state?.deviceData || JSON.parse(localStorage.getItem('editDeviceData'));
+    localStorage.setItem('editDeviceData', JSON.stringify(dataItem));
     const navigate = useNavigate();
     
-    const [latitude, setLatitude] = useState('');
-    const [longitude, setLongitude] = useState('');
-    const [wifiUsername, setWifiUsername] = useState('');
-    const [wifiPassword, setWifiPassword] = useState('');
-    const [selectStatus, setSelectedStatus] = useState('2');
-
-    // Edit data
-    useEffect(() => {
-        if (dataItem) {
-            setLatitude(dataItem.lat || '');
-            setLongitude(dataItem.long || '');
-            setWifiUsername(dataItem.wifi_username || '');
-            setWifiPassword(dataItem.wifi_password || '');
-            setSelectedStatus(dataItem.charger_accessibility ? '1' : '2');
-            localStorage.setItem('editDeviceData', JSON.stringify(dataItem));
-        }
-    }, [dataItem]);
+    const [latitude, setLatitude] = useState(dataItem?.lat || '');
+    const [longitude, setLongitude] = useState(dataItem.long || '');
+    const [wifiUsername, setWifiUsername] = useState(dataItem.wifi_username || '');
+    const [wifiPassword, setWifiPassword] = useState(dataItem.wifi_password || '');
+    const [selectStatus, setSelectedStatus] = useState(dataItem?.charger_accessibility || '');
 
     // Selected status
     const handleStatusChange = (e) => {
@@ -40,7 +29,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
 
     // Back manage device
     const editBackManageDevice = () => {
-        navigate('/associationadmin/ViewManageDevice');
+        navigate('/associationadmin/ManageDevice');
     };
 
     // Update manage device

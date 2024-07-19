@@ -64,6 +64,22 @@ const Profile = ({ userInfo, handleLogout }) => {
         }
     }, [dataAss]);
 
+    // Set timeout
+    useEffect(() => {
+        if (errorMessage) {
+            const timeout = setTimeout(() => setErrorMessage(''), 5000); // Clear error message after 5 seconds
+            return () => clearTimeout(timeout);
+        }
+    }, [errorMessage]);
+
+    // Set timeout
+    useEffect(() => {
+        if (errorMessageAss) {
+            const timeout = setTimeout(() => setErrorMessageAss(''), 5000); // Clear error message after 5 seconds
+            return () => clearTimeout(timeout);
+        }
+    }, [errorMessageAss]);
+
     const addAssProfileUpdate = async (e) => {
         e.preventDefault();
 

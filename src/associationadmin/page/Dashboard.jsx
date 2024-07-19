@@ -1,153 +1,145 @@
-import React from 'react';
-// import React, { useState, useEffect,  useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback} from 'react';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer';
-// import axios from 'axios';
-// import Chart from 'chart.js/auto';
+import Chart from 'chart.js/auto';
+
 const Dashboard = ({ userInfo, handleLogout }) => {
-    // const [data, setData] = useState([]);
-    // const [loading, setLoading] = useState(true);
-    // const [error, setError] = useState(null);
-    // const [filteredData] = useState([]);
-    // const [posts, setPosts] = useState([]);
-    
-    // const chartRef = useRef(null);
-    // //  console.log(data, 'total data');
-    // // Get table data
-    // useEffect(() => {
-    //     // Define the API URL based on the event detail
-    //     const url = `/GetAllChargerDetails`;
-    //     axios.get(url).then((res) => {
-    //         // console.log('Data fetched successfully:', res.data);
-    //         setData(res.data); // Assuming the data you need is inside the 'data' property
-    //         setLoading(false);
-    //         console.log(res.data + 'charger data');
-    //     })
-    //        .catch((err) => {
-    //         console.error('Error fetching data:', err);
-    //         setError('Error fetching data. Please try again.');
-    //         setLoading(false);
-    //       });
-    // }, []);
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [filteredData] = useState([]);
+    const [posts, setPosts] = useState([]);
+    const fetchMangeCalled = useRef(false);
+    const chartRef = useRef(null);
+
+    // Get Allocated charger data
+    const FetchAllocatedCharger = useCallback(async () => {
+        try {
+            const response = await fetch('/associationadmin/FetchAllocatedChargerByClientToAssociation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ association_id: userInfo.data.association_id }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                // console.log('Response data:', data);
+                setData(data.data);
+                setLoading(false);
+            } else {
+                setError('Failed to fetch profile');
+                console.error('Failed to fetch profile:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            setError('Error fetching data. Please try again.');
+            setLoading(false);
+        }
+    }, [userInfo.data.association_id]);
+
+    useEffect(() => {
+        if (!fetchMangeCalled.current && userInfo && userInfo.data && userInfo.data.user_id) {
+            FetchAllocatedCharger();
+            fetchMangeCalled.current = true;
+        }
+    }, [userInfo, FetchAllocatedCharger]);
 
     // Faulty data onclick show box data
-    // const [isBoxVisible, setIsBoxVisible] = useState(false);
-    // const toggleBoxVisibility = () => {
-    //   setIsBoxVisible(!isBoxVisible);
-    // };
-
-    // // Timestamp data 
-    // function formatTimestamp(originalTimestamp) {
-    //     const date = new Date(originalTimestamp);
-    //     const day = String(date.getDate()).padStart(2, '0');
-    //     const month = String(date.getMonth() + 1).padStart(2, '0');
-    //     const year = date.getFullYear();
-        
-    //     let hours = date.getHours();
-    //     const minutes = String(date.getMinutes()).padStart(2, '0');
-    //     const seconds = String(date.getSeconds()).padStart(2, '0');
-    //     const ampm = hours >= 12 ? 'PM' : 'AM';
-    //     hours = hours % 12;
-    //     hours = hours ? hours : 12; // the hour '0' should be '12'
-    //     hours = String(hours).padStart(2, '0');
-    
-    //     const formattedDate = `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
-    //     return formattedDate;
-    // }
+    const [isBoxVisible, setIsBoxVisible] = useState(false);
+    const toggleBoxVisibility = () => {
+      setIsBoxVisible(!isBoxVisible);
+    };
     
     // Search data 
-    // const handleSearchInputChange = (e) => {
-    //     const inputValue = e.target.value.toUpperCase();
-    //     // Filter the data array based on the input value (converted to uppercase)
-    //     const filteredData = data.filter((item) =>
-    //       item.ChargerID.toString().toUpperCase().includes(inputValue)
-    //     );
-    //     // Update the search state with the filtered results
-    //     setPosts(filteredData); // Set posts to the filteredData
-    //   };
+    const handleSearchInputChange = (e) => {
+        const inputValue = e.target.value.toUpperCase();
+        if (Array.isArray(data)) {
+            const filteredData = data.filter((item) =>
+                item.charger_id.toUpperCase().includes(inputValue)
+            );
+            setPosts(filteredData);
+        }
+    };
 
     // // Update table data 'data', and 'filteredData' 
-    // useEffect(() => {
-    //     switch (data) {
-    //         case 'filteredData':
-    //             setPosts(filteredData);
-    //             break;
-    //         default:
-    //             setPosts(data);
-    //             break;
-    //     }
-    // }, [data, filteredData]);
-  
-    // // Online, Offline and Faulty charger lengths 
-    // const onlineStatus = 'Charging'; // Define the status for online chargers
-    // const offlineStatuses = [' ', 'pending', 'Available']; // Define other statuses for offline chargers
-    // const faultyStatus = 'Faulted'; // Define other statuses for faulty chargers
+    useEffect(() => {
+        switch (data) {
+            case 'filteredData':
+                setPosts(filteredData);
+                break;
+            default:
+                setPosts(data);
+                break;
+        }
+    }, [data, filteredData]);
     
-    // const onlineChargers = data.filter((charger) => charger && charger.status && charger.status.trim() === onlineStatus);
-    // const offlineChargers = data.filter((charger) => charger && charger.status && offlineStatuses.includes(charger.status.trim()));
-    // const faultyChargers = data.filter((charger) => charger && charger.status && charger.status.trim() === faultyStatus);
-    
-    // // Total, Online, Offline, and Faulted progressbar with data length
-    // const totalChargers = data.length + onlineChargers.length + offlineChargers.length + faultyChargers.length;
+    // Online, Offline and Faulty charger lengths 
+    const onlineChargers = data.filter((post) => post.status === true || post.status === 'true');
+    const offlineChargers = data.filter((post) => post.status === false || post.status === 'false');
+    const faultyChargers = data.filter((post) => post.status === 'Faulted');
 
-    // const totalPercentage = (data.length / totalChargers) * 100;
-    // const onlinePercentage = (onlineChargers.length / totalChargers) * 100;
-    // const offlinePercentage = (offlineChargers.length / totalChargers) * 100;
-    // const faultyPercentage = (faultyChargers.length / totalChargers) * 100;
+    // Total chargers count
+    const totalChargers = data.length;
+
+    const totalPercentage = (data.length / totalChargers) * 10;
+    const onlinePercentage = (onlineChargers.length / totalChargers) * 10;
+    const offlinePercentage = (offlineChargers.length / totalChargers) * 10;
+    const faultyPercentage = (faultyChargers.length / totalChargers) * 10;
     
     // // Chart data 
-    // useEffect(() => {
-    //     const xValues = [ 'Total', 'Online', 'Offline' ]; // Adjusted order of labels
-    //     const yValues = [
-    //         data.length,
-    //         onlineChargers.length,
-    //         offlineChargers.length
-    //     ];
-    //     const barColors = [ "#4B46AC", "#57B657", "#FF4747" ];
+    useEffect(() => {
+        const xValues = [ 'Total', 'Online', 'Offline' ]; // Adjusted order of labels
+        const yValues = [
+            data.length,
+            onlineChargers.length,
+            offlineChargers.length
+        ];
+        const barColors = [ "#4B46AC", "#57B657", "#FF4747" ];
     
-    //     if (chartRef.current) {
-    //         chartRef.current.destroy();
-    //     }
+        if (chartRef.current) {
+            chartRef.current.destroy();
+        }
     
-    //     const ctx = document.getElementById('myChart');
-    //     chartRef.current = new Chart(ctx, {
-    //         type: 'doughnut',
-    //         data: {
-    //             labels: xValues,
-    //             datasets: [{
-    //                 backgroundColor: barColors,
-    //                 data: yValues
-    //             }]
-    //         },
-    //         options: {
-    //             plugins: {
-    //                 title: {
-    //                     display: true,
-    //                 }
-    //             }
-    //         }
-    //     });
+        const ctx = document.getElementById('myChart');
+        chartRef.current = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: xValues,
+                datasets: [{
+                    backgroundColor: barColors,
+                    data: yValues
+                }]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                    }
+                }
+            }
+        });
     
-    //     return () => {
-    //         if (chartRef.current) {
-    //             chartRef.current.destroy();
-    //         };
-    //     };
-    // }, [data, onlineChargers.length, offlineChargers.length]);
+        return () => {
+            if (chartRef.current) {
+                chartRef.current.destroy();
+            };
+        };
+    }, [data, onlineChargers.length, offlineChargers.length]);
     
-    // const fetchDataAndUpdateChart = () => {
-    //     setData([...Array(0)]);
-    // };
+    const fetchDataAndUpdateChart = () => {
+        setData([...Array(0)]);
+    };
     
-    // useEffect(() => {
-    //     fetchDataAndUpdateChart();
-    // }, []);
+    useEffect(() => {
+        fetchDataAndUpdateChart();
+    }, []);
 
     return (
         <div className='container-scroller'>
             {/* Header */}
-            {/* <Header/> */}
             <Header userInfo={userInfo} handleLogout={handleLogout}/>
             <div className="container-fluid page-body-wrapper">
                 {/* Sidebar */}
@@ -178,7 +170,7 @@ const Dashboard = ({ userInfo, handleLogout }) => {
                                         <div className="card card-tale">
                                             <div className="card-body">
                                                 <h4 className="mb-4">Todays Chargers</h4>
-                                                {/* <h3 className="fs-30 mb-2">{data.length} Charger's</h3> */}
+                                                <h3 className="fs-30 mb-2">{data.length} Charger's</h3>
                                             </div>
                                         </div>
                                     </div>
@@ -240,48 +232,30 @@ const Dashboard = ({ userInfo, handleLogout }) => {
                                                                                     <td className="text-muted"><h5>Total</h5>Chargers installed</td>
                                                                                     <td className="w-100 px-0">
                                                                                         <div className="progress progress-md mx-4">
-                                                                                            {/* <div className="progress-bar bg-primary" role="progressbar" style={{width:`${totalPercentage}%`}}></div> */}
+                                                                                            <div className="progress-bar bg-primary" role="progressbar" style={{width:`${totalPercentage}%`}}></div>
                                                                                         </div>
                                                                                     </td>
-                                                                                    {/* <td><h5 className="font-weight-bold mb-0">{data.length}</h5></td> */}
+                                                                                    <td><h5 className="font-weight-bold mb-0">{data.length}</h5></td>
                                                                                 </tr>
-                                                                                {/* <tr>
-                                                                                    <td className="text-muted"><h5>Private</h5>Total Chargers</td>
-                                                                                        <td className="w-100 px-0">
-                                                                                            <div className="progress progress-md mx-4">
-                                                                                                <div className="progress-bar bg-info" role="progressbar" style={{width:'30%'}}></div>
-                                                                                            </div>
-                                                                                        </td>
-                                                                                    <td><h5 className="font-weight-bold mb-0">583</h5></td>
-                                                                                </tr> */}
-                                                                                {/* <tr>
-                                                                                    <td className="text-muted"><h5>Public</h5>Total Chargers</td>
-                                                                                    <td className="w-100 px-0">
-                                                                                        <div className="progress progress-md mx-4">
-                                                                                            <div className="progress-bar bg-pink" role="progressbar"  style={{width:'95%', backgroundColor:'#ff59eb'}}></div>
-                                                                                        </div>
-                                                                                    </td>
-                                                                                    <td><h5 className="font-weight-bold mb-0">924</h5></td>
-                                                                                </tr> */}
                                                                                 <tr>
                                                                                     <td className="text-muted"><h5>Online</h5>Currently Charging</td>
                                                                                     <td className="w-100 px-0">
                                                                                         <div className="progress progress-md mx-4">
-                                                                                            {/* <div className="progress-bar bg-success" role="progressbar"  style={{width:`${onlinePercentage}%`}}></div> */}
+                                                                                            <div className="progress-bar bg-success" role="progressbar"  style={{width:`${onlinePercentage}%`}}></div>
                                                                                         </div>
                                                                                     </td>
-                                                                                    {/* <td><h5 className="font-weight-bold mb-0">{onlineChargers.length}</h5></td> */}
+                                                                                    <td><h5 className="font-weight-bold mb-0">{onlineChargers.length}</h5></td>
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <td className="text-muted"><h5>Offline</h5>Not live</td>
                                                                                     <td className="w-100 px-0">
                                                                                         <div className="progress progress-md mx-4">
-                                                                                            {/* <div className="progress-bar bg-danger" role="progressbar"  style={{width:`${offlinePercentage}%`}}></div> */}
+                                                                                            <div className="progress-bar bg-danger" role="progressbar"  style={{width:`${offlinePercentage}%`}}></div>
                                                                                         </div>
                                                                                     </td>
-                                                                                    {/* <td><h5 className="font-weight-bold mb-0">{offlineChargers.length}</h5></td> */}
+                                                                                    <td><h5 className="font-weight-bold mb-0">{offlineChargers.length}</h5></td>
                                                                                 </tr>
-                                                                                {/* <tr onClick={toggleBoxVisibility} className="custom-hover">
+                                                                                <tr onClick={toggleBoxVisibility} className="custom-hover">
                                                                                     <td className="text-muted"><h5>Faulty</h5>Not live</td>
                                                                                     <td className="w-100 px-0">
                                                                                         <div className="progress progress-md mx-4">
@@ -289,7 +263,7 @@ const Dashboard = ({ userInfo, handleLogout }) => {
                                                                                         </div>
                                                                                     </td>
                                                                                     <td><h5 className="font-weight-bold mb-0">{faultyChargers.length}</h5></td>
-                                                                                </tr> */}
+                                                                                </tr>
                                                                             </tbody>
                                                                         </table>
                                                                     </div>
@@ -300,7 +274,7 @@ const Dashboard = ({ userInfo, handleLogout }) => {
                                                                             <canvas id="myChart" />
                                                                         </div>  
                                                                     </div>
-                                                                    {/* <div>
+                                                                    <div>
                                                                         <div className="report-chart">
                                                                             <div className="d-flex justify-content-between mx-4 mx-xl-5 mt-3">
                                                                                 <div className="d-flex align-items-center">
@@ -324,7 +298,7 @@ const Dashboard = ({ userInfo, handleLogout }) => {
                                                                                 <p className="mb-0">{offlineChargers.length}</p>
                                                                             </div>
                                                                         </div>
-                                                                    </div> */}
+                                                                    </div> 
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -375,7 +349,7 @@ const Dashboard = ({ userInfo, handleLogout }) => {
                                                                 <i className="icon-search"></i>
                                                                 </span>
                                                             </div>
-                                                            {/* <input type="text" className="form-control" placeholder="Search now" aria-label="search" aria-describedby="search" autoComplete="off" onChange={handleSearchInputChange}/> */}
+                                                            <input type="text" className="form-control" placeholder="Search now" aria-label="search" aria-describedby="search" autoComplete="off" onChange={handleSearchInputChange}/>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -383,23 +357,21 @@ const Dashboard = ({ userInfo, handleLogout }) => {
                                         </div>
                                         <div className="table-responsive" style={{ maxHeight: '300px', overflowY: 'auto' }}>
                                             <table className="table table-striped">
-                                                <thead style={{textAlign:'center'}}>
+                                                <thead style={{ textAlign: 'center', tableLayout: 'fixed', position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 1 }}>
                                                     <tr> 
-                                                       <th>Sl.No</th>
-                                                        <th>Type</th>
-                                                        <th>Capacities</th>
+                                                        <th>Sl.No</th>
                                                         <th>Charger ID</th>
-                                                        <th>Date / Time</th>
-                                                        <th>Tag ID</th>
-                                                        <th>Connector</th>
-                                                        <th>Error</th>
+                                                        <th>Model</th>
+                                                        <th>Charger Type</th>
+                                                        <th>Gun Connetor</th>
+                                                        <th>Max Current</th>
                                                         <th>Status</th>
                                                     </tr>
                                                 </thead>
-                                                {/* <tbody style={{textAlign:'center'}}>
+                                                <tbody style={{textAlign:'center'}}>
                                                     {loading ? (
                                                         <tr>
-                                                        <td colSpan="9" style={{ marginTop: '50px', textAlign: 'center' }}>Loading...</td>
+                                                            <td colSpan="9" style={{ marginTop: '50px', textAlign: 'center' }}>Loading...</td>
                                                         </tr>
                                                     ) : error ? (
                                                         <tr>
@@ -410,54 +382,50 @@ const Dashboard = ({ userInfo, handleLogout }) => {
                                                             posts.map((dataItem, index) => (
                                                             <tr key={index}>
                                                                 <td>{index + 1}</td>
+                                                                <td>{dataItem.charger_id ? (
+                                                                    <span>{dataItem.charger_id}</span>
+                                                                    ): (
+                                                                        <span>-</span> 
+                                                                    )}
+                                                                </td>
+                                                                <td className="py-1">
+                                                                    <img src={`../../images/dashboard/${dataItem.model ? dataItem.model : '-'}kw.png`} alt="img" />
+                                                                </td>
+                                                                {/* <td>{dataItem.model ? (
+                                                                    <span>{dataItem.model}</span>
+                                                                    ): (
+                                                                        <span>-</span> 
+                                                                    )}
+                                                                </td> */}
                                                                 <td>{dataItem.type ? (
                                                                     <span>{dataItem.type}</span>
                                                                     ): (
                                                                         <span>-</span> 
                                                                     )}
                                                                 </td>
-                                                                <td className="py-1">
-                                                                    {dataItem.capacity ? (
-                                                                        <img src={`../../images/dashboard/${dataItem.capacity}kw.png`} alt="img" />
-
-                                                                    ): (
-                                                                        <span>-</span> 
-                                                                    )}
-                                                                </td>                                                            
-                                                                <td>{dataItem.ChargerID ? (
-                                                                    <span>{dataItem.ChargerID}</span>
-                                                                    ): (
-                                                                        <span>-</span> 
-                                                                    )}
+                                                                <td>
+                                                                    {dataItem.gun_connector === 1
+                                                                        ? 'Single phase'
+                                                                        : dataItem.gun_connector === 2
+                                                                        ? 'CSS Type 2'
+                                                                        : dataItem.gun_connector === 3
+                                                                        ? '3 phase socket'
+                                                                    : '-'}
                                                                 </td>
-                                                                <td>{dataItem.timestamp ? (
-                                                                    <span>{formatTimestamp(dataItem.timestamp)}</span>
+                                                                <td>{dataItem.max_current ? (
+                                                                    <span>{dataItem.max_current}</span>
                                                                     ) : (
                                                                     <span>-</span>
                                                                     )}
                                                                 </td>
-                                                                <td>{dataItem.ChargerTagID ? (
-                                                                    <span>{dataItem.ChargerTagID}</span>
-                                                                    ): (
-                                                                        <span>-</span> 
+                                                                <td>{dataItem.status === true ? (
+                                                                        <span className="text-success">Active</span>
+                                                                    ) : dataItem.status === false ? (
+                                                                        <span className="text-danger">DeActive</span>
+                                                                    ) : (
+                                                                        <span>-</span>
                                                                     )}
                                                                 </td>
-                                                                <td>{dataItem.connector ? (
-                                                                    <span>{dataItem.connector}</span>
-                                                                    ): (
-                                                                        <span>-</span> 
-                                                                    )}
-                                                                </td>
-                                                                <td>{dataItem.errorCode ? (
-                                                                    <span>{dataItem.errorCode}</span>
-                                                                    ) : (
-                                                                    <span>-</span>
-                                                                )}</td>
-                                                                <td>{dataItem.status ? (
-                                                                    <span>{dataItem.status}</span>
-                                                                    ) : (
-                                                                    <span>-</span>
-                                                                )}</td>
                                                             </tr>
                                                         ))
                                                         ) : (
@@ -466,7 +434,7 @@ const Dashboard = ({ userInfo, handleLogout }) => {
                                                         </tr>
                                                         )
                                                     )}
-                                                </tbody> */}
+                                                </tbody> 
                                             </table>
                                         </div>
                                     </div>

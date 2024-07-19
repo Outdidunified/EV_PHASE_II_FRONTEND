@@ -65,6 +65,7 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
     const addManageDevice = async (e) => {
         e.preventDefault();
 
+        // Validate chargerid
         const chargerIDRegex = /^[a-zA-Z0-9]{1,14}$/;
         if (!charger_id) {
             setErrorMessage("Charger ID can't be empty.");
@@ -75,6 +76,7 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
             return;
         }
 
+        // Validate tagid
         const tagIDRegex = /^[a-zA-Z0-9]{1,12}$/;
         if (!tag_id) {
             setErrorMessage("Tag ID can't be empty.");
@@ -82,6 +84,17 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
         }
         if (!tagIDRegex.test(tag_id)) {
             setErrorMessage('Oops! Tag ID must be a maximum of 12 characters.');
+            return;
+        }
+
+        // Validate vendor
+        const vendorRegex = /^[a-zA-Z0-9 ]{1,20}$/;
+        if (!vendor) {
+            setErrorMessage("Vendor name can't be empty.");
+            return;
+        }
+        if (!vendorRegex.test(vendor)) {
+            setErrorMessage('Oops! Vendor name must be 1 to 20 characters and contain only alphanumeric characters.');
             return;
         }
 
@@ -240,7 +253,7 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Vendor</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Vendor" value={vendor} onChange={(e) => setVendor(e.target.value)} required/>
+                                                                        <input type="text" className="form-control" placeholder="Vendor" value={vendor} min={1} max={20} onChange={(e) => setVendor(e.target.value)} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -271,7 +284,7 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Max Power</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="number" className="form-control" placeholder="Max Power" value={maxPower} min={1} onChange={(e) => setMaxPower(e.target.value)} required/>
+                                                                        <input type="number" className="form-control" placeholder="Max Power" value={maxPower} min={1} max={200} onChange={(e) => setMaxPower(e.target.value)} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>

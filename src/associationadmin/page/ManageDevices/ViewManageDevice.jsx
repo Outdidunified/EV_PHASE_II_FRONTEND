@@ -11,7 +11,7 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
         charger_id: '', model: '', type: '', vendor: '', gun_connector: '',
         max_current: '', max_power: '', socket_count: '', current_active_user: '', client_commission: '',
         ip: '', lat: '', long: '', short_description: '', charger_accessibility: '',
-        unit_price: '', assigned_user: '', wifi_password: '', created_by: '', created_date: '',
+        unit_price: '', assigned_user: '', wifi_username: '', wifi_password: '', created_by: '', created_date: '',
         modified_by: '', modified_date: '', status: '', _id: '',
     });
 
@@ -36,6 +36,7 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
                 charger_accessibility: dataItem.charger_accessibility || '',
                 unit_price: dataItem.unit_price || '',
                 assigned_user: dataItem.assigned_user || '',
+                wifi_username: dataItem.wifi_username || '',
                 wifi_password: dataItem.wifi_password || '',
                 created_by: dataItem.created_by || '',
                 created_date: dataItem.created_date || '',
@@ -148,7 +149,7 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
                                                         </div>
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Gun Connector: <span style={{fontWeight: 'normal'}}>{deviceData.gun_connector ?  deviceData.gun_connector : '-'}</span></div>
+                                                                <div className="col-sm-12">Gun Connector: <span style={{ fontWeight: 'normal' }}>{deviceData.gun_connector === 1 ? 'Single phase' : deviceData.gun_connector === 2 ? 'CSS Type 2' : deviceData.gun_connector === 3 ? '3 phase socket' : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4">
@@ -165,7 +166,7 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
                                                         </div>
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Socket Count: <span style={{fontWeight: 'normal'}}>{deviceData.socket_count ? deviceData.socket_count : '-'}</span></div>
+                                                                <div className="col-sm-12">Socket Count: <span style={{fontWeight:'normal'}}>{deviceData.socket_count === 1 ? '1 Socket ' : deviceData.socket_count === 2 ? '2 Sockets' : deviceData.socket_count === 3 ? '3 Sockets' : deviceData.socket_count === 4 ? '4 Sockets' : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4">
@@ -204,7 +205,7 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
                                                         </div>
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Charger Accessibility: <span style={{fontWeight: 'normal'}}>{deviceData.charger_accessibility ? deviceData.charger_accessibility : '-'}</span></div>
+                                                                <div className="col-sm-12">Charger Accessibility: <span style={{ fontWeight: 'normal' }}>{deviceData.charger_accessibility === 1 ? 'Public' : deviceData.charger_accessibility === 2 ? 'Private' : '-'}</span></div> 
                                                             </div>
                                                         </div>
                                                     </div>
