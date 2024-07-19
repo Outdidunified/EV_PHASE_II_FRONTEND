@@ -111,17 +111,19 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
                 setTheadsticky('sticky');
                 setTheadfixed('fixed');
                 setTheadBackgroundColor('white');
+                fetchUsers();
             } else {
+                const responseData = await response.json();
                 Swal.fire({
                     title: "Error",
-                    text: "Failed to add charger",
+                    text: "Failed to add user " + responseData.message,
                     icon: "error"
                 });
             }
         }catch (error) {
             Swal.fire({
                 title: "Error:", error,
-                text: "An error occurred while adding the charger",
+                text: "An error occurred while adding the user",
                 icon: "error"
             });
         }
@@ -163,6 +165,7 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
                 FetchResellerForSelectionCalled.current = true;
         }        
     }, []);
+    
 
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -171,20 +174,24 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
     const [posts, setPosts] = useState([]);
 
     // Get user data
+    const fetchUsers = async () => {
+        try {
+            const url = `/superadmin/FetchUsers`;
+            const res = await axios.get(url);
+            setData(res.data.data);
+            setLoading(false);
+        } catch (err) {
+            console.error('Error fetching data:', err);
+            setError('Error fetching data. Please try again.');
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         if (!FetchUsersCalled.current) {
-            const url = `/superadmin/FetchUsers`;
-            axios.get(url).then((res) => {
-                setData(res.data.data);
-                    setLoading(false);
-                })
-                .catch((err) => {
-                    console.error('Error fetching data:', err);
-                    setError('Error fetching data. Please try again.');
-                    setLoading(false);
-                });
+            fetchUsers();
             FetchUsersCalled.current = true;
-        }    
+        }
     }, []);
 
     // Search data 

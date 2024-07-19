@@ -38,10 +38,6 @@ const Assignuser = ({ userInfo, handleLogout }) => {
     fetchUsersToUnassign();
   }, [fetchUsersToAssign, fetchUsersToUnassign]);
 
-  const goBack = () => {
-    navigate(-1);
-  };
-
   const handleAddUserSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -106,18 +102,6 @@ const Assignuser = ({ userInfo, handleLogout }) => {
                 <div className="row">
                   <div className="col-12 col-xl-8 mb-4 mb-xl-0">
                     <h3 className="font-weight-bold">Assign User to Association</h3>
-                  </div>
-                  <div className="col-12 col-xl-4">
-                    <div className="justify-content-end d-flex">
-                      <button
-                        type="button"
-                        className="btn btn-success"
-                        onClick={goBack}
-                        style={{ marginRight: '10px' }}
-                      >
-                        Go Back
-                      </button>
-                    </div>
                   </div>
                 </div>
               </div>

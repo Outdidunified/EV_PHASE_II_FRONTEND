@@ -54,6 +54,13 @@ const Profile = ({ userInfo, handleLogout }) => {
         }
     }, [data]);
 
+     // Set timeout
+     useEffect(() => {
+        if (errorMessage) {
+            const timeout = setTimeout(() => setErrorMessage(''), 5000); // Clear error message after 5 seconds
+            return () => clearTimeout(timeout);
+        }
+    }, [errorMessage]); 
     // Update profile
     const addProfileUpdate = async (e) => {
         e.preventDefault();

@@ -120,9 +120,10 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
                 setTheadfixed('fixed');
                 setTheadBackgroundColor('white');
             } else {
+                const responseData = await response.json();
                 Swal.fire({
                     title: "Error",
-                    text: "Failed to user role",
+                    text: "Failed to user role " + responseData.message,
                     icon: "error"
                 });
             }

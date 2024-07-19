@@ -20,6 +20,9 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
     };
     const closeAddModal = () => {
         setShowAddForm(false);
+        setTheadsticky('sticky');
+        setTheadfixed('fixed');
+        setTheadBackgroundColor('white');
     };
     const modalAddStyle = {
         display: showAddForm ? 'block' : 'none',
@@ -77,6 +80,7 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
             body: JSON.stringify({ role_id:roleID, reseller_id:userInfo.data.reseller_id, client_id:userInfo.data.client_id, association_id:userInfo.data.association_id, username, email_id, password, phone_no, created_by:userInfo.data.association_name }),
             });
             if (response.ok) {
+                setUpdateTrigger((prev) => !prev);
                 Swal.fire({
                     title: "Charger added successfully",
                     icon: "success"
@@ -86,18 +90,22 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
                 setPassword(''); 
                 setPhone(''); 
                 setShowAddForm(false);
-                setUpdateTrigger((prev) => !prev);
+                setTheadsticky('sticky');
+                setTheadfixed('fixed');
+                setTheadBackgroundColor('white');
+                fetchUsers();
             } else {
+                const responseData = await response.json();
                 Swal.fire({
                     title: "Error",
-                    text: "Failed to add charger",
+                    text: "Failed to add user " + responseData.message,
                     icon: "error"
                 });
             }
         }catch (error) {
             Swal.fire({
                 title: "Error:", error,
-                text: "An error occurred while adding the charger",
+                text: "An error occurred while adding the use",
                 icon: "error"
             });
         }
@@ -130,18 +138,22 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
     const [posts, setPosts] = useState([]);
 
     // Get user data
+    const fetchUsers = async () => {
+        try {
+            const url = `/associationadmin/FetchUsers`;
+            const res = await axios.get(url);
+            setData(res.data.data);
+            setLoading(false);
+        } catch (err) {
+            console.error('Error fetching data:', err);
+            setError('Error fetching data. Please try again.');
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         if (!fetchUsersCalled.current) {
-            const url = `/associationadmin/FetchUsers`;
-            axios.get(url).then((res) => {
-                setData(res.data.data);
-                setLoading(false);
-            })
-            .catch((err) => {
-                console.error('Error fetching data:', err);
-                setError('Error fetching data. Please try again.');
-                setLoading(false);
-            });
+            fetchUsers();
             fetchUsersCalled.current = true;
         }
     }, [updateTrigger]);
@@ -186,6 +198,17 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
         return formattedDate;
     } 
 
+    const [theadsticky, setTheadsticky] = useState('sticky');
+    const [theadfixed, setTheadfixed] = useState('fixed');
+    const [theadBackgroundColor, setTheadBackgroundColor] = useState('white');
+
+    // Add button thead bgcolor
+    const handleAddUser = () => {
+        addChargers();
+        setTheadsticky(theadsticky === 'sticky' ? '' : 'sticky');
+        setTheadfixed(theadfixed === 'fixed' ? 'transparent' : 'fixed');
+        setTheadBackgroundColor(theadBackgroundColor === 'white' ? 'transparent' : 'white');
+    }
     return (
         <div className='container-scroller'>
             {/* Header */}
@@ -203,7 +226,7 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
                                     </div>
                                     <div className="col-12 col-xl-4">
                                         <div className="justify-content-end d-flex">
-                                            <button type="button" className="btn btn-success" onClick={addChargers}>Add User's</button>
+                                            <button type="button" className="btn btn-success" onClick={handleAddUser}>Add User's</button>
                                             {/* Add user start */}
                                             <div className="modalStyle" style={modalAddStyle}>
                                                 <div className="modalContentStyle" style={{ maxHeight: '680px', overflowY: 'auto' }}>
@@ -289,7 +312,7 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
                                         </div>
                                         <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
                                             <table className="table table-striped">
-                                                <thead style={{ textAlign: 'center', position: 'sticky', tableLayout: 'fixed', top: 0, backgroundColor: 'white', zIndex: 1 }}>
+                                                <thead style={{ textAlign: 'center', position: theadsticky, tableLayout: theadfixed, top: 0, backgroundColor: theadBackgroundColor, zIndex: 1 }}>
                                                     <tr> 
                                                         <th>Sl.No</th>
                                                         <th>User Name</th>
