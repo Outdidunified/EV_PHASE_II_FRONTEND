@@ -94,7 +94,7 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
             return;
         }
         if (!vendorRegex.test(vendor)) {
-            setErrorMessage('Oops! Vendor name must be 1 to 20 characters and contain only alphanumeric characters.');
+            setErrorMessage('Oops! Vendor name must be 1 to 20 characters and contain alphanumeric and number.');
             return;
         }
 
@@ -207,7 +207,7 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Charger ID</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Charger ID" value={charger_id} onChange={(e) => setChargerID(e.target.value)} required/>
+                                                                        <input type="text" className="form-control" placeholder="Charger ID" value={charger_id} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, ''); setChargerID(sanitizedValue);}} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -215,7 +215,7 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Tag ID</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Tag ID" value={tag_id} onChange={(e) => setTagID(e.target.value)} required/>
+                                                                        <input type="text" className="form-control" placeholder="Tag ID" value={tag_id} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, ''); setTagID(sanitizedValue);}} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -253,7 +253,7 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Vendor</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Vendor" value={vendor} min={1} max={20} onChange={(e) => setVendor(e.target.value)} required/>
+                                                                        <input type="text" className="form-control" placeholder="Vendor" value={vendor} min={1} max={20} onChange={(e) => {const value = e.target.value; let sanitizedValue = value.replace(/[^a-zA-Z0-9 ]/g, ''); setVendor(sanitizedValue); }} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -305,7 +305,7 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        {errorMessage && <div className="text-danger">{errorMessage}</div>}
+                                                        {errorMessage && <div className="text-danger">{errorMessage}</div>}<br></br>
                                                         <div style={{ textAlign: 'center' }}>
                                                             <button type="submit" className="btn btn-primary mr-2">Add</button>
                                                         </div>

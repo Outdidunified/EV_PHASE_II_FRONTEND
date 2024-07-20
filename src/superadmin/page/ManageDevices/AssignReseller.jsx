@@ -101,7 +101,7 @@ const AssignReseller = ({ userInfo, handleLogout }) => {
         } catch (error) {
             Swal.fire({
                 title: "Error",
-                text: "An error occurred while adding the charger",
+                text: "An error occurred while assign the charger",
                 icon: "error"
             });
         }
@@ -151,7 +151,7 @@ const AssignReseller = ({ userInfo, handleLogout }) => {
                                                     <div className="row">
                                                         <div className="col-md-6">
                                                             <div className="card-body">
-                                                                <h4 className="card-title">Reseller ID</h4>
+                                                                <h4 className="card-title">Reseller List</h4>
                                                                 <div className="template-demo">
                                                                     <div className="form-group row">
                                                                         <div className="col-sm-9" style={{ margin: '0 auto' }}>

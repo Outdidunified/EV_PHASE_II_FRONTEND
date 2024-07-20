@@ -316,7 +316,7 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
                                                                     <div className="input-group-prepend">
                                                                         <span className="input-group-text" style={{color:'black', width:'125px'}}>Role Name</span>
                                                                     </div>
-                                                                    <input type="text" className="form-control" placeholder="Role Name" value={rolename} onChange={(e) => setuserRole(e.target.value)} required/>
+                                                                    <input type="text" className="form-control" placeholder="Role Name" value={rolename} maxLength={25} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^a-zA-Z0-9 ]/g, ''); setuserRole(sanitizedValue);}} required/>
                                                                 </div>
                                                             </div>
                                                             <div style={{textAlign:'center'}}>
@@ -341,7 +341,7 @@ const ManageUserRole = ({ userInfo, handleLogout }) => {
                                                                     <div className="input-group-prepend">
                                                                         <span className="input-group-text" style={{color:'black', width:'125px'}}>Role Name</span>
                                                                     </div>
-                                                                    <input type="text" className="form-control" placeholder="Role Name" id="roleEditname" value={roleEditname} onChange={(e) => setEdituserRole(e.target.value)} />
+                                                                    <input type="text" className="form-control" placeholder="Role Name" id="roleEditname" value={roleEditname} maxLength={25} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^a-zA-Z0-9 ]/g, ''); setEdituserRole(sanitizedValue);}} required/>
                                                                 </div>
                                                             </div>
                                                             <div style={{textAlign:'center'}}>

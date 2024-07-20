@@ -104,7 +104,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
             });
             if (response.ok) {
                 Swal.fire({
-                    title: "Charger added successfully",
+                    title: "Charger updated successfully",
                     icon: "success"
                 });
                 editBackManageDevice();
@@ -118,7 +118,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
         }catch (error) {
             Swal.fire({
                 title: "Error:", error,
-                text: "An error occurred while adding the charger",
+                text: "An error occurred while updated the charger",
                 icon: "error"
             });
         }
@@ -170,7 +170,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Tag ID</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Tag ID" value={tag_id}  onChange={(e) => setTagID(e.target.value)} required/>
+                                                                        <input type="text" className="form-control" placeholder="Tag ID" value={tag_id}  onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, ''); setTagID(sanitizedValue);}} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -207,7 +207,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Vendor</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Vendor" value={vendor}  onChange={(e) => setVendor(e.target.value)} required/>
+                                                                        <input type="text" className="form-control" placeholder="Vendor" value={vendor}  onChange={(e) => {const value = e.target.value; let sanitizedValue = value.replace(/[^a-zA-Z0-9 ]/g, ''); setVendor(sanitizedValue); }} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>

@@ -145,7 +145,7 @@ const Profile = ({ userInfo, handleLogout }) => {
                                                         <div className="form-group row">
                                                             <label htmlFor="exampleInputUsername2" className="col-sm-2 col-form-label">User Name</label>
                                                             <div className="col-sm-10">
-                                                                <input type="text" className="form-control" placeholder="Username" value={username} onChange={(e) => setUpdateUname(e.target.value)} required />
+                                                                <input type="text" className="form-control" placeholder="Username" value={username}  maxLength={25} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^a-zA-Z0-9 ]/g, ''); setUpdateUname(sanitizedValue);}} required/>
                                                             </div>
                                                         </div>
                                                         <div className="form-group row">
@@ -157,13 +157,13 @@ const Profile = ({ userInfo, handleLogout }) => {
                                                         <div className="form-group row">
                                                             <label htmlFor="exampleInputMobile" className="col-sm-2 col-form-label">Phone</label>
                                                             <div className="col-sm-10">
-                                                                <input type="text" className="form-control" placeholder="Phone number" value={phone_no} onChange={(e) => setUpdatePhone(e.target.value)} required />
+                                                                <input type="text" className="form-control" placeholder="Phone number" value={phone_no} maxLength={10} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^0-9]/g, ''); setUpdatePhone(sanitizedValue);}} required/>
                                                             </div>
                                                         </div>
                                                         <div className="form-group row">
                                                             <label htmlFor="exampleInputPassword2" className="col-sm-2 col-form-label">Password</label>
                                                             <div className="col-sm-10">
-                                                                <input type="text" className="form-control" placeholder="Password" value={password} onChange={(e) => setUpdatePassword(e.target.value)} required />
+                                                                <input type="text" className="form-control" placeholder="Password" value={password} maxLength={4} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^0-9]/g, ''); setUpdatePassword(sanitizedValue);}} required/>
                                                             </div>
                                                         </div>
                                                         {errorMessage && <div className="text-danger">{errorMessage}</div>}
