@@ -164,7 +164,7 @@ const EditUserList = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Wallet</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" value={wallet_bal} onChange={(e) => setWalletBal(e.target.value)} required/>
+                                                                        <input type="text" className="form-control" value={wallet_bal} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^0-9]/g, ''); setWalletBal(sanitizedValue);}} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
