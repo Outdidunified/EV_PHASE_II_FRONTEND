@@ -140,7 +140,7 @@ const AddManageReseller = ({ userInfo, handleLogout }) => {
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        {errorMessage && <div className="text-danger">{errorMessage}</div>}
+                                                        {errorMessage && <div className="text-danger">{errorMessage}</div>}<br/>
                                                         <div style={{textAlign:'center'}}>
                                                             <button type="submit" className="btn btn-primary mr-2">Add</button>
                                                         </div>

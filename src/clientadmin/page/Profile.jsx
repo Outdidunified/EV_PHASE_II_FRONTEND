@@ -1,133 +1,205 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import axios from 'axios';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer';
-import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
 const Profile = ({ userInfo, handleLogout }) => {
-    const navigate = useNavigate();
-    const [clientDetails, setClientDetails] = useState({
-        username: '',
-        email: '',
-        phoneNo: '',
-        address: '',
-    });
-    const [userDetails, setUserDetails] = useState({
-        username: '',
-        email: '',
-        phoneNo: '',
-        pass: '',
-    });
+    const [data, setPosts] = useState({});
+    const [username, setUserUname] = useState('');
+    const [email_id, setUserEmail] = useState('');
+    const [phone_no, setUserPhone] = useState('');
+    const [password, setUserPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const [errorMessages, setErrorMessages] = useState('');
+    const [dataAss, setPostsAss] = useState({});
+    const [client_name, setUpdateUname] = useState('');
+    const [client_email_id, setUpdateEmail] = useState('');
+    const [client_phone_no, setUpdatePhone] = useState('');
+    const [client_address, setUpdateAddress] = useState('');
+    const fetchProfileCalled = useRef(false); // Ref to track if fetchProfile has been called
 
+    // Define fetchClientUserDetails using useCallback to memoize it
     const fetchClientUserDetails = useCallback(async () => {
         try {
             const response = await axios.post('/clientadmin/FetchUserProfile', {
                 user_id: userInfo.data.user_id,
             });
-            const clientdata = response.data.data;
 
-            if (clientdata.client_details && clientdata.client_details.length > 0) {
-                const client = clientdata.client_details[0];
-                setClientDetails({
-                    username: client.client_name,
-                    email: client.client_email_id,
-                    phoneNo: client.client_phone_no,
-                    address: client.client_address,
-                });
+            if (response.status === 200) {
+                const data = response.data.data;
+                setPosts(data);
+                const clientDetails = data.client_details[0] || {};
+                setPostsAss(clientDetails);
+            } else {
+                setErrorMessage('Failed to fetch profile');
+                console.error('Failed to fetch profile:', response.statusText);
             }
-
-            setUserDetails({
-                username: clientdata.username,
-                email: clientdata.email_id,
-                phoneNo: clientdata.phone_no,
-                pass: clientdata.password, // Assuming password is not returned in response for security reasons
-            });
-
         } catch (error) {
-            console.error('Error fetching user details:', error);
+            setErrorMessage('An error occurred while fetching the profile');
+            console.error('Error:', error);
         }
     }, [userInfo.data.user_id]);
 
     useEffect(() => {
-        fetchClientUserDetails();
-    }, [fetchClientUserDetails]); // Include fetchClientUserDetails in the dependency array
+        if (!fetchProfileCalled.current && userInfo && userInfo.data && userInfo.data.user_id) {
+            fetchClientUserDetails();
+            fetchProfileCalled.current = true; // Mark fetchClientUserDetails as called
+        }
+    }, [fetchClientUserDetails, userInfo]);
 
-    const handleUserFormSubmit = async (e) => {
+    // Client profile
+    useEffect(() => {
+        if (dataAss) {
+            setUpdateUname(dataAss.client_name || '');
+            setUpdateEmail(dataAss.client_email_id || '');
+            setUpdatePhone(dataAss.client_phone_no || '');
+            setUpdateAddress(dataAss.client_address || '');
+        }
+    }, [dataAss]);
+
+    // Set timeout
+    useEffect(() => {
+        if (errorMessage) {
+            const timeout = setTimeout(() => setErrorMessage(''), 5000); // Clear error message after 5 seconds
+            return () => clearTimeout(timeout);
+        }
+        if (errorMessages) {
+            const timeout = setTimeout(() => setErrorMessages(''), 5000); // Clear error message after 5 seconds
+            return () => clearTimeout(timeout);
+        }
+    }, [errorMessage, errorMessages]);
+
+    const addClientProfileUpdate = async (e) => {
         e.preventDefault();
+
+        // Validate phone number
+        const phoneRegex = /^\d{10}$/;
+        if (!client_phone_no) {
+            setErrorMessages("Phone can't be empty.");
+            return;
+        }
+        if (!phoneRegex.test(client_phone_no)) {
+            setErrorMessages('Oops! Phone must be a 10-digit number.');
+            return;
+        }
+
         try {
-            const response = await axios.post('/clientadmin/UpdateUserProfile', {
-                user_id: userInfo.data.user_id,
-                username: userDetails.username,
-                phone_no: parseInt(userDetails.phoneNo),
-                password: userDetails.pass,
+            const phoneNos = parseInt(client_phone_no);
+            const response = await fetch('/clientadmin/UpdateClientProfile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    client_id: userInfo.data.client_id,
+                    client_name,
+                    client_address,
+                    client_phone_no: phoneNos,
+                    modified_by: userInfo.data.client_name,
+                }),
             });
 
-            console.log('User profile updated successfully:', response.data);
-
-            // Show success message
-            Swal.fire({
-                title: 'Success!',
-                text: 'User profile updated successfully.',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            });
-
+            if (response.ok) {
+                Swal.fire({
+                    title: "Client profile updated successfully",
+                    icon: "success",
+                });
+            } else {
+                Swal.fire({
+                    title: "Error",
+                    text: "Failed to update client profile",
+                    icon: "error",
+                });
+            }
         } catch (error) {
-            console.error('Error updating user profile:', error);
-
-            // Show error message
             Swal.fire({
-                title: 'Error!',
-                text: 'An error occurred while updating user profile. Please try again.',
-                icon: 'error',
-                confirmButtonText: 'OK'
+                title: "Error",
+                text: "An error occurred while updating the client profile",
+                icon: "error",
             });
         }
     };
 
-    const goBack = () => {
-        navigate(-1);
-    };
+    // User profile update
+    useEffect(() => {
+        if (data) {
+            setUserUname(data.username || '');
+            setUserEmail(data.email_id || '');
+            setUserPhone(data.phone_no || '');
+            setUserPassword(data.password || '');
+        }
+    }, [data]);
 
-    const handleClientFormSubmit = async (e) => {
+    const addUserProfileUpdate = async (e) => {
         e.preventDefault();
+
+        // Validate phone number
+        const phoneRegex = /^\d{10}$/;
+        if (!phone_no) {
+            setErrorMessage("Phone can't be empty.");
+            return;
+        }
+        if (!phoneRegex.test(phone_no)) {
+            setErrorMessage('Oops! Phone must be a 10-digit number.');
+            return;
+        }
+
+        // Validate password
+        const passwordRegex = /^\d{4}$/;
+        if (!password) {
+            setErrorMessage("Password can't be empty.");
+            return;
+        }
+        if (!passwordRegex.test(password)) {
+            setErrorMessage('Oops! Password must be a 4-digit number.');
+            return;
+        }
+
         try {
-            const response = await axios.post('/clientadmin/UpdateClientProfile', {
-                client_id: userInfo.data.reseller_id,
-                modified_by: clientDetails.username,
-                client_phone_no: parseInt(clientDetails.phoneNo),
-                client_address: clientDetails.address,
+            const phoneNo = parseInt(phone_no);
+            const Password = parseInt(password);
+            const response = await fetch('/clientadmin/UpdateUserProfile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: userInfo.data.user_id,
+                    username,
+                    phone_no: phoneNo,
+                    password: Password,
+                }),
             });
 
-            console.log('Client profile updated successfully:', response.data);
-
-            // Show success message
-            Swal.fire({
-                title: 'Success!',
-                text: 'Client profile updated successfully.',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            });
-
+            if (response.ok) {
+                Swal.fire({
+                    title: "User profile updated successfully",
+                    icon: "success",
+                });
+            } else {
+                Swal.fire({
+                    title: "Error",
+                    text: "Failed to update user profile",
+                    icon: "error",
+                });
+            }
         } catch (error) {
-            console.error('Error updating client profile:', error);
-
-            // Show error message
             Swal.fire({
-                title: 'Error!',
-                text: 'An error occurred while updating client profile. Please try again.',
-                icon: 'error',
-                confirmButtonText: 'OK'
+                title: "Error",
+                text: "An error occurred while updating the user profile",
+                icon: "error",
             });
         }
     };
 
     return (
         <div className='container-scroller'>
+            {/* Header */}
             <Header userInfo={userInfo} handleLogout={handleLogout} />
             <div className="container-fluid page-body-wrapper">
+                {/* Sidebar */}
                 <Sidebar />
                 <div className="main-panel">
                     <div className="content-wrapper">
@@ -137,135 +209,67 @@ const Profile = ({ userInfo, handleLogout }) => {
                                     <div className="col-12 col-xl-8 mb-4 mb-xl-0">
                                         <h3 className="font-weight-bold">Profile</h3>
                                     </div>
-                                    <div className="col-12 col-xl-4">
-                                        <div className="justify-content-end d-flex">
-                                            <button
-                                                type="button"
-                                                className="btn btn-success"
-                                                onClick={goBack}
-                                                style={{ marginRight: '10px' }}
-                                            >
-                                                Go Back
-                                            </button>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
-
                         <div className="row">
-                            <div className="col-lg-6">
+                            <div className="col-md-6 grid-margin stretch-card">
                                 <div className="card">
                                     <div className="card-body">
-                                        <form className="forms-sample" onSubmit={handleClientFormSubmit}>
-                                            <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
-                                                <h3>CLIENT DETAILS</h3>
-                                            </div>
-
+                                        <div style={{ textAlign: 'center' }}>
+                                            <h4 className="card-title">Client Profile</h4>
+                                        </div>
+                                        <form className="forms-sample" onSubmit={addClientProfileUpdate}>
                                             <div className="form-group">
-                                                <label htmlFor="exampleInputUsername1">Client name</label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    id="exampleInputUsername1"
-                                                    placeholder="Username"
-                                                    value={clientDetails.username}
-                                                    onChange={(e) => setClientDetails({ ...clientDetails, username: e.target.value })}
-                                                />
+                                                <label htmlFor="exampleInputUsername1">Username</label>
+                                                <input type="text" className="form-control" placeholder="Username" value={client_name} maxLength={25} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^a-zA-Z0-9 ]/g, ''); setUpdateUname(sanitizedValue); }} required/>
                                             </div>
                                             <div className="form-group">
                                                 <label htmlFor="exampleInputEmail1">Email address</label>
-                                                <input
-                                                    type="email"
-                                                    className="form-control"
-                                                    id="exampleInputEmail1"
-                                                    placeholder="Email"
-                                                    value={clientDetails.email}
-                                                    readOnly
-                                                />
+                                                <input type="email" className="form-control" placeholder="Email" value={client_email_id} onChange={(e) => setUpdateEmail(e.target.value)} readOnly required/>
                                             </div>
                                             <div className="form-group">
-                                                <label htmlFor="exampleInputPhoneNo1">Phone Number</label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    id="exampleInputPhoneNo1"
-                                                    placeholder="Phone Number"
-                                                    value={clientDetails.phoneNo}
-                                                    onChange={(e) => setClientDetails({ ...clientDetails, phoneNo: e.target.value })}
-                                                />
+                                                <label htmlFor="exampleInputPassword1">Phone Number</label>
+                                                <input type="text" className="form-control" placeholder="Phone Number" value={client_phone_no} maxLength={10} onChange={(e) => { const value = e.target.value; const sanitizedValue = value.replace(/[^0-9]/g, ''); setUpdatePhone(sanitizedValue); }} required/>
                                             </div>
                                             <div className="form-group">
-                                                <label htmlFor="address">Address</label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    id="address"
-                                                    placeholder="Address"
-                                                    value={clientDetails.address}
-                                                    onChange={(e) => setClientDetails({ ...clientDetails, address: e.target.value })}
-                                                />
+                                                <label htmlFor="exampleInputConfirmPassword1">Address</label>
+                                                <textarea className="form-control" placeholder="Address" value={client_address} onChange={(e) => setUpdateAddress(e.target.value)} required/>
                                             </div>
-                                            <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                                <button type="submit" className="btn btn-primary mr-2">Update</button>
+                                            {errorMessages && <div className="text-danger">{errorMessages}</div>}<br/>
+                                            <div style={{textAlign:'center'}}>
+                                                <button type="submit" className="btn btn-primary mr-2">Submit</button>
                                             </div>
                                         </form>
                                     </div>
                                 </div>
                             </div>
-                            <div className="col-lg-6">
+                            <div className="col-md-6 grid-margin stretch-card">
                                 <div className="card">
                                     <div className="card-body">
-                                        <form className="forms-sample" onSubmit={handleUserFormSubmit}>
-                                            <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
-                                                <h3>USER DETAILS</h3>
+                                        <div style={{ textAlign: 'center' }}>
+                                            <h4 className="card-title">User Profile</h4>
+                                        </div>
+                                        <form className="forms-sample" onSubmit={addUserProfileUpdate}>
+                                            <div className="form-group">
+                                                <label htmlFor="exampleInputUsername1">Username</label>
+                                                <input type="text" className="form-control" placeholder="Username" value={username} maxLength={25} onChange={(e) => { const value = e.target.value; const sanitizedValue = value.replace(/[^a-zA-Z0-9 ]/g, ''); setUserUname(sanitizedValue); }} required/>
                                             </div>
                                             <div className="form-group">
-                                                <label htmlFor="exampleInputUsername2">Username</label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    id="exampleInputUsername2"
-                                                    placeholder="Username"
-                                                    value={userDetails.username}
-                                                    onChange={(e) => setUserDetails({ ...userDetails, username: e.target.value })}
-                                                />
+                                                <label htmlFor="exampleInputEmail1">Email address</label>
+                                                <input type="email" className="form-control" placeholder="Email" value={email_id} onChange={(e) => setUserEmail(e.target.value)} readOnly required/>
                                             </div>
                                             <div className="form-group">
-                                                <label htmlFor="exampleInputEmail2">Email address</label>
-                                                <input
-                                                    type="email"
-                                                    className="form-control"
-                                                    id="exampleInputEmail2"
-                                                    placeholder="Email"
-                                                    value={userDetails.email}
-                                                    readOnly
-                                                />
+                                                <label htmlFor="exampleInputPassword1">Phone Number</label>
+                                                <input type="text" className="form-control" placeholder="Phone Number" value={phone_no} maxLength={10} onChange={(e) => { const value = e.target.value; const sanitizedValue = value.replace(/[^0-9]/g, ''); setUserPhone(sanitizedValue); }} required/>
                                             </div>
                                             <div className="form-group">
-                                                <label htmlFor="exampleInputPhoneNo2">Phone Number</label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    id="exampleInputPhoneNo2"
-                                                    placeholder="Phone Number"
-                                                    value={userDetails.phoneNo}
-                                                    onChange={(e) => setUserDetails({ ...userDetails, phoneNo: e.target.value })}
-                                                />
+                                                <label htmlFor="exampleInputConfirmPassword1">Password</label>
+                                                <input type="text" className="form-control" placeholder="Password" value={password} maxLength={4} onChange={(e) => { const value = e.target.value; const sanitizedValue = value.replace(/[^0-9]/g, ''); setUserPassword(sanitizedValue); }} required/>
                                             </div>
-                                            <div className="form-group">
-                                                <label htmlFor="exampleInputPassword2">Password</label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    id="exampleInputPassword2"
-                                                    placeholder="Password"
-                                                    value={userDetails.pass}
-                                                    onChange={(e) => setUserDetails({ ...userDetails, pass: e.target.value })}
-                                                />
-                                            </div>
-                                            <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                                <button type="submit" className="btn btn-primary mr-2">Update</button>
+                                            {errorMessage && <div className="text-danger">{errorMessage}</div>}<br/>
+                                            <div style={{textAlign:'center'}}>
+                                                <button type="submit" className="btn btn-primary mr-2">Submit</button>
                                             </div>
                                         </form>
                                     </div>
@@ -273,6 +277,7 @@ const Profile = ({ userInfo, handleLogout }) => {
                             </div>
                         </div>
                     </div>
+                    {/* Footer */}
                     <Footer />
                 </div>
             </div>

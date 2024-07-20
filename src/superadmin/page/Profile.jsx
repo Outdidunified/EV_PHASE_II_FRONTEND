@@ -166,7 +166,7 @@ const Profile = ({ userInfo, handleLogout }) => {
                                                                 <input type="text" className="form-control" placeholder="Password" value={password} maxLength={4} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^0-9]/g, ''); setUpdatePassword(sanitizedValue);}} required/>
                                                             </div>
                                                         </div>
-                                                        {errorMessage && <div className="text-danger">{errorMessage}</div>}
+                                                        {errorMessage && <div className="text-danger">{errorMessage}</div>}<br/>
                                                         <div style={{ textAlign: 'center' }}>
                                                             <button type="submit" className="btn btn-primary mr-2">Update</button>
                                                         </div>

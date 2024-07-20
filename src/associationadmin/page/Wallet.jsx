@@ -5,7 +5,6 @@ import Footer from '../components/Footer';
 
 const Wallet = ({ userInfo, handleLogout }) => {
     const [data, setPosts] = useState({});
-    const [errorMessage, setErrorMessage] = useState('');
     const fetchWalletCalled = useRef(false); // Ref to track if fetchProfile has been called
 
     // get profile data
@@ -25,12 +24,10 @@ const Wallet = ({ userInfo, handleLogout }) => {
                     // console.log("Wallet res " , data)
                     setPosts(data);
                 } else {
-                    setErrorMessage('Failed to fetch wallet');
-                    console.error('Failed to fetch profile:', response.statusText);
+                    console.error('Failed to fetch wallet:', response.statusText);
                 }
             } catch (error) {
-                setErrorMessage('An error occurred while fetching the wallet');
-                console.error('Error:', error);
+                console.error('Error: An error occurred while fetching the wallet,', error);
             }
         };
 
@@ -63,12 +60,20 @@ const Wallet = ({ userInfo, handleLogout }) => {
                                 <div className="card">
                                     <div className="card-body">
                                         <div className="row">
-                                            <div className="col-md-12 grid-margin">
-                                                <div className="row">
-                                                    <div className="col-4 col-xl-8">
-                                                        <h4 className="card-title" style={{paddingTop:'10px'}}>Wallet balance: {data ? data.data : 'Loading...'}</h4>  
+                                            <div className="col-md-6 mb-4 stretch-card transparent">
+                                                <div className="card card-tale">
+                                                    <div className="card-body">
+                                                        <h3 className="mb-4">Wallet Balance</h3>
+                                                        <h3 className="fs-30 mb-2"> <b>Rs: {data ? data.data : 'Loading...'}</b></h3>
                                                     </div>
-                                                    {errorMessage && <div className="text-danger">{errorMessage}</div>}
+                                                </div>
+                                            </div>
+                                            <div className="col-md-6 mb-4 stretch-card transparent">
+                                                <div className="card card-dark-blue">
+                                                    <div className="card-body">
+                                                        <p className="mb-4 fs-30">Withdraw</p>
+                                                        <button>click here</button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

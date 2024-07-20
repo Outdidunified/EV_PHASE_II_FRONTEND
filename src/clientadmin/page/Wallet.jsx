@@ -3,11 +3,9 @@ import axios from 'axios';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer';
-import { useNavigate } from 'react-router-dom';
 
 const Wallet = ({ userInfo, handleLogout }) => {
     const [commissionAmount, setCommissionAmount] = useState('');
-    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchCommissionAmount = async () => {
@@ -30,10 +28,6 @@ const Wallet = ({ userInfo, handleLogout }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []); // Empty dependency array because fetchCommissionAmount doesn't depend on any external variables
 
-    const goBack = () => {
-        navigate(-1);
-    };
-
     return (
         <div className='container-scroller'>
             <Header userInfo={userInfo} handleLogout={handleLogout} />
@@ -47,18 +41,6 @@ const Wallet = ({ userInfo, handleLogout }) => {
                                     <div className="col-12 col-xl-8 mb-4 mb-xl-0">
                                         <h3 className="font-weight-bold">Wallet</h3>
                                     </div>
-                                    <div className="col-12 col-xl-4">
-                                        <div className="justify-content-end d-flex">
-                                            <button
-                                                type="button"
-                                                className="btn btn-success"
-                                                onClick={goBack}
-                                                style={{ marginRight: '10px' }}
-                                            >
-                                                Go Back
-                                            </button>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -71,7 +53,7 @@ const Wallet = ({ userInfo, handleLogout }) => {
                                                 <div className="card card-tale">
                                                     <div className="card-body">
                                                         <h3 className="mb-4">Wallet Balance</h3>
-                                                        <h3 className="fs-30 mb-2"> <b>{commissionAmount} Rs</b></h3>
+                                                        <h3 className="fs-30 mb-2"> <b>Rs: {commissionAmount}</b></h3>
                                                     </div>
                                                 </div>
                                             </div>

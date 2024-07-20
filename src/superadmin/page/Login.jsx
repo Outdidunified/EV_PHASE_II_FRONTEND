@@ -56,8 +56,8 @@ const Login = ({ handleLogin }) => {
                   <div className="form-group">
                     <input type="password" className="form-control form-control-lg" placeholder="Enter your password" value={passwords} maxLength={4} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^0-9]/g, ''); setPassword(sanitizedValue);}} required/>
                   </div>
-                  {errorMessage && <p className="text-danger">{errorMessage}</p>}
-                  {successMessage && <p className="text-success">{successMessage}</p>}
+                  {errorMessage && <p className="text-danger">{errorMessage}</p>}<br/>
+                  {successMessage && <p className="text-success">{successMessage}</p>}<br/>
                   <div className="mt-3">
                     <button type="submit" className="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">SIGN IN</button>
                   </div>

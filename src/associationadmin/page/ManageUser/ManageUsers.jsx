@@ -273,7 +273,7 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
                                                                     <input type="text" className="form-control" placeholder="Password" value={Password} maxLength={4} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^0-9]/g, ''); setPassword(sanitizedValue);}} required/>
                                                                 </div>
                                                             </div>
-                                                            {errorMessage && <div className="text-danger">{errorMessage}</div>}
+                                                            {errorMessage && <div className="text-danger">{errorMessage}</div>}<br/>
                                                             <div style={{textAlign:'center'}}>
                                                                 <button type="submit" className="btn btn-primary mr-2" style={{marginTop:'10px'}}>Add</button>
                                                             </div>

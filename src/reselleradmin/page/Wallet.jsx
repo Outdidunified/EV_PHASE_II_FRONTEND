@@ -55,7 +55,7 @@ const Wallet = ({ userInfo, handleLogout }) => {
                                                 <div className="card card-tale">
                                                     <div className="card-body">
                                                         <h3 className="mb-4">Wallet Balance</h3>
-                                                        <h3 className="fs-30 mb-2"> <b>{commissionAmount}.Rs</b></h3>
+                                                        <h3 className="fs-30 mb-2"> <b>Rs: {commissionAmount}</b></h3>
                                                     </div>
                                                 </div>
                                             </div>

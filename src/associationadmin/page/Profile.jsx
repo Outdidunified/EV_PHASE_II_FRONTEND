@@ -231,7 +231,7 @@ const Profile = ({ userInfo, handleLogout }) => {
                                                 <label htmlFor="exampleInputConfirmPassword1">Address</label>
                                                 <textarea type="password" className="form-control" placeholder="Address" value={association_address} onChange={(e) => setUpdateAddress(e.target.value)} required/>
                                             </div>
-                                            {errorMessageAss && <div className="text-danger">{errorMessageAss}</div>}
+                                            {errorMessageAss && <div className="text-danger">{errorMessageAss}</div>}<br/>
                                             <div style={{textAlign:'center'}}>
                                                 <button type="submit" className="btn btn-primary mr-2">Update</button>
                                             </div> 
@@ -262,7 +262,7 @@ const Profile = ({ userInfo, handleLogout }) => {
                                                 <label htmlFor="exampleInputPassword1">Password</label>
                                                 <input type="text" className="form-control" placeholder="Password" value={password} maxLength={4} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^0-9]/g, ''); setUserPassword(sanitizedValue);}} required/>
                                             </div>
-                                            {errorMessage && <div className="text-danger">{errorMessage}</div>}
+                                            {errorMessage && <div className="text-danger">{errorMessage}</div>}<br/>
                                             <div style={{textAlign:'center'}}>
                                                 <button type="submit" className="btn btn-primary mr-2">Update</button>
                                             </div>                                    
