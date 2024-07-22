@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useLocation, Link } from 'react-router-dom';
 
 const Sidebar = () => {
     const location = useLocation();
-    const [isManageDeviceOpen, setIsManageDeviceOpen] = useState(false);
+    // const [isManageDeviceOpen, setIsManageDeviceOpen] = useState(false);
 
-    const toggleManageDevice = () => {
-        setIsManageDeviceOpen(!isManageDeviceOpen);
-    };
+    // const toggleManageDevice = () => {
+    //     setIsManageDeviceOpen(!isManageDeviceOpen);
+    // };
 
-    const isManageDeviceActive = [
-        '/reselleradmin/Allocateddevice',
-        '/reselleradmin/Unallocateddevice',
-        '/reselleradmin/Assigntoclients',
-        '/reselleradmin/ViewAlloc',
-        '/reselleradmin/ViewUnalloc'
-    ].includes(location.pathname);
+    // const isManageDeviceActive = [
+    //     '/reselleradmin/Allocateddevice',
+    //     '/reselleradmin/Unallocateddevice',
+    //     '/reselleradmin/Assigntoclients',
+    //     '/reselleradmin/ViewAlloc',
+    //     '/reselleradmin/ViewUnalloc'
+    // ].includes(location.pathname);
 
     return (
         <nav className="sidebar sidebar-offcanvas" id="sidebar">
@@ -27,7 +27,7 @@ const Sidebar = () => {
                     </Link>
                 </li>
                 
-                <li className={`nav-item ${isManageDeviceActive || isManageDeviceOpen ? 'active' : ''}`} key="ManageDevice">
+                {/* <li className={`nav-item ${isManageDeviceActive || isManageDeviceOpen ? 'active' : ''}`} key="ManageDevice">
                     <a className="nav-link" href="#!" onClick={toggleManageDevice}>
                         <i className="icon-head menu-icon mdi mdi-cellphone-link"></i>
                         <span className="menu-title">Manage Device</span>
@@ -51,6 +51,21 @@ const Sidebar = () => {
                                 </Link>
                             </li>
                         </ul>
+                    </div>
+                </li> */}
+
+                <li className={location.pathname === '/reselleradmin/Allocateddevice' || location.pathname === '/reselleradmin/Unallocateddevice' || location.pathname === '/reselleradmin/Assigntoclients' ? 'nav-item active' : 'nav-item'} key="ManageDevice">
+                    <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                    <i className="icon-head menu-icon mdi mdi-cellphone-link"></i>
+                    <span className="menu-title">Manage Device</span>
+                    <i class="menu-arrow"></i>
+                    </a>
+                    <div class="collapse" id="ui-basic">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item"> <Link class="nav-link" to={{ pathname: "/reselleradmin/Allocateddevice" }}>Allocated Chargers</Link></li>
+                        <li class="nav-item"> <Link class="nav-link" to={{ pathname: "/reselleradmin/Unallocateddevice" }}>Unallocated Chargers</Link></li>
+                        <li class="nav-item"> <Link class="nav-link" to={{ pathname: "/reselleradmin/Assigntoclients" }}>Assigned to Clients</Link></li>
+                    </ul>
                     </div>
                 </li>
 

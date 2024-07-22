@@ -121,7 +121,7 @@ const EditManageUsers = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">User Name</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" value={username} onChange={(e) => setUsername(e.target.value )} required/>
+                                                                        <input type="text" className="form-control" value={username} maxLength={25} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^a-zA-Z0-9 ]/g, ''); setUsername(sanitizedValue);}} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -129,7 +129,7 @@ const EditManageUsers = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Phone Number</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" value={phone_no} onChange={(e) => setPhoneNumber( e.target.value )} required/>
+                                                                        <input type="text" className="form-control" value={phone_no} maxLength={10} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^0-9]/g, ''); setPhoneNumber(sanitizedValue);}} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -147,7 +147,7 @@ const EditManageUsers = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Password</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" value={password} onChange={(e) => setPassword( e.target.value )} required />
+                                                                        <input type="text" className="form-control" value={password} maxLength={4} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^0-9]/g, ''); setPassword(sanitizedValue);}} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -165,7 +165,7 @@ const EditManageUsers = ({ userInfo, handleLogout }) => {
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        {errorMessage && <div className="text-danger">{errorMessage}</div>}
+                                                        {errorMessage && <div className="text-danger">{errorMessage}</div>}<br/>
                                                         <div style={{ textAlign: 'center' }}>
                                                             <button type="submit" className="btn btn-primary mr-2">Update</button>
                                                         </div>

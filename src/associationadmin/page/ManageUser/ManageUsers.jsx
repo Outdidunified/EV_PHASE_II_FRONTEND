@@ -82,7 +82,7 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
             if (response.ok) {
                 setUpdateTrigger((prev) => !prev);
                 Swal.fire({
-                    title: "Charger added successfully",
+                    title: "User added successfully",
                     icon: "success"
                 });
                 setuserName(''); 
@@ -105,7 +105,7 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
         }catch (error) {
             Swal.fire({
                 title: "Error:", error,
-                text: "An error occurred while adding the use",
+                text: "An error occurred while adding the user",
                 icon: "error"
             });
         }
@@ -252,28 +252,28 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
                                                                     <div className="input-group-prepend">
                                                                         <span className="input-group-text" style={{color:'black', width:'125px'}}>User Name</span>
                                                                     </div>
-                                                                    <input type="text" className="form-control" placeholder="User Name" value={username} onChange={(e) => setuserName(e.target.value)} required/>
+                                                                    <input type="text" className="form-control" placeholder="User Name" value={username} maxLength={25} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^a-zA-Z0-9 ]/g, ''); setuserName(sanitizedValue);}} required/>
                                                                 </div>
                                                                 <div className="input-group">
                                                                     <div className="input-group-prepend">
                                                                         <span className="input-group-text" style={{color:'black', width:'125px'}}>Emial ID</span>
                                                                     </div>
-                                                                    <input type="email" className="form-control" placeholder="Email ID" value={email_id} onChange={(e) => setemailID(e.target.value)} required/>
+                                                                    <input type="email" className="form-control" placeholder="Email ID" value={email_id} onChange={(e) => {const value = e.target.value; const noSpaces = value.replace(/\s/g, ''); const validChars = noSpaces.replace(/[^a-zA-Z0-9@.]/g, ''); const atCount = (validChars.match(/@/g) || []).length; const sanitizedEmail = atCount <= 1 ? validChars : validChars.replace(/@.*@/, '@'); setemailID(sanitizedEmail); }}required/>  
                                                                 </div>
                                                                 <div className="input-group">
                                                                     <div className="input-group-prepend">
                                                                         <span className="input-group-text" style={{color:'black', width:'125px'}}>Phone</span>
                                                                     </div>
-                                                                    <input type="phone" className="form-control" placeholder="Phone" value={phoneNo} onChange={(e) => setPhone(e.target.value)} required/>
+                                                                    <input type="phone" className="form-control" placeholder="Phone" value={phoneNo} maxLength={10} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^0-9]/g, ''); setPhone(sanitizedValue);}} required/>
                                                                 </div>
                                                                 <div className="input-group">
                                                                     <div className="input-group-prepend">
                                                                         <span className="input-group-text" style={{color:'black', width:'125px'}}>Password</span>
                                                                     </div>
-                                                                    <input type="password" className="form-control" placeholder="Password" value={Password} onChange={(e) => setPassword(e.target.value)} required/>
+                                                                    <input type="text" className="form-control" placeholder="Password" value={Password} maxLength={4} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^0-9]/g, ''); setPassword(sanitizedValue);}} required/>
                                                                 </div>
                                                             </div>
-                                                            {errorMessage && <div className="text-danger">{errorMessage}</div>}
+                                                            {errorMessage && <div className="text-danger">{errorMessage}</div>}<br/>
                                                             <div style={{textAlign:'center'}}>
                                                                 <button type="submit" className="btn btn-primary mr-2" style={{marginTop:'10px'}}>Add</button>
                                                             </div>

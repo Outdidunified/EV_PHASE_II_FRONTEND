@@ -6,9 +6,19 @@ import Footer from '../components/Footer';
 import Swal from 'sweetalert2';
 
 const Profile = ({ userInfo, handleLogout }) => {
-    const [resellerDetails, setResellerDetails] = useState({ username: '', email: '', phoneNo: '', address:''});
-    const [userDetails, setUserDetails] = useState({ username: '', email: '', phoneNo: '', pass:''});
-    const fetchProfileCalled = useRef(false); // Ref to track if fetch function has been called
+    const [data, setPosts] = useState({});
+    const [username, setUserUname] = useState('');
+    const [email_id, setUserEmail] = useState('');
+    const [phone_no, setUserPhone] = useState('');
+    const [password, setUserPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const [errorMessages, setErrorMessages] = useState('');
+    const [dataAss, setPostsAss] = useState({});
+    const [reseller_name, setUpdateUname] = useState('');
+    const [reseller_email_id, setUpdateEmail] = useState('');
+    const [reseller_phone_no, setUpdatePhone] = useState('');
+    const [reseller_address, setUpdateAddress] = useState('');
+    const fetchProfileCalled = useRef(false); // Ref to track if fetchProfile has been called
 
     // Define fetchResellerUserDetails using useCallback to memoize it
     const fetchResellerUserDetails = useCallback(async () => {
@@ -16,95 +26,170 @@ const Profile = ({ userInfo, handleLogout }) => {
             const response = await axios.post('/reselleradmin/FetchUserProfile', {
                 user_id: userInfo.data.user_id,
             });
-            const resedeta = response.data.data;
 
-            if (resedeta.reseller_details && resedeta.reseller_details.length > 0) {
-                const reseller = resedeta.reseller_details[0];
-                setResellerDetails({
-                    username: reseller.reseller_name,
-                    email: reseller.reseller_email_id,
-                    phoneNo: reseller.reseller_phone_no,
-                    address: reseller.reseller_address
-                });
+            if (response.status === 200) {
+                const data = response.data.data;
+                setPosts(data);
+                const resellerDetails = data.reseller_details[0] || {};
+                setPostsAss(resellerDetails);
+            } else {
+                setErrorMessage('Failed to fetch profile');
+                console.error('Failed to fetch profile:', response.statusText);
             }
-
-            setUserDetails({
-                username: resedeta.username,
-                email: resedeta.email_id,
-                phoneNo: resedeta.phone_no,
-                pass: resedeta.password,
-            });
-
         } catch (error) {
-            console.error('Error fetching user details:', error);
+            setErrorMessage('An error occurred while fetching the profile');
+            console.error('Error:', error);
         }
     }, [userInfo.data.user_id]);
 
     useEffect(() => {
-        if (!fetchProfileCalled.current) {
+        if (!fetchProfileCalled.current && userInfo && userInfo.data && userInfo.data.user_id) {
             fetchResellerUserDetails();
             fetchProfileCalled.current = true; // Mark fetchResellerUserDetails as called
         }
-    }, [fetchResellerUserDetails]);
+    }, [fetchResellerUserDetails, userInfo]);
 
-    const handleUserFormSubmit = async (e) => {
+    // Reseller profile
+    useEffect(() => {
+        if (dataAss) {
+            setUpdateUname(dataAss.reseller_name || '');
+            setUpdateEmail(dataAss.reseller_email_id || '');
+            setUpdatePhone(dataAss.reseller_phone_no || '');
+            setUpdateAddress(dataAss.reseller_address || '');
+        }
+    }, [dataAss]);
+
+    // Set timeout
+    useEffect(() => {
+        if (errorMessage) {
+            const timeout = setTimeout(() => setErrorMessage(''), 5000); // Clear error message after 5 seconds
+            return () => clearTimeout(timeout);
+        }
+        if (errorMessages) {
+            const timeout = setTimeout(() => setErrorMessages(''), 5000); // Clear error message after 5 seconds
+            return () => clearTimeout(timeout);
+        }
+    }, [errorMessage, errorMessages]);
+
+    const addResellerProfileUpdate = async (e) => {
         e.preventDefault();
+
+        // Validate phone number
+        const phoneRegex = /^\d{10}$/;
+        if (!reseller_phone_no) {
+            setErrorMessages("Phone can't be empty.");
+            return;
+        }
+        if (!phoneRegex.test(reseller_phone_no)) {
+            setErrorMessages('Oops! Phone must be a 10-digit number.');
+            return;
+        }
+
         try {
-            await axios.post('/reselleradmin/UpdateUserProfile', {
-                user_id: userInfo.data.user_id,
-                username: userDetails.username,
-                phone_no: parseInt(userDetails.phoneNo),
-                password: userDetails.pass
+            const phoneNos = parseInt(reseller_phone_no);
+            const response = await fetch('/reselleradmin/UpdateResellerProfile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    reseller_id: userInfo.data.reseller_id,
+                    reseller_name,
+                    reseller_address,
+                    reseller_phone_no: phoneNos,
+                    modified_by: userInfo.data.reseller_name,
+                }),
             });
 
-            // Show success message
-            Swal.fire({
-                title: 'Success!',
-                text: 'User profile updated successfully.',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            });
-
+            if (response.ok) {
+                Swal.fire({
+                    title: "Reseller profile updated successfully",
+                    icon: "success",
+                });
+            } else {
+                Swal.fire({
+                    title: "Error",
+                    text: "Failed to update reseller profile",
+                    icon: "error",
+                });
+            }
         } catch (error) {
-            console.error('Error updating user profile:', error);
-
-            // Show error message
             Swal.fire({
-                title: 'Error!',
-                text: 'An error occurred while updating user profile. Please try again.',
-                icon: 'error',
-                confirmButtonText: 'OK'
+                title: "Error",
+                text: "An error occurred while updating the reseller profile",
+                icon: "error",
             });
         }
     };
 
-    const handleResellerFormSubmit = async (e) => {
+    // User profile update
+    useEffect(() => {
+        if (data) {
+            setUserUname(data.username || '');
+            setUserEmail(data.email_id || '');
+            setUserPhone(data.phone_no || '');
+            setUserPassword(data.password || '');
+        }
+    }, [data]);
+
+    const addUserProfileUpdate = async (e) => {
         e.preventDefault();
+
+        // Validate phone number
+        const phoneRegex = /^\d{10}$/;
+        if (!phone_no) {
+            setErrorMessage("Phone can't be empty.");
+            return;
+        }
+        if (!phoneRegex.test(phone_no)) {
+            setErrorMessage('Oops! Phone must be a 10-digit number.');
+            return;
+        }
+
+        // Validate password
+        const passwordRegex = /^\d{4}$/;
+        if (!password) {
+            setErrorMessage("Password can't be empty.");
+            return;
+        }
+        if (!passwordRegex.test(password)) {
+            setErrorMessage('Oops! Password must be a 4-digit number.');
+            return;
+        }
+
         try {
-             await axios.post('/reselleradmin/UpdateResellerProfile', {
-                reseller_id: userInfo.data.reseller_id,
-                modified_by: resellerDetails.username,
-                reseller_phone_no: parseInt(resellerDetails.phoneNo),
-                reseller_address: resellerDetails.address,
+            const phoneNo = parseInt(phone_no);
+            const Password = parseInt(password);
+            const response = await fetch('/reselleradmin/UpdateUserProfile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: userInfo.data.user_id,
+                    username,
+                    phone_no: phoneNo,
+                    password: Password,
+                }),
             });
 
-            // Show success message
-            Swal.fire({
-                title: 'Success!',
-                text: 'Reseller profile updated successfully.',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            });
-
+            if (response.ok) {
+                Swal.fire({
+                    title: "User profile updated successfully",
+                    icon: "success",
+                });
+            } else {
+                Swal.fire({
+                    title: "Error",
+                    text: "Failed to update user profile",
+                    icon: "error",
+                });
+            }
         } catch (error) {
-            console.error('Error updating reseller profile:', error);
-
-            // Show error message
             Swal.fire({
-                title: 'Error!',
-                text: 'An error occurred while updating reseller profile. Please try again.',
-                icon: 'error',
-                confirmButtonText: 'OK'
+                title: "Error",
+                text: "An error occurred while updating the user profile",
+                icon: "error",
             });
         }
     };
@@ -127,65 +212,64 @@ const Profile = ({ userInfo, handleLogout }) => {
                                 </div>
                             </div>
                         </div>
-
                         <div className="row">
-                            <div className="col-lg-6">
+                            <div className="col-md-6 grid-margin stretch-card">
                                 <div className="card">
                                     <div className="card-body">
-                                        <form className="forms-sample" onSubmit={handleResellerFormSubmit}>
-                                            <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
-                                                <h3>RESELLER DETAILS</h3>
-                                            </div>
-
+                                        <div style={{ textAlign: 'center' }}>
+                                            <h4 className="card-title">Reseller Profile</h4>
+                                        </div>
+                                        <form className="forms-sample" onSubmit={addResellerProfileUpdate}>
                                             <div className="form-group">
-                                                <label htmlFor="exampleInputUsername1">Reseller Name</label>
-                                                <input type="text" className="form-control" id="exampleInputUsername1" placeholder="Username"
-                                                    value={resellerDetails.username} onChange={(e) => setResellerDetails({ ...resellerDetails, username: e.target.value })}/>
+                                                <label htmlFor="exampleInputUsername1">Username</label>
+                                                <input type="text" className="form-control" placeholder="Username" value={reseller_name} maxLength={25} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^a-zA-Z0-9 ]/g, ''); setUpdateUname(sanitizedValue); }} required/>
                                             </div>
                                             <div className="form-group">
                                                 <label htmlFor="exampleInputEmail1">Email address</label>
-                                                <input type="email" className="form-control" id="exampleInputEmail1" placeholder="Email" value={resellerDetails.email} readOnly />
+                                                <input type="email" className="form-control" placeholder="Email" value={reseller_email_id} onChange={(e) => setUpdateEmail(e.target.value)} readOnly required/>
                                             </div>
                                             <div className="form-group">
-                                                <label htmlFor="exampleInputPhoneNo1">Phone Number</label>
-                                                <input type="text" className="form-control" id="exampleInputPhoneNo1" placeholder="Phone Number" value={resellerDetails.phoneNo} onChange={(e) => setResellerDetails({ ...resellerDetails, phoneNo: e.target.value })}/>
+                                                <label htmlFor="exampleInputPassword1">Phone Number</label>
+                                                <input type="text" className="form-control" placeholder="Phone Number" value={reseller_phone_no} maxLength={10} onChange={(e) => { const value = e.target.value; const sanitizedValue = value.replace(/[^0-9]/g, ''); setUpdatePhone(sanitizedValue); }} required/>
                                             </div>
                                             <div className="form-group">
-                                                <label htmlFor="address"> Address</label>
-                                                <input type="text" className="form-control" id="address" placeholder="Address" value={resellerDetails.address} onChange={(e) => setResellerDetails({ ...resellerDetails, address: e.target.value })}/>
+                                                <label htmlFor="exampleInputConfirmPassword1">Address</label>
+                                                <textarea className="form-control" placeholder="Address" value={reseller_address} onChange={(e) => setUpdateAddress(e.target.value)} required/>
                                             </div>
-                                            <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                                <button type="submit" className="btn btn-primary mr-2">Update</button>
+                                            {errorMessages && <div className="text-danger">{errorMessages}</div>}<br/>
+                                            <div style={{textAlign:'center'}}>
+                                                <button type="submit" className="btn btn-primary mr-2">Submit</button>
                                             </div>
                                         </form>
                                     </div>
                                 </div>
                             </div>
-                            <div className="col-lg-6">
+                            <div className="col-md-6 grid-margin stretch-card">
                                 <div className="card">
                                     <div className="card-body">
-                                        <form className="forms-sample" onSubmit={handleUserFormSubmit}>
-                                            <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
-                                                <h3>USER DETAILS</h3>
+                                        <div style={{ textAlign: 'center' }}>
+                                            <h4 className="card-title">User Profile</h4>
+                                        </div>
+                                        <form className="forms-sample" onSubmit={addUserProfileUpdate}>
+                                            <div className="form-group">
+                                                <label htmlFor="exampleInputUsername1">Username</label>
+                                                <input type="text" className="form-control" placeholder="Username" value={username} maxLength={25} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^a-zA-Z0-9 ]/g, ''); setUserUname(sanitizedValue); }} required/>
                                             </div>
                                             <div className="form-group">
-                                                <label htmlFor="exampleInputUsername2">Username</label>
-                                                <input type="text" className="form-control" id="exampleInputUsername2" placeholder="Username" value={userDetails.username} onChange={(e) => setUserDetails({ ...userDetails, username: e.target.value })}/>
+                                                <label htmlFor="exampleInputEmail1">Email address</label>
+                                                <input type="email" className="form-control" placeholder="Email" value={email_id} onChange={(e) => setUserEmail(e.target.value)} readOnly required/>
                                             </div>
                                             <div className="form-group">
-                                                <label htmlFor="exampleInputEmail2">Email address</label>
-                                                <input type="email" className="form-control" id="exampleInputEmail2" placeholder="Email" value={userDetails.email} readOnly/>
+                                                <label htmlFor="exampleInputPassword1">Phone Number</label>
+                                                <input type="text" className="form-control" placeholder="Phone Number" value={phone_no} maxLength={10} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^0-9]/g, ''); setUserPhone(sanitizedValue); }} required/>
                                             </div>
                                             <div className="form-group">
-                                                <label htmlFor="exampleInputPhoneNo2">Phone Number</label>
-                                                <input type="text" className="form-control" id="exampleInputPhoneNo2" placeholder="Phone Number" value={userDetails.phoneNo} onChange={(e) => setUserDetails({ ...userDetails, phoneNo: e.target.value })}/>
+                                                <label htmlFor="exampleInputConfirmPassword1">Password</label>
+                                                <input type="text" className="form-control" placeholder="Password" value={password} maxLength={4} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^0-9]/g, ''); setUserPassword(sanitizedValue); }} required/>
                                             </div>
-                                            <div className="form-group">
-                                                <label htmlFor="exampleInputPassword2">Password</label>
-                                                <input type="text" className="form-control" id="exampleInputPassword2" placeholder="Password" value={userDetails.pass} onChange={(e) => setUserDetails({ ...userDetails, pass: e.target.value })}/>
-                                            </div>
-                                            <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                                <button type="submit" className="btn btn-primary mr-2">Update</button>
+                                            {errorMessage && <div className="text-danger">{errorMessage}</div>}<br/>
+                                            <div style={{textAlign:'center'}}>
+                                                <button type="submit" className="btn btn-primary mr-2">Submit</button>
                                             </div>
                                         </form>
                                     </div>

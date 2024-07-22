@@ -51,13 +51,13 @@ const Login = ({ handleLogin }) => {
                 <h6 className="font-weight-light">Sign in to continue</h6>
                 <form className="pt-3" onSubmit={handleLoginFormSubmit}>
                   <div className="form-group">
-                    <input type="email" className="form-control form-control-lg" placeholder="Enter your email" value={email}  onChange={(e) => setEmail(e.target.value)} required/>
+                    <input type="email" className="form-control form-control-lg" placeholder="Enter your email" value={email} onChange={(e) => {const value = e.target.value; const noSpaces = value.replace(/\s/g, ''); const validChars = noSpaces.replace(/[^a-zA-Z0-9@.]/g, ''); const atCount = (validChars.match(/@/g) || []).length; const sanitizedEmail = atCount <= 1 ? validChars : validChars.replace(/@.*@/, '@'); setEmail(sanitizedEmail); }}required/>  
                   </div>
                   <div className="form-group">
-                    <input type="password" className="form-control form-control-lg" placeholder="Enter your password" value={passwords} onChange={(e) => setPassword(e.target.value)} required/>
+                    <input type="password" className="form-control form-control-lg" placeholder="Enter your password" value={passwords} maxLength={4} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^0-9]/g, ''); setPassword(sanitizedValue);}} required/>
                   </div>
-                  {errorMessage && <p className="text-danger">{errorMessage}</p>}
-                  {successMessage && <p className="text-success">{successMessage}</p>}
+                  {errorMessage && <p className="text-danger">{errorMessage}</p>}<br/>
+                  {successMessage && <p className="text-success">{successMessage}</p>}<br/>
                   <div className="mt-3">
                     <button type="submit" className="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">SIGN IN</button>
                   </div>

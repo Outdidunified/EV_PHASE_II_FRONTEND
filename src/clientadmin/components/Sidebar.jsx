@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useLocation, Link } from 'react-router-dom';
 
 const Sidebar = () => {
     const location = useLocation();
-    const [isManageDeviceOpen, setIsManageDeviceOpen] = useState(false);
+    // const [isManageDeviceOpen, setIsManageDeviceOpen] = useState(false);
 
-    const toggleManageDevice = () => {
-        setIsManageDeviceOpen(!isManageDeviceOpen);
-    };
+    // const toggleManageDevice = () => {
+    //     setIsManageDeviceOpen(!isManageDeviceOpen);
+    // };
 
-    const isManageDeviceActive = [
-        '/clientadmin/Allocateddevice',
-        '/clientadmin/Unallocateddevice',
-        '/clientadmin/AssigntoAssociation',
-        '/clientadmin/ViewAlloc',
-        '/clientadmin/ViewUnalloc'
-    ].includes(location.pathname);
+    // const isManageDeviceActive = [
+    //     '/clientadmin/Allocateddevice',
+    //     '/clientadmin/Unallocateddevice',
+    //     '/clientadmin/AssigntoAssociation',
+    //     '/clientadmin/ViewAlloc',
+    //     '/clientadmin/ViewUnalloc'
+    // ].includes(location.pathname);
 
     const isManageAssociationActive = [
         '/clientadmin/ManageAssociation',
@@ -51,33 +51,47 @@ const Sidebar = () => {
                     </Link>
                 </li>
                 
-                <li className={`nav-item ${isManageDeviceActive || isManageDeviceOpen ? 'active' : ''}`} key="ManageDevice">
-    <a className="nav-link" href="#!" onClick={toggleManageDevice}>
-        <i className="icon-head menu-icon mdi mdi-cellphone-link"></i>
-        <span className="menu-title">Manage Device</span>
-        <i className={`menu-arrow ${isManageDeviceOpen ? 'mdi mdi-chevron-down' : 'mdi mdi-chevron-right'}`}></i>
-    </a>
-    <div className={`collapse ${isManageDeviceOpen ? 'show' : ''}`}>
-        <ul className="nav flex-column sub-menu">
-            <li className={`nav-item ${location.pathname === '/clientadmin/Allocateddevice' || location.pathname === '/clientadmin/ViewAlloc' ? 'active' : ''}`} key="Allocateddevice">
-                <Link className="nav-link" to={{ pathname: "/clientadmin/Allocateddevice" }}>
-                    Allocated Chargers
-                </Link>
-            </li>
-            <li className={`nav-item ${location.pathname === '/clientadmin/Unallocateddevice' || location.pathname === '/clientadmin/ViewUnalloc' ? 'active' : ''}`} key="Unallocateddevice">
-                <Link className="nav-link" to={{ pathname: "/clientadmin/Unallocateddevice" }}>
-                    Unallocated Chargers
-                </Link>
-            </li>
-            <li className={`nav-item ${location.pathname === '/clientadmin/AssigntoAssociation' ? 'active' : ''}`} key="AssigntoAssociation">
-                <Link className="nav-link" to={{ pathname: "/clientadmin/AssigntoAssociation" }}>
-                    Assign to Association
-                </Link>
-            </li>
-        </ul>
-    </div>
-</li>
+                {/* <li className={`nav-item ${isManageDeviceActive || isManageDeviceOpen ? 'active' : ''}`} key="ManageDevice">
+                    <a className="nav-link" href="#!" onClick={toggleManageDevice}>
+                        <i className="icon-head menu-icon mdi mdi-cellphone-link"></i>
+                        <span className="menu-title">Manage Device</span>
+                        <i className={`menu-arrow ${isManageDeviceOpen ? 'mdi mdi-chevron-down' : 'mdi mdi-chevron-right'}`}></i>
+                    </a>
+                    <div className={`collapse ${isManageDeviceOpen ? 'show' : ''}`}>
+                        <ul className="nav flex-column sub-menu">
+                            <li className={`nav-item ${location.pathname === '/clientadmin/Allocateddevice' || location.pathname === '/clientadmin/ViewAlloc' ? 'active' : ''}`} key="Allocateddevice">
+                                <Link className="nav-link" to={{ pathname: "/clientadmin/Allocateddevice" }}>
+                                    Allocated Chargers
+                                </Link>
+                            </li>
+                            <li className={`nav-item ${location.pathname === '/clientadmin/Unallocateddevice' || location.pathname === '/clientadmin/ViewUnalloc' ? 'active' : ''}`} key="Unallocateddevice">
+                                <Link className="nav-link" to={{ pathname: "/clientadmin/Unallocateddevice" }}>
+                                    Unallocated Chargers
+                                </Link>
+                            </li>
+                            <li className={`nav-item ${location.pathname === '/clientadmin/AssigntoAssociation' ? 'active' : ''}`} key="AssigntoAssociation">
+                                <Link className="nav-link" to={{ pathname: "/clientadmin/AssigntoAssociation" }}>
+                                    Assign to Association
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+                </li> */}
 
+                <li className={location.pathname === '/clientadmin/Allocateddevice' || location.pathname === '/clientadmin/Unallocateddevice' || location.pathname === '/clientadmin/AssigntoAssociation' ? 'nav-item active' : 'nav-item'} key="ManageDevice">
+                    <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                    <i className="icon-head menu-icon mdi mdi-cellphone-link"></i>
+                    <span className="menu-title">Manage Device</span>
+                    <i class="menu-arrow"></i>
+                    </a>
+                    <div class="collapse" id="ui-basic">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item"> <Link class="nav-link" to={{ pathname: "/clientadmin/Allocateddevice" }}>Allocated Chargers</Link></li>
+                        <li class="nav-item"> <Link class="nav-link" to={{ pathname: "/clientadmin/Unallocateddevice" }}>Unallocated Chargers</Link></li>
+                        <li class="nav-item"> <Link class="nav-link" to={{ pathname: "/clientadmin/AssigntoAssociation" }}>Assigned to Clients</Link></li>
+                    </ul>
+                    </div>
+                </li>
 
                 <li className={`nav-item ${isManageAssociationActive ? 'active' : ''}`} key="ManageAssociation">
                     <Link className="nav-link" to={{ pathname: "/clientadmin/ManageAssociation" }}>

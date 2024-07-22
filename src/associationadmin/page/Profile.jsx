@@ -104,21 +104,21 @@ const Profile = ({ userInfo, handleLogout }) => {
                 body: JSON.stringify({ association_id: userInfo.data.association_id, association_address, association_phone_no: phoneNos, modified_by: userInfo.data.association_name}),});
             if (response.ok) {
                 Swal.fire({
-                    title: "User profile updated successfully",
+                    title: "Association profile updated successfully",
                     icon: "success"
                 });       
                         
             } else {
                 Swal.fire({
                     title: "Error",
-                    text: "Failed to update user profile",
+                    text: "Failed to update association profile",
                     icon: "error"
                 });
             }
         } catch (error) {
             Swal.fire({
                 title: "Error:", error,
-                text: "An error occurred while updating the user profile",
+                text: "An error occurred while updating the association profile",
                 icon: "error"
             });
         }
@@ -217,7 +217,7 @@ const Profile = ({ userInfo, handleLogout }) => {
                                         <form className="forms-sample" onSubmit={addAssProfileUpdate}>
                                             <div className="form-group">
                                                 <label htmlFor="exampleInputUsername1">Username</label>
-                                                <input type="text" className="form-control" placeholder="Username" value={association_name} onChange={(e) => setUpdateUname(e.target.value)} required/>
+                                                <input type="text" className="form-control" placeholder="Username" value={association_name} maxLength={25} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^a-zA-Z0-9 ]/g, ''); setUpdateUname(sanitizedValue);}} required/>
                                             </div>
                                             <div className="form-group">
                                                 <label htmlFor="exampleInputEmail1">Email address</label>
@@ -225,13 +225,13 @@ const Profile = ({ userInfo, handleLogout }) => {
                                             </div>
                                             <div className="form-group">
                                                 <label htmlFor="exampleInputPassword1">Phone Number</label>
-                                                <input type="text" className="form-control" placeholder="Phone Number" value={association_phone_no} onChange={(e) => setUpdatePhone(e.target.value)} required/>
+                                                <input type="text" className="form-control" placeholder="Phone Number" value={association_phone_no} maxLength={10} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^0-9]/g, ''); setUpdatePhone(sanitizedValue);}} required/>
                                             </div>
                                             <div className="form-group">
                                                 <label htmlFor="exampleInputConfirmPassword1">Address</label>
                                                 <textarea type="password" className="form-control" placeholder="Address" value={association_address} onChange={(e) => setUpdateAddress(e.target.value)} required/>
                                             </div>
-                                            {errorMessageAss && <div className="text-danger">{errorMessageAss}</div>}
+                                            {errorMessageAss && <div className="text-danger">{errorMessageAss}</div>}<br/>
                                             <div style={{textAlign:'center'}}>
                                                 <button type="submit" className="btn btn-primary mr-2">Update</button>
                                             </div> 
@@ -248,7 +248,7 @@ const Profile = ({ userInfo, handleLogout }) => {
                                         <form className="forms-sample" onSubmit={addUserProfileUpdate}>
                                             <div className="form-group">
                                                 <label htmlFor="exampleInputUsername1">Username</label>
-                                                <input type="text" className="form-control" placeholder="Username" value={username} onChange={(e) => setUserUname(e.target.value)} required/>
+                                                <input type="text" className="form-control" placeholder="Username" value={username} maxLength={25} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^a-zA-Z0-9 ]/g, ''); setUserUname(sanitizedValue);}} required/>
                                             </div>
                                             <div className="form-group">
                                                 <label htmlFor="exampleInputEmail1">Email address</label>
@@ -256,13 +256,13 @@ const Profile = ({ userInfo, handleLogout }) => {
                                             </div>
                                             <div className="form-group">
                                                 <label htmlFor="exampleInputConfirmPassword1">Phone Number</label>
-                                                <input type="text" className="form-control" placeholder="Phone Number" value={phone_no} onChange={(e) => setUserPhone(e.target.value)} required/>
+                                                <input type="text" className="form-control" placeholder="Phone Number" value={phone_no} maxLength={10} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^0-9]/g, ''); setUserPhone(sanitizedValue);}} required/> 
                                             </div>
                                             <div className="form-group">
                                                 <label htmlFor="exampleInputPassword1">Password</label>
-                                                <input type="text" className="form-control" placeholder="Password" value={password} onChange={(e) => setUserPassword(e.target.value)} required/>
+                                                <input type="text" className="form-control" placeholder="Password" value={password} maxLength={4} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^0-9]/g, ''); setUserPassword(sanitizedValue);}} required/>
                                             </div>
-                                            {errorMessage && <div className="text-danger">{errorMessage}</div>}
+                                            {errorMessage && <div className="text-danger">{errorMessage}</div>}<br/>
                                             <div style={{textAlign:'center'}}>
                                                 <button type="submit" className="btn btn-primary mr-2">Update</button>
                                             </div>                                    

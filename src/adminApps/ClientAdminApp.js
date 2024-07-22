@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Route, Routes, Navigate } from 'react-router-dom';
+import React, { useState, useEffect} from 'react';
+import { Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import Login from '../clientadmin/page/Login';
 import Dashboard from '../clientadmin/page/Dashboard';
 // managedevice
@@ -34,245 +34,256 @@ import Sessionhistoryass from '../clientadmin/page/ManageAssociation/Sessionhist
 
 import Wallet from '../clientadmin/page/Wallet';
 import Profile from '../clientadmin/page/Profile';
+import Header from '../clientadmin/components/Header';
 
 const ClientAdminApp = () => {
   const storedUser = JSON.parse(sessionStorage.getItem('clientAdminUser'));
   const [loggedIn, setLoggedIn] = useState(!!storedUser);
   const [userInfo, setUserInfo] = useState(storedUser || {});
-  const [initialLoad, setInitialLoad] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (storedUser) {
+      setLoggedIn(true);
+      setUserInfo(storedUser);
+    }else {
+      setLoggedIn(false);
+    }
+  }, [storedUser]);
 
   const handleLogin = (data) => {
     const { email, ...rest } = data;
     setUserInfo({ email, ...rest });
     setLoggedIn(true);
     sessionStorage.setItem('clientAdminUser', JSON.stringify({ email, ...rest }));
+    navigate('/clientadmin/Dashboard');
   };
 
   const handleLogout = () => {
     setLoggedIn(false);
     setUserInfo({});
     sessionStorage.removeItem('clientAdminUser');
+    navigate('/clientadmin');
   };
 
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={loggedIn ? <Navigate to="/clientadmin/Dashboard" /> : <Login handleLogin={handleLogin} />}
-      />
-      <Route
-        path="/Dashboard"
-        element={loggedIn ? (
-          initialLoad ? (
-            <Dashboard userInfo={userInfo} handleLogout={handleLogout} setInitialLoad={setInitialLoad} />
-          ) : (
+    <>
+      {loggedIn && <Header userInfo={userInfo} handleLogout={handleLogout} />}
+      <Routes>
+        <Route
+          path="/"
+          element={loggedIn ? <Navigate to="/clientadmin/Dashboard" /> : <Login handleLogin={handleLogin} />}
+        />
+        <Route
+          path="/Dashboard"
+          element={loggedIn ? (
             <Dashboard userInfo={userInfo} handleLogout={handleLogout} />
-          )
-        ) : (
-        <Navigate to="/clientadmin" />
-        )}
-      />
-      {/* manage device */}
-      <Route
-        path="/ManageDevice"
-        element={loggedIn ? (
-          <ManageDevice userInfo={userInfo} handleLogout={handleLogout} />
-        ) : (
+          ) : (
           <Navigate to="/clientadmin" />
-        )}
-      />
-       <Route
-        path="/Allocateddevice"
-        element={loggedIn ? (
-          <Allocateddevice userInfo={userInfo} handleLogout={handleLogout} />
-        ) : (
-          <Navigate to="/clientadmin" />
-        )}
-      />
-      <Route
-        path="/Unallocateddevice"
-        element={loggedIn ? (
-          <Unallocateddevice userInfo={userInfo} handleLogout={handleLogout} />
-        ) : (
-          <Navigate to="/clientadmin" />
-        )}
-      />
-      <Route
-        path="/ViewAlloc"
-        element={loggedIn ? (
-          <ViewAlloc userInfo={userInfo} handleLogout={handleLogout} />
-        ) : (
-          <Navigate to="/clientadmin" />
-        )}
-      />
-      <Route
-        path="/ViewUnalloc"
-        element={loggedIn ? (
-          <ViewUnalloc userInfo={userInfo} handleLogout={handleLogout} />
-        ) : (
-          <Navigate to="/clientadmin" />
-        )}
-      />
-      <Route
-        path="/AssigntoAssociation"
-        element={loggedIn ? (
-          <AssigntoAssociation userInfo={userInfo} handleLogout={handleLogout} />
-        ) : (
-          <Navigate to="/clientadmin" />
-        )}
-      />
-      {/*  */}
+          )}
+        />
+        {/* manage device */}
+        <Route
+          path="/ManageDevice"
+          element={loggedIn ? (
+            <ManageDevice userInfo={userInfo} handleLogout={handleLogout} />
+          ) : (
+            <Navigate to="/clientadmin" />
+          )}
+        />
+        <Route
+          path="/Allocateddevice"
+          element={loggedIn ? (
+            <Allocateddevice userInfo={userInfo} handleLogout={handleLogout} />
+          ) : (
+            <Navigate to="/clientadmin" />
+          )}
+        />
+        <Route
+          path="/Unallocateddevice"
+          element={loggedIn ? (
+            <Unallocateddevice userInfo={userInfo} handleLogout={handleLogout} />
+          ) : (
+            <Navigate to="/clientadmin" />
+          )}
+        />
+        <Route
+          path="/ViewAlloc"
+          element={loggedIn ? (
+            <ViewAlloc userInfo={userInfo} handleLogout={handleLogout} />
+          ) : (
+            <Navigate to="/clientadmin" />
+          )}
+        />
+        <Route
+          path="/ViewUnalloc"
+          element={loggedIn ? (
+            <ViewUnalloc userInfo={userInfo} handleLogout={handleLogout} />
+          ) : (
+            <Navigate to="/clientadmin" />
+          )}
+        />
+        <Route
+          path="/AssigntoAssociation"
+          element={loggedIn ? (
+            <AssigntoAssociation userInfo={userInfo} handleLogout={handleLogout} />
+          ) : (
+            <Navigate to="/clientadmin" />
+          )}
+        />
+        {/*  */}
 
-      {/* Manageuser */}
-      <Route
-        path="/ManageUsers"
-        element={loggedIn ? (
-          <ManageUsers userInfo={userInfo} handleLogout={handleLogout} />
-        ) : (
-          <Navigate to="/clientadmin" />
-        )}
-      />
-      <Route
-        path="/Viewuser"
-        element={loggedIn ? (
-          <Viewuser userInfo={userInfo} handleLogout={handleLogout} />
-        ) : (
-          <Navigate to="/clientadmin" />
-        )}
-      />
-      <Route
-        path="/Edituser"
-        element={loggedIn ? (
-          <Edituser userInfo={userInfo} handleLogout={handleLogout} />
-        ) : (
-          <Navigate to="/clientadmin" />
-        )}
-      />
-      <Route
-        path="/Createuser"
-        element={loggedIn ? (
-          <Createuser userInfo={userInfo} handleLogout={handleLogout} />
-        ) : (
-          <Navigate to="/clientadmin" />
-        )}
-      />
-      {/*  */}
+        {/* Manageuser */}
+        <Route
+          path="/ManageUsers"
+          element={loggedIn ? (
+            <ManageUsers userInfo={userInfo} handleLogout={handleLogout} />
+          ) : (
+            <Navigate to="/clientadmin" />
+          )}
+        />
+        <Route
+          path="/Viewuser"
+          element={loggedIn ? (
+            <Viewuser userInfo={userInfo} handleLogout={handleLogout} />
+          ) : (
+            <Navigate to="/clientadmin" />
+          )}
+        />
+        <Route
+          path="/Edituser"
+          element={loggedIn ? (
+            <Edituser userInfo={userInfo} handleLogout={handleLogout} />
+          ) : (
+            <Navigate to="/clientadmin" />
+          )}
+        />
+        <Route
+          path="/Createuser"
+          element={loggedIn ? (
+            <Createuser userInfo={userInfo} handleLogout={handleLogout} />
+          ) : (
+            <Navigate to="/clientadmin" />
+          )}
+        />
+        {/*  */}
 
-      {/* Manage Finance */}
-      <Route
-        path="/Managefinance"
-        element={loggedIn ? (
-          <Managefinance userInfo={userInfo} handleLogout={handleLogout} />
-        ) : (
-          <Navigate to="/clientadmin" />
-        )}
-      />
-      <Route
-        path="/CreateFinance"
-        element={loggedIn ? (
-          <CreateFinance userInfo={userInfo} handleLogout={handleLogout} />
-        ) : (
-          <Navigate to="/clientadmin" />
-        )}
-      />
-            <Route
-        path="/ViewFinance"
-        element={loggedIn ? (
-          <ViewFinance userInfo={userInfo} handleLogout={handleLogout} />
-        ) : (
-          <Navigate to="/clientadmin" />
-        )}
-      />
-      <Route
-        path="/EditFinance"
-        element={loggedIn ? (
-          <EditFinance userInfo={userInfo} handleLogout={handleLogout} />
-        ) : (
-          <Navigate to="/clientadmin" />
-        )}
-      />
-      
-      {/*  */}
+        {/* Manage Finance */}
+        <Route
+          path="/Managefinance"
+          element={loggedIn ? (
+            <Managefinance userInfo={userInfo} handleLogout={handleLogout} />
+          ) : (
+            <Navigate to="/clientadmin" />
+          )}
+        />
+        <Route
+          path="/CreateFinance"
+          element={loggedIn ? (
+            <CreateFinance userInfo={userInfo} handleLogout={handleLogout} />
+          ) : (
+            <Navigate to="/clientadmin" />
+          )}
+        />
+              <Route
+          path="/ViewFinance"
+          element={loggedIn ? (
+            <ViewFinance userInfo={userInfo} handleLogout={handleLogout} />
+          ) : (
+            <Navigate to="/clientadmin" />
+          )}
+        />
+        <Route
+          path="/EditFinance"
+          element={loggedIn ? (
+            <EditFinance userInfo={userInfo} handleLogout={handleLogout} />
+          ) : (
+            <Navigate to="/clientadmin" />
+          )}
+        />
+        
+        {/*  */}
 
-      {/* Manage Association */}
-      <Route
-        path="/ManageAssociation"
-        element={loggedIn ? (
-          <ManageAssociation userInfo={userInfo} handleLogout={handleLogout} />
-        ) : (
-          <Navigate to="/clientadmin" />
-        )}
-      />
-      <Route
-        path="/ViewAss"
-        element={loggedIn ? (
-          <ViewAss userInfo={userInfo} handleLogout={handleLogout} />
-        ) : (
-          <Navigate to="/clientadmin" />
-        )}
-      />
-      <Route
-        path="/Editass"
-        element={loggedIn ? (
-          <Editass userInfo={userInfo} handleLogout={handleLogout} />
-        ) : (
-          <Navigate to="/clientadmin" />
-        )}
-      />
-      <Route
-        path="/Createass"
-        element={loggedIn ? (
-          <Createass userInfo={userInfo} handleLogout={handleLogout} />
-        ) : (
-          <Navigate to="/clientadmin" />
-        )}
-      />
-      <Route
-        path="/Assigneddevass"
-        element={loggedIn ? (
-          <Assigneddevass userInfo={userInfo} handleLogout={handleLogout} />
-        ) : (
-          <Navigate to="/clientadmin" />
-        )}
-      />
-      <Route
-        path="/Assignfinance"
-        element={loggedIn ? (
-          <Assignfinance userInfo={userInfo} handleLogout={handleLogout} />
-        ) : (
-          <Navigate to="/clientadmin" />
-        )}
-      />
-       <Route
-        path="/Sessionhistoryass"
-        element={loggedIn ? (
-          <Sessionhistoryass userInfo={userInfo} handleLogout={handleLogout} />
-        ) : (
-          <Navigate to="/clientadmin" />
-        )}
-      />
-      {/*  */}
-
+        {/* Manage Association */}
+        <Route
+          path="/ManageAssociation"
+          element={loggedIn ? (
+            <ManageAssociation userInfo={userInfo} handleLogout={handleLogout} />
+          ) : (
+            <Navigate to="/clientadmin" />
+          )}
+        />
+        <Route
+          path="/ViewAss"
+          element={loggedIn ? (
+            <ViewAss userInfo={userInfo} handleLogout={handleLogout} />
+          ) : (
+            <Navigate to="/clientadmin" />
+          )}
+        />
+        <Route
+          path="/Editass"
+          element={loggedIn ? (
+            <Editass userInfo={userInfo} handleLogout={handleLogout} />
+          ) : (
+            <Navigate to="/clientadmin" />
+          )}
+        />
+        <Route
+          path="/Createass"
+          element={loggedIn ? (
+            <Createass userInfo={userInfo} handleLogout={handleLogout} />
+          ) : (
+            <Navigate to="/clientadmin" />
+          )}
+        />
+        <Route
+          path="/Assigneddevass"
+          element={loggedIn ? (
+            <Assigneddevass userInfo={userInfo} handleLogout={handleLogout} />
+          ) : (
+            <Navigate to="/clientadmin" />
+          )}
+        />
+        <Route
+          path="/Assignfinance"
+          element={loggedIn ? (
+            <Assignfinance userInfo={userInfo} handleLogout={handleLogout} />
+          ) : (
+            <Navigate to="/clientadmin" />
+          )}
+        />
+        <Route
+          path="/Sessionhistoryass"
+          element={loggedIn ? (
+            <Sessionhistoryass userInfo={userInfo} handleLogout={handleLogout} />
+          ) : (
+            <Navigate to="/clientadmin" />
+          )}
+        />
+        {/*  */}
 
 
-      
-      <Route
-        path="/Wallet"
-        element={loggedIn ? (
-          <Wallet userInfo={userInfo} handleLogout={handleLogout} />
-        ) : (
-          <Navigate to="/clientadmin" />
-        )}
-      />
-      <Route
-        path="/Profile"
-        element={loggedIn ? (
-          <Profile userInfo={userInfo} handleLogout={handleLogout} />
-        ) : (
-          <Navigate to="/clientadmin" />
-        )}
-      />
-    </Routes>
+
+        
+        <Route
+          path="/Wallet"
+          element={loggedIn ? (
+            <Wallet userInfo={userInfo} handleLogout={handleLogout} />
+          ) : (
+            <Navigate to="/clientadmin" />
+          )}
+        />
+        <Route
+          path="/Profile"
+          element={loggedIn ? (
+            <Profile userInfo={userInfo} handleLogout={handleLogout} />
+          ) : (
+            <Navigate to="/clientadmin" />
+          )}
+        />
+      </Routes>
+    </>
   );
 };
 

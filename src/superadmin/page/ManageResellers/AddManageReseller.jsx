@@ -47,7 +47,7 @@ const AddManageReseller = ({ userInfo, handleLogout }) => {
             });
             if (response.ok) {
                 Swal.fire({
-                    title: "Charger added successfully",
+                    title: "Reseller added successfully",
                     icon: "success"
                 });
                 setResellerName(''); 
@@ -109,7 +109,7 @@ const AddManageReseller = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Reseller Name</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Reseller Name" value={reseller_name}  onChange={(e) => setResellerName(e.target.value)} required/>
+                                                                        <input type="text" className="form-control" placeholder="Reseller Name" value={reseller_name} maxLength={25} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^a-zA-Z0-9 ]/g, ''); setResellerName(sanitizedValue);}} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -117,7 +117,7 @@ const AddManageReseller = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Phone Number</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" placeholder="Phone Number" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} required/>
+                                                                        <input type="text" className="form-control" placeholder="Phone Number" value={phoneNumber} maxLength={10} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^0-9]/g, ''); setPhoneNumber(sanitizedValue);}} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -127,7 +127,7 @@ const AddManageReseller = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Email ID</label>
                                                                     <div className="col-sm-9">
-                                                                        <input type="email" className="form-control" placeholder="Email ID" value={reseller_email_id}  onChange={(e) => setEmailID(e.target.value)} required/>
+                                                                        <input type="email" className="form-control" placeholder="Email ID" value={reseller_email_id} onChange={(e) => {const value = e.target.value; const noSpaces = value.replace(/\s/g, ''); const validChars = noSpaces.replace(/[^a-zA-Z0-9@.]/g, ''); const atCount = (validChars.match(/@/g) || []).length; const sanitizedEmail = atCount <= 1 ? validChars : validChars.replace(/@.*@/, '@'); setEmailID(sanitizedEmail); }}required/>  
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -140,7 +140,7 @@ const AddManageReseller = ({ userInfo, handleLogout }) => {
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        {errorMessage && <div className="text-danger">{errorMessage}</div>}
+                                                        {errorMessage && <div className="text-danger">{errorMessage}</div>}<br/>
                                                         <div style={{textAlign:'center'}}>
                                                             <button type="submit" className="btn btn-primary mr-2">Add</button>
                                                         </div>
